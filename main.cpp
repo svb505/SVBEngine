@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     // 🔸 Добавляем квадрат
     Box* box = new Box();
     box->position = { -2, 0, 0 };
-    box->color = { 1, 1, 0 }; // 
+    box->color = { 1, 1, 0 }; 
     ogl->addObject(box);
 
     // 🔸 Добавляем круг

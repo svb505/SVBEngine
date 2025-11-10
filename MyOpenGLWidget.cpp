@@ -26,20 +26,12 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
 void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
-<<<<<<< HEAD
-=======
-
     // Отрисовываем все объекты
->>>>>>> main
     for (auto obj : objects)
         obj->render();
 }
 
 void MyOpenGLWidget::addObject(Object* obj) {
     objects.push_back(obj);
-<<<<<<< HEAD
-    update(); 
-=======
     update(); // перерисовать экран
->>>>>>> main
 }

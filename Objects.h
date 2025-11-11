@@ -3,30 +3,17 @@
 #include <QVector3D>
 #include <cmath>
 
-/*
- * БАЗОВЫЙ КЛАСС Object
- * --------------------
- * Это основа всех фигур (2D и 3D).
- * У каждой есть позиция, масштаб, цвет, угол вращения.
- */
 class Object : protected QOpenGLFunctions {
 public:
-    QVector3D position{ 0, 0, 0 }; // x, y, z (z позже пригодится для 3D)
+    QVector3D position{ 0, 0, 0 };
     QVector3D scale{ 1, 1, 1 };
-    float rotation = 0.0f;       // угол поворота в градусах
-    QVector3D color{ 1, 1, 1 };    // цвет RGB
+    float rotation = 0.0f;       
+    QVector3D color{ 1, 1, 1 };    
 
     Object() { initializeOpenGLFunctions(); }
-    virtual void render() = 0;   // чисто виртуальная функция (должна быть у каждой фигуры)
+    virtual void render() = 0;  
     virtual ~Object() {}
 };
-
-
-/*
- * КЛАСС Box — квадрат/прямоугольник
- * --------------------------------
- * Самая базовая фигура 2D.
- */
 class Box : public Object {
 public:
     float width = 1.0f;
@@ -52,11 +39,6 @@ public:
 };
 
 
-/*
- * КЛАСС Circle — окружность
- * -------------------------
- * Использует простую аппроксимацию тригонометрией.
- */
 class Circle : public Object {
 public:
     float radius = 0.5f;
@@ -70,7 +52,7 @@ public:
         glColor3f(color.x(), color.y(), color.z());
 
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(0, 0); // центр
+        glVertex2f(0, 0); 
         const int segments = 40;
         for (int i = 0; i <= segments; ++i) {
             float angle = i * 2 * M_PI / segments;

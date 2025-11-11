@@ -1,6 +1,7 @@
 ﻿#include "MyOpenGLWidget.h"
 #include <QTimer>
 #include <iostream>
+#include <QDebug>
 
 MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
     : QOpenGLWidget(parent)
@@ -28,24 +29,24 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
 void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
-    // Отрисовываем все объекты
-    for (auto obj : objects)
-        obj->render();
+    for (auto& pair : objects)
+        pair.first->render();
 }
-void MyOpenGLWidget::addObject(Object* obj) {
-    objects.push_back(obj);
-    update(); // перерисовать экран
+void MyOpenGLWidget::addObject(Object* obj,const std::string& name,const int& x,
+    const int& y,const int z) {
+    objects[obj] = {name,x,y,z};
+    update(); 
 }
 void MyOpenGLWidget::clearScene() {
-    for (auto obj : objects) delete obj;
+    for (auto& pair : objects) delete pair.first;
     objects.clear();
     update();
 }
 void MyOpenGLWidget::removeObj(Object* obj) {
-    auto it = std::find(objects.begin(), objects.end(), obj);
+    auto it = objects.find(obj);
     if (it != objects.end()) {
-        delete* it;
-        objects.erase(it);
+        delete it->first;
+        objects.erase(obj);
         update();
     }
 }

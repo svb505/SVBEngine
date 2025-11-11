@@ -10,13 +10,12 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 public:
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
     void addObject(Object* obj);     
-
+    void clearScene();
+    void removeObj(Object* obj);
 protected:
     void initializeGL() override; 
     void resizeGL(int w, int h) override; 
-    void paintGL() override; 
-    void clearScene();
-    void removeObj(Object* obj);
+    void paintGL() override;
 
 private:
     std::vector<Object*> objects; 

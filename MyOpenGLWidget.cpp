@@ -2,6 +2,8 @@
 #include <QTimer>
 #include <iostream>
 #include <QDebug>
+#include <map>
+
 
 MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
     : QOpenGLWidget(parent)
@@ -22,31 +24,39 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
 
     // Ортографическая проекция (2D)
     float aspect = float(w) / float(h);
-    glOrtho(-aspect * 5, aspect * 5, -5, 5, -10, 10);
+    glOrtho(-100,100,-100,100,-100,100);
 
     glMatrixMode(GL_MODELVIEW);
 }
 void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
-    for (auto& pair : objects)
-        pair.first->render();
+
+    for (auto& [name, data] : objects) {
+        if (data.obj) {
+            qDebug() << "Render:" << QString::fromStdString(name)
+                << "x=" << data.x;
+            glPushMatrix();
+            glTranslatef(data.x, data.y, data.z);
+            glColor3f(data.r, data.g, data.b);
+            data.obj->render();
+            glPopMatrix();
+        }
+    }
 }
 void MyOpenGLWidget::addObject(Object* obj,const std::string& name,const int& x,
-    const int& y,const int z) {
-    objects[obj] = {name,x,y,z};
+    const int& y,const int z,const int r,const int g, const  int b) {
+    objects[name] = {obj,x,y,z,r,g,b};
     update(); 
 }
 void MyOpenGLWidget::clearScene() {
-    for (auto& pair : objects) delete pair.first;
     objects.clear();
     update();
 }
-void MyOpenGLWidget::removeObj(Object* obj) {
-    auto it = objects.find(obj);
+void MyOpenGLWidget::removeObj(const std::string& name) {
+    auto it = objects.find(name);
     if (it != objects.end()) {
-        delete it->first;
-        objects.erase(obj);
+        objects.erase(it);
         update();
     }
 }

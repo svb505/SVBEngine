@@ -8,20 +8,21 @@
 struct Data {
     Object* obj;
     int x, y, z;
-    int r, g, b;
+    float r, g, b;
 };
 
 class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT
 public:
+    std::string mode = "2D";
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
-    void addObject(Object* obj, const std::string& name, const int& x,
-        const int& y, const int z,const int r, const int g, const  int b);
+    void addObj(Object* obj, const std::string& name, const int& x,
+        const int& y, const int z,const float r, const float g, const float b);
     void clearScene();
     void removeObj(const std::string& name);
 protected:
     void initializeGL() override; 
-    void resizeGL(int w, int h) override; 
+    void resizeGL(int w,int h) override; 
     void paintGL() override;
 
 private:

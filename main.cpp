@@ -10,25 +10,21 @@ int main(int argc, char* argv[]) {
     QMainWindow window;
     auto* ogl = new MyOpenGLWidget();
     window.setCentralWidget(ogl);
-    window.resize(800, 600);
+    window.showMaximized();
+    window.setWindowTitle("SVBEgine - OpenGL");
     window.show();
 
     Box* box = new Box();
-    box->position = { -6, 0, 0 };
+    box->position = { 30, 0, 0};
     box->color = { 255, 0, 0 };
-    box->width = 20.0f;
-    box->height = 20.0f;
-    ogl->addObject(box, "box1", -3, 0, 0, 255, 0, 0);
+    box->setSize(20.0f, 20.0f);
+    ogl->addObj(box, "box1", 30, 0, 0, 255.0f,0.0f,0.0f);
 
     Circle* circle = new Circle();
-    circle->position = { -2, 0, 0 };
+    circle->position = { 100, 0, 0 };
     circle->color = { 0, 255, 0 };
-    ogl->addObject(circle, "circle1", -2, 0, 0, 0, 255, 0);
-
-    Circle* circle1 = new Circle();
-    circle1->position = { 2, 0, 0 };
-    circle1->color = { 0, 0, 255 };
-    ogl->addObject(circle1, "circle2", 2, 0, 0, 0, 0, 255);
+    circle->setRadius(6.0f);
+    ogl->addObj(circle, "circle1", 190, 0, 0, 0.0f, 255.0f, 0.0f);
 
     return app.exec();
 }

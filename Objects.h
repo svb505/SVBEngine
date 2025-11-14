@@ -15,10 +15,14 @@ public:
     virtual ~Object() {}
 };
 class Box : public Object {
-public:
+private:
     float width = 1.0f;
     float height = 1.0f;
-
+public:
+    void setSize(const float& w,const float& h) {
+        width = w;
+        height = h;
+    }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);
@@ -40,9 +44,10 @@ public:
 
 
 class Circle : public Object {
+private:
+float radius = 0.5f;
 public:
-    float radius = 0.5f;
-
+    void setRadius(const float& r) { radius = r; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);

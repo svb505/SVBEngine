@@ -75,3 +75,7 @@ void MyOpenGLWidget::removeObj(const std::string& name) {
         update();
     }
 }
+void MyOpenGLWidget::setMode(const std::string& m) {
+    mode = m;
+    update();
+}

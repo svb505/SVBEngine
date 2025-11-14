@@ -20,11 +20,11 @@ public:
         const int& y, const int z,const float r, const float g, const float b);
     void clearScene();
     void removeObj(const std::string& name);
+    void setMode(const std::string& m);
 protected:
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 
     void paintGL() override;
-
 private:
     std::map < std::string, Data > objects;
 };

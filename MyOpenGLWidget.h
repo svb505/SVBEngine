@@ -12,7 +12,8 @@ struct Data {
 };
 
 class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
-    Q_OBJECT
+    Q_OBJECT;
+
 public:
     std::string mode = "2D";
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
@@ -21,10 +22,18 @@ public:
     void clearScene();
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
+    void startMove(const std::string& name, int targetX, int speed);
+    void moveObj(Object* obj, const std::string& name, const int& x, const int& y, const int z, float r, float g, float b);
 protected:
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
     std::map < std::string, Data > objects;
+    QTimer* animTimer = nullptr;
+    std::string animName;
+    int animTargetX = 0;
+    int animSpeed = 5;   
+private slots:
+    void animateMove();
 };

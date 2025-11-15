@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QDebug>
 #include <map>
+#include <qDebug>
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -20,6 +21,8 @@ void perspective(float fov, float aspect, float zNear, float zFar) {
 MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
     : QOpenGLWidget(parent)
 {
+    animTimer = new QTimer(this);
+    connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
 }
 void MyOpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
@@ -58,9 +61,10 @@ void MyOpenGLWidget::paintGL() {
         }
     }
 }
-void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const int& x,
-    const int& y,const int z,float r, float g, float b) {
-    r /= 255.0f,g /= 255.0f,b /= 255.0f;
+void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const int& x,const int& y,const int z,float r, float g, float b) {
+    r /= 255.0f; 
+    g /= 255.0f;
+    b /= 255.0f;
     objects[name] = {obj,x,y,z,r,g,b};
     update(); 
 }
@@ -77,5 +81,31 @@ void MyOpenGLWidget::removeObj(const std::string& name) {
 }
 void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
+    update();
+}
+void MyOpenGLWidget::moveObj(Object* obj, const std::string& name, const int& x, const int& y, const int z, float r, float g, float b) {
+    obj->position = { float(x), float(y), float(z) };
+    obj->color = { r, g, b };
+    objects[name] = { obj,x,y,z,r,g,b };;
+    update();
+}
+void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed)
+{
+    animName = name;
+    animTargetX = targetX;
+    animSpeed = speed;
+
+    animTimer->start(16); 
+}
+void MyOpenGLWidget::animateMove() {
+    auto& data = objects[animName];
+
+    if (data.x < animTargetX)
+        data.x += animSpeed;
+    else {
+        animTimer->stop();
+        return;
+    }
+
     update();
 }

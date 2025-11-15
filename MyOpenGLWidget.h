@@ -23,6 +23,7 @@ public:
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
+    std::map <std::string, Data> getObjects();
     void moveObj(Object* obj, const std::string& name, const int& x, const int& y, const int z, float r, float g, float b);
 protected:
     void initializeGL() override; 

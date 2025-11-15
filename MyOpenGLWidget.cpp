@@ -62,9 +62,6 @@ void MyOpenGLWidget::paintGL() {
     }
 }
 void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const int& x,const int& y,const int z,float r, float g, float b) {
-    r /= 255.0f; 
-    g /= 255.0f;
-    b /= 255.0f;
     objects[name] = {obj,x,y,z,r,g,b};
     update(); 
 }
@@ -78,6 +75,9 @@ void MyOpenGLWidget::removeObj(const std::string& name) {
         objects.erase(it);
         update();
     }
+}
+std::map <std::string, Data> MyOpenGLWidget::getObjects() {
+    return objects;
 }
 void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;

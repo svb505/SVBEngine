@@ -70,7 +70,7 @@ void MyOpenGLWidget::paintGL() {
         }
     }
 }
-void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const int& x,const int& y,const int z,float r, float g, float b) {
+void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const float& x,const float& y,const float z,float r, float g, float b) {
     objects[name] = {obj,x,y,z,r,g,b};
     update(); 
 }
@@ -92,7 +92,7 @@ void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
     update();
 }
-void MyOpenGLWidget::moveObj(const std::string& name, const int& x, const int& y, const int z)
+void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const float& y, const float z)
 {
     auto it = objects.find(name);
     if (it == objects.end()) {

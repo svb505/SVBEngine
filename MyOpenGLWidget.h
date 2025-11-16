@@ -7,7 +7,7 @@
 
 struct Data {
     Object* obj;
-    int x, y, z;
+    float x, y, z;
     float r, g, b;
 };
 struct ProjectionParams {
@@ -17,17 +17,18 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
+    QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
-    void addObj(Object* obj, const std::string& name, const int& x,
-        const int& y, const int z,const float r, const float g, const float b);
+    void addObj(Object* obj, const std::string& name, const float& x,
+        const float& y, const float z,const float r, const float g, const float b);
     void clearScene();
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
     std::map <std::string, Data> getObjects();
-    void moveObj(const std::string& name, const int& x, const int& y, const int z);
+    void moveObj(const std::string& name, const float& x, const float& y, const float z);
     int getX(const std::string& name);
     int getY(const std::string& name);
     int getZ(const std::string& name);
@@ -36,6 +37,7 @@ protected:
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
+    
     std::map < std::string, Data > objects;
     QTimer* animTimer = nullptr;
     std::string animName;

@@ -12,7 +12,6 @@
 #include <QPointer>
 #include <GUI.h>
 #include <MyOpenGLWidget.h>
-#include <Physics.h>
 
 QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
     QLabel* lbl = new QLabel(parent);
@@ -38,9 +37,7 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QMenu* addMenu = objectsMenu->addMenu("Add");
     QAction* removeAction = objectsMenu->addAction("Remove");
     QAction* sceneAction = menubar->addAction("Scene");
-    QAction* scenariosAction = menubar->addAction("Scenarios");
-    QAction* physicsAction = menubar->addAction("Physics simulation");
-    
+    QAction* scenariosAction = menubar->addAction("Scenarios");    
 
     QAction* rectAction = addMenu->addAction("Add rectangle");
     QAction* circleAction = addMenu->addAction("Add circle");
@@ -51,10 +48,6 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
 
     QAction* twoD= modeMenu->addAction("Set 2D mode");
     QAction* threeD = modeMenu->addAction("Set 3D mode");
-
-    QObject::connect(physicsAction, &QAction::triggered, [&]() {
-        openPhysicsWindow(ogl);
-    });
     QObject::connect(removeAction, &QAction::triggered, [&]() {
         openRemoveWindow(ogl);
         });
@@ -89,67 +82,6 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         changeMode("3D",ogl);
         });
 };
-void GUI::openPhysicsWindow(MyOpenGLWidget* ogl) {
-    std::map<std::string, std::string> scenarios;
-    scenarios["LEFT"] = "Moving to left on";
-    scenarios["RIGHT"] = "Moving to right on";
-    scenarios["TOP"] = "Moving to top on";
-    scenarios["BOTTOM"] = "Moving to bottom on";
-    scenarios["DLEFTTOP"] = "Moving to diagonal(left -> top) on";
-    scenarios["DLEFTBOTTOM"] = "Moving to diagonal(left -> bottom) on";
-    scenarios["DRIGHTTOP"] = "Moving to diagonal(right -> top) on";
-    scenarios["DRIGHTBOTTOM"] = "Moving to diagonal(right -> bottom) on";
-
-    QWidget* child = new QWidget();
-    child->resize(500, 200);
-    child->setWindowTitle("Physics");
-    child->show();
-
-    QLabel* lbl1 = makeLabel(child, "Select object", 10, 10);
-
-    QComboBox* combo1 = new QComboBox(child);
-    combo1->move(10, 30);
-    for (auto name : ogl->getObjects()) {
-        combo1->addItem(QString::fromStdString(name.first));
-    }
-    combo1->show();
-
-    QLabel* pix = makeLabel(child, "Move on ... pixels", 10, 60);
-    QLineEdit* pixels = makeLineEdit(child, "On", "10", 10, 80);
-
-    QLabel* lbl2 = makeLabel(child, "Select scenario", 160, 10);
-
-    QComboBox* combo2 = new QComboBox(child);
-    combo2->move(160, 30);
-    for (auto& name : scenarios) {
-        combo2->addItem(QString::fromStdString(name.second));
-    }
-    combo2->show();
-
-    QLabel* lbl5 = makeLabel(child, "Enter speed", 10, 100);
-    QLineEdit* speed = makeLineEdit(child, "Enter speed", "5", 10, 120);
-
-    QPushButton* start = new QPushButton(child);
-    start->setText("Start");
-    start->move(10, 140);
-    start->show();
-
-    QObject::connect(start, &QPushButton::clicked,
-        [this, ogl, combo1, combo2, scenarios, pixels,speed]() {
-
-            QStringList list;   
-            QString scenText = combo2->currentText();
-
-            bool ok;
-            int pix = pixels->text().toInt(&ok);
-            if (!ok) pix = 0;
-
-            QString full = QString("%1 %2").arg(scenText).arg(pix);
-            list << full;
-            Phys physics;
-            physics.movingParcer(ogl,combo1->currentText().toStdString(),1,list,scenarios,speed->text().toInt());
-        });
-}
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     auto params = ogl->getProjectionParams();
     QWidget* child = new QWidget();

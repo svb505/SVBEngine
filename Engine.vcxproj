@@ -99,7 +99,6 @@
   <ItemGroup>
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="MyOpenGLWidget.cpp" />
-    <ClCompile Include="Physics.cpp" />
     <QtRcc Include="Engine.qrc" />
     <QtRcc Include="resources.qrc" />
     <QtUic Include="Engine.ui" />
@@ -113,7 +112,6 @@
   <ItemGroup>
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Objects.h" />
-    <ClInclude Include="Physics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

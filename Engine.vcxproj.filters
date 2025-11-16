@@ -49,9 +49,6 @@
     <ClCompile Include="GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyOpenGLWidget.h">
@@ -63,9 +60,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

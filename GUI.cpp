@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <QColorDialog>
-#include <QCombobox>
+#include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QMessageBox>
@@ -102,7 +102,7 @@ void GUI::openPhysicsWindow(MyOpenGLWidget* ogl) {
 
     QWidget* child = new QWidget();
     child->resize(500, 200);
-    child->setWindowTitle("Scenarios");
+    child->setWindowTitle("Physics");
     child->show();
 
     QLabel* lbl1 = makeLabel(child, "Select object", 10, 10);
@@ -126,13 +126,16 @@ void GUI::openPhysicsWindow(MyOpenGLWidget* ogl) {
     }
     combo2->show();
 
+    QLabel* lbl5 = makeLabel(child, "Enter speed", 10, 100);
+    QLineEdit* speed = makeLineEdit(child, "Enter speed", "5", 10, 120);
+
     QPushButton* start = new QPushButton(child);
     start->setText("Start");
-    start->move(10, 130);
+    start->move(10, 140);
     start->show();
 
     QObject::connect(start, &QPushButton::clicked,
-        [this, ogl, combo1, combo2, scenarios, pixels]() {
+        [this, ogl, combo1, combo2, scenarios, pixels,speed]() {
 
             QStringList list;   
             QString scenText = combo2->currentText();
@@ -144,7 +147,7 @@ void GUI::openPhysicsWindow(MyOpenGLWidget* ogl) {
             QString full = QString("%1 %2").arg(scenText).arg(pix);
             list << full;
             Phys physics;
-            physics.movingParcer(ogl,combo1->currentText().toStdString(),1,list,scenarios);
+            physics.movingParcer(ogl,combo1->currentText().toStdString(),1,list,scenarios,speed->text().toInt());
         });
 }
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
@@ -232,19 +235,21 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     combo3->addItem("10");
     combo3->show();
 
+    QLabel* lbl5 = makeLabel(child, "Enter speed", 160, 120);
+    QLineEdit* speed = makeLineEdit(child, "Enter speed", "5", 160, 135);
 
     QPushButton* start = new QPushButton(child);
     start->setText("Start");
     start->move(10, 160);
     start->show();
 
-    QObject::connect(start, &QPushButton::clicked, [this,ogl,combo1,combo3,list1,scenarios,pixels]() {
+    QObject::connect(start, &QPushButton::clicked, [this,ogl,combo1,combo3,list1,scenarios,pixels,speed]() {
         QStringList texts;
         for (int i = 0; i < list1->count(); i++) {
             texts << list1->item(i)->text();
         }
         movingParcer(ogl,combo1->currentText().toStdString(), combo3->currentText().toInt(), texts,
-            scenarios);
+            scenarios,speed->text().toInt());
     });
 
 };
@@ -460,9 +465,8 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
 void GUI::changeMode(const std::string& mode,MyOpenGLWidget* ogl) {
     ogl->setMode(mode);
 };
-void GUI::movingParcer(
-    MyOpenGLWidget* ogl,const std::string& name,const int& repeatTime,const QStringList& items,
-    const std::map<std::string, std::string>& scenarios)
+void GUI::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& repeatTime,const QStringList& items,
+    const std::map<std::string, std::string>& scenarios,const int& speed)
 {
     struct Scenario {
         std::string vect;
@@ -493,6 +497,7 @@ void GUI::movingParcer(
         startMoveObj(
             ogl,
             name,
+            speed,
             (*queue)[index].vect,
             (*queue)[index].num,
             repeatTime,
@@ -502,18 +507,18 @@ void GUI::movingParcer(
 
     (*runNextPtr)(0);
 }
-void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const std::string& vect,
+void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& speed,const std::string& vect,
     const int time,  const int to,    std::function<void()> onFinished) {
     int x = ogl->getX(name);
     int y = ogl->getY(name);
     int z = ogl->getZ(name);
 
-    int step = 5;      
+    int step = speed;      
     int repeatCount = 0; 
     int moved = 0;       
 
     QTimer* timer = new QTimer();
-    timer->setInterval(50);
+    timer->setInterval(1000 / speed);
 
     QObject::connect(timer, &QTimer::timeout, [=]() mutable {
         if (repeatCount >= time || moved >= to) {

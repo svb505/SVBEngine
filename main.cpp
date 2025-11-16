@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     window.setCentralWidget(ogl);
     window.showMaximized();
     window.setWindowTitle("SVBEngine - Render: OpenGL");
+    window.setWindowIcon(QIcon(":/logo.png"));
     window.show();
 
     ogl->setMode("2D");

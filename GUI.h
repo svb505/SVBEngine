@@ -18,7 +18,7 @@ public:
 	void addObjWindow(const std::string& type,MyOpenGLWidget* ogl);
 	void changeMode(const std::string& mode,MyOpenGLWidget* ogl);
 	void movingParcer(MyOpenGLWidget* ogl, const std::string& name, const int& repeatTime,const QStringList& items,
-		const std::map<std::string,std::string>& scenarios);
-	void startMoveObj(MyOpenGLWidget* ogl, const std::string& name, const std::string& vect,
+		const std::map<std::string,std::string>& scenarios,const int& speed);
+	void startMoveObj(MyOpenGLWidget* ogl, const std::string& name,const int& speed, const std::string& vect,
 		const int time, const int to, std::function<void()> onFinished);
 };

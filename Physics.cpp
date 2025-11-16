@@ -5,7 +5,7 @@
 
 
 void Phys::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& repeatTime,
-    const QStringList& items,const std::map<std::string, std::string>& scenarios){
+    const QStringList& items,const std::map<std::string, std::string>& scenarios, const int& speed){
     struct Scenario {
         std::string vect;
         int num;
@@ -35,6 +35,7 @@ void Phys::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& r
         startMoveObj(
             ogl,
             name,
+            speed,
             (*queue)[index].vect,
             (*queue)[index].num,
             repeatTime,
@@ -44,18 +45,18 @@ void Phys::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& r
 
     (*runNextPtr)(0);
 }
-void Phys::startMoveObj(MyOpenGLWidget* ogl, const std::string& name, const std::string& vect,
+void Phys::startMoveObj(MyOpenGLWidget* ogl, const std::string& name, const int& speed, const std::string& vect,
     const int time, const int to, std::function<void()> onFinished) {
     int x = ogl->getX(name);
     int y = ogl->getY(name);
     int z = ogl->getZ(name);
 
-    int step = 5;
+    int step = speed;
     int repeatCount = 0;
     int moved = 0;
 
     QTimer* timer = new QTimer();
-    timer->setInterval(50);
+    timer->setInterval(1000 / speed);
 
     QObject::connect(timer, &QTimer::timeout, [=]() mutable {
         if (repeatCount >= time || moved >= to) {

@@ -101,6 +101,7 @@
     <ClCompile Include="MyOpenGLWidget.cpp" />
     <ClCompile Include="Physics.cpp" />
     <QtRcc Include="Engine.qrc" />
+    <QtRcc Include="resources.qrc" />
     <QtUic Include="Engine.ui" />
     <QtMoc Include="Engine.h" />
     <ClCompile Include="Engine.cpp" />

@@ -17,12 +17,14 @@ void perspective(float fov, float aspect, float zNear, float zFar) {
 
     glMultMatrixf(mat);
 }
-
 MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
     : QOpenGLWidget(parent)
 {
     animTimer = new QTimer(this);
     connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
+}
+ProjectionParams MyOpenGLWidget::getProjectionParams() const {
+    return { left, right, top, bottom, zNear, zFar };
 }
 void MyOpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
@@ -32,13 +34,20 @@ void MyOpenGLWidget::initializeGL() {
 }
 void MyOpenGLWidget::resizeGL(int w, int h) {
     float aspect = float(w) / float(h);
+    left = -200 * aspect;
+    right = 200 * aspect;
+    bottom = -100 * aspect;
+    top = 100 * aspect;
+    zNear = -100 * aspect;
+    zFar = 100 * aspect;
+
     glViewport(0, 0, w, h);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     if (mode == "2D") {
-        glOrtho(-200 * aspect, 200 * aspect, -100 * aspect, 100 * aspect, -100, 100);
+        glOrtho(left, right, bottom, top, zNear, zFar);
     }
     else {
         perspective(60.0f, aspect, 0.1f, 1000.0f);

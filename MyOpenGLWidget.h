@@ -27,7 +27,10 @@ public:
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
     std::map <std::string, Data> getObjects();
-    void moveObj(Object* obj, const std::string& name, const int& x, const int& y, const int z, float r, float g, float b);
+    void moveObj(const std::string& name, const int& x, const int& y, const int z);
+    int getX(const std::string& name);
+    int getY(const std::string& name);
+    int getZ(const std::string& name);
 protected:
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 

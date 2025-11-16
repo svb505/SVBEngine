@@ -9,22 +9,9 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QListWidget>
+#include <QPointer>
 #include <GUI.h>
 #include <MyOpenGLWidget.h>
-
-/*QTimer* timer = new QTimer(ogl);
-
-  QObject::connect(timer, &QTimer::timeout, ogl, [=]() mutable {
-       x += 10;
-       ogl->moveObj(obj, "triangle1", x, 90, 0, 225, 0, 170);
-
-       if (x >= 100) {
-           timer->stop();
-           timer->deleteLater();
-       }
-});
-timer->start(50);*/
-
 
 QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
     QLabel* lbl = new QLabel(parent);
@@ -122,67 +109,88 @@ void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     QLabel* infoZ = makeLabel(child, QString::fromStdString(znZF), 10, 100);
 };
 void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
-    std::vector<std::string> scenarios = { "Moving to left" ,"Moving to right","Moving to top",
-        "Moving to bottom","Moving to diagonal(left -> top)","Moving to diagonal(left -> bottom)",
-        "Moving to diagonal(right -> top)","Moving to diagonal(right -> bottom)"};
+    std::map<std::string, std::string> scenarios;
+    scenarios["LEFT"] = "Moving to left on";
+    scenarios["RIGHT"] = "Moving to right on";
+    scenarios["TOP"] = "Moving to top on";
+    scenarios["BOTTOM"] = "Moving to bottom on";
+    scenarios["DLEFTTOP"] = "Moving to diagonal(left -> top) on";
+    scenarios["DLEFTBOTTOM"] = "Moving to diagonal(left -> bottom) on";
+    scenarios["DRIGHTTOP"] = "Moving to diagonal(right -> top) on";
+    scenarios["DRIGHTBOTTOM"] = "Moving to diagonal(right -> bottom) on";
+
 
     QWidget* child = new QWidget();
-    child->resize(500, 400);
+    child->resize(550, 400);
     child->setWindowTitle("Scenarios");
     child->show();
 
-    QLabel* lbl = makeLabel(child, "Select object", 10, 10);
-
-    QComboBox* combo = new QComboBox(child);
-    combo->move(10, 30);
-    for (auto name : ogl->getObjects()) {
-        combo->addItem(QString::fromStdString(name.first));
-    }
-    combo->show();
-
-    QLabel* lbl1 = makeLabel(child, "Select scenario", 40, 10);
+    QLabel* lbl1 = makeLabel(child, "Select object", 10, 10);
 
     QComboBox* combo1 = new QComboBox(child);
-    combo1->move(40, 30);
-    for (std::string name : scenarios) {
-        combo1->addItem(QString::fromStdString(name));
+    combo1->move(10, 30);
+    for (auto name : ogl->getObjects()) {
+        combo1->addItem(QString::fromStdString(name.first));
     }
     combo1->show();
+    QLabel* pix = makeLabel(child, "Move on ... pixels", 10, 55);
+    QLineEdit* pixels = makeLineEdit(child, "On", "10", 10, 70);
 
-    QListWidget* list = new QListWidget(child);
-    list->move(40, 50);
-    list->resize(160, 100);
+    QLabel* lbl2 = makeLabel(child, "Select scenario", 100, 10);
+
+    QComboBox* combo2 = new QComboBox(child);
+    combo2->move(100, 30);
+    for (auto name : scenarios) {
+        combo2->addItem(QString::fromStdString(name.second));
+    }
+    combo2->show();
+
+    QLabel* lbl3 = makeLabel(child, "Added scenarios", 340, 10);
+    QListWidget* list1 = new QListWidget(child);
+    list1->move(350, 30);
+    list1->resize(190, 100);
+    list1->show();
 
     QPushButton* add = new QPushButton(child);
     add->setText("Add scenario");
-    add->move(10,50);
+    add->move(10,95);
     add->show();
 
-    QObject::connect(add, &QPushButton::clicked, [&]() {
-        QString item = combo->currentText();
-        list->addItem(item);
-    });
+    QObject::connect(add, &QPushButton::clicked, [combo2, list1, pixels]() {
+        QString item = combo2->currentText();
+        bool ok;
+        int pix = pixels->text().toInt(&ok);
+        if (!ok) pix = 0;
 
-    QLabel* lbl2 = makeLabel(child, "How many times to repeat", 10, 10);
-    QComboBox* combo2 = new QComboBox(child);
-    combo2->move(40, 60);
-    combo2->addItem("1 times");
-    combo2->addItem("2 times");
-    combo2->addItem("5 times");
-    combo2->addItem("10 times");
-    combo2->addItem("constantly");
-    combo2->show();
+        QString str = QString("%1 %2").arg(item).arg(pix);
+        list1->addItem(str);
+        });
+
+
+    QLabel* lbl4 = makeLabel(child, "How many times to repeat", 10, 120);
+    QComboBox* combo3 = new QComboBox(child);
+    combo3->move(10, 135);
+    combo3->addItem("1");
+    combo3->addItem("2");
+    combo3->addItem("5");
+    combo3->addItem("10");
+    combo3->addItem("constantly");
+    combo3->show();
 
 
     QPushButton* start = new QPushButton(child);
     start->setText("Start");
-    start->move(10, 700);
+    start->move(10, 160);
     start->show();
 
-
-
-
-
+    QObject::connect(start, &QPushButton::clicked, [this,ogl,combo1,combo3,list1,scenarios,pixels]() {
+        QStringList texts;
+        for (int i = 0; i < list1->count(); i++) {
+            texts << list1->item(i)->text();
+        }
+        movingParcer(ogl,combo1->currentText().toStdString(), combo3->currentText().toInt(), texts,
+            scenarios);
+    });
 
 };
 void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
@@ -282,7 +290,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     QLineEdit* xPos = makeLineEdit(child, "Set X position", "0", 10, 70);
     
     QLabel* lbl2 = makeLabel(child, "Set Y position", 10, 90);
-    QLineEdit* yPos = makeLineEdit(child, "Set Y position", "3", 10, 110);
+    QLineEdit* yPos = makeLineEdit(child, "Set Y position", "0", 10, 110);
     
     QLabel* lbl3 = makeLabel(child, "Set Z position(leave 0 if 2D mode)", 10, 130);
     QLineEdit* zPos = makeLineEdit(child, "Set Z position", "0", 10, 150);
@@ -397,3 +405,112 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
 void GUI::changeMode(const std::string& mode,MyOpenGLWidget* ogl) {
     ogl->setMode(mode);
 };
+void GUI::movingParcer(
+    MyOpenGLWidget* ogl,
+    const std::string& name,
+    const int& repeatTime,
+    const QStringList& items,
+    const std::map<std::string, std::string>& scenarios)
+{
+    struct Scenario {
+        std::string vect;
+        int num;
+    };
+    auto queue = std::make_shared<QVector<Scenario>>();
+
+    for (const QString& i : items) {
+        QString textOnly = i.section(" on ", 0, 0);
+        std::string vect;
+
+        for (const auto& [key, value] : scenarios) {
+            QString valueOnly = QString::fromStdString(value).section(" on", 0, 0);
+            if (textOnly == valueOnly.toStdString()) {
+                vect = key;
+                break;
+            }
+        }
+
+        int num = i.section(" on ", 1, 1).toInt();
+        queue->push_back({ vect, num });
+    }
+    auto runNextPtr = std::make_shared<std::function<void(int)>>();
+
+    *runNextPtr = [=](int index) {
+        if (index >= queue->size()) return;
+
+        startMoveObj(
+            ogl,
+            name,
+            (*queue)[index].vect,
+            (*queue)[index].num,
+            repeatTime,
+            [=]() { (*runNextPtr)(index + 1); }
+        );
+        };
+
+    (*runNextPtr)(0);
+}
+void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const std::string& vect,
+    const int time,  const int to,    std::function<void()> onFinished) {
+    int x = ogl->getX(name);
+    int y = ogl->getY(name);
+    int z = ogl->getZ(name);
+
+    int step = 5;      
+    int repeatCount = 0; 
+    int moved = 0;       
+
+    QTimer* timer = new QTimer();
+    timer->setInterval(50);
+
+    QObject::connect(timer, &QTimer::timeout, [=]() mutable {
+        if (repeatCount >= time || moved >= to) {
+            timer->stop();
+            timer->deleteLater();
+            if (onFinished) onFinished();
+            return;
+        }
+
+        int currentStep = std::min(step, to - moved); 
+        if (vect == "LEFT") x -= currentStep;
+        else if (vect == "RIGHT") x += currentStep;
+        else if (vect == "TOP") y += currentStep;
+        else if (vect == "BOTTOM") y -= currentStep;
+        else if (vect == "DLEFTTOP") { x -= currentStep; y += currentStep; }
+        else if (vect == "DLEFTBOTTOM") { x -= currentStep; y -= currentStep; }
+        else if (vect == "DRIGHTTOP") { x += currentStep; y += currentStep; }
+        else if (vect == "DRIGHTBOTTOM") { x += currentStep; y -= currentStep; }
+
+        moved += currentStep;
+
+        ogl->moveObj(name, x, y, z);
+        if (moved >= to) {
+            moved = 0; 
+            repeatCount++;
+        }
+        });
+
+    timer->start();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

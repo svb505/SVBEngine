@@ -92,12 +92,34 @@ void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
     update();
 }
-void MyOpenGLWidget::moveObj(Object* obj, const std::string& name, const int& x, const int& y, const int z, float r, float g, float b) {
+void MyOpenGLWidget::moveObj(const std::string& name, const int& x, const int& y, const int z)
+{
+    auto it = objects.find(name);
+    if (it == objects.end()) {
+        qDebug() << "Object not found:" << QString::fromStdString(name);
+        return;
+    }
+    Object* obj = it->second.obj;
+    float r = it->second.r;
+    float g = it->second.g;
+    float b = it->second.b;
     obj->position = { float(x), float(y), float(z) };
     obj->color = { r, g, b };
-    objects[name] = { obj,x,y,z,r,g,b };;
+    it->second.x = x;
+    it->second.y = y;
+    it->second.z = z;
+
     update();
-}
+};
+int MyOpenGLWidget::getX(const std::string& name) {
+    return objects[name].x;
+};
+int MyOpenGLWidget::getY(const std::string& name) {
+    return objects[name].y;
+};
+int MyOpenGLWidget::getZ(const std::string& name) {
+    return objects[name].z;
+};
 void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed)
 {
     animName = name;

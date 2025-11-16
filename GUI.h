@@ -1,6 +1,7 @@
 #pragma once
 #include <QLabel>
 #include <QLineEdit>
+#include <QMainWindow>
 
 class MyOpenGLWidget;
 class GUI {
@@ -8,7 +9,7 @@ public:
 	QLabel* makeLabel(QWidget* parent, const QString& text, const int& x, const int& y);
 	QLineEdit* makeLineEdit(QWidget* parent, const QString& text, const QString& setTxt, const int& x, const int& y);
 	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
-	void openPhysicsWindow();
+	void openPhysicsWindow(MyOpenGLWidget* ogl);
 	void openSceneWindow(MyOpenGLWidget* ogl);
 	void openScenariosWindow(MyOpenGLWidget* ogl);
 	void openRemoveWindow(MyOpenGLWidget* ogl);

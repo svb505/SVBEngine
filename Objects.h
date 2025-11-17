@@ -192,3 +192,251 @@ public:
         glPopMatrix();
     }
 };
+class Cube : public Object {
+public:
+    float width = 1.0f;
+    float height = 1.0f;
+    float depth = 1.0f;
+
+    void setSize(float w, float h, float d) {
+        width = w;
+        height = h;
+        depth = d;
+    }
+
+    void render() override {
+        glPushMatrix();
+
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        float w = width / 2.0f;
+        float h = height / 2.0f;
+        float d = depth / 2.0f;
+
+        glBegin(GL_QUADS);
+
+        // Front
+        glNormal3f(0, 0, 1);
+        glVertex3f(-w, -h, d);
+        glVertex3f(w, -h, d);
+        glVertex3f(w, h, d);
+        glVertex3f(-w, h, d);
+
+        // Back
+        glNormal3f(0, 0, -1);
+        glVertex3f(-w, -h, -d);
+        glVertex3f(-w, h, -d);
+        glVertex3f(w, h, -d);
+        glVertex3f(w, -h, -d);
+
+        // Left
+        glNormal3f(-1, 0, 0);
+        glVertex3f(-w, -h, -d);
+        glVertex3f(-w, -h, d);
+        glVertex3f(-w, h, d);
+        glVertex3f(-w, h, -d);
+
+        // Right
+        glNormal3f(1, 0, 0);
+        glVertex3f(w, -h, -d);
+        glVertex3f(w, h, -d);
+        glVertex3f(w, h, d);
+        glVertex3f(w, -h, d);
+
+        // Top
+        glNormal3f(0, 1, 0);
+        glVertex3f(-w, h, -d);
+        glVertex3f(-w, h, d);
+        glVertex3f(w, h, d);
+        glVertex3f(w, h, -d);
+
+        // Bottom
+        glNormal3f(0, -1, 0);
+        glVertex3f(-w, -h, -d);
+        glVertex3f(w, -h, -d);
+        glVertex3f(w, -h, d);
+        glVertex3f(-w, -h, d);
+
+        glEnd();
+
+        glPopMatrix();
+    }
+};
+class Sphere : public Object {
+private:
+    float radius = 1.0f;
+    int slices = 24;
+    int stacks = 24;
+
+public:
+    void setSize(float r, int sl = 24, int st = 24) {
+        radius = r;
+        slices = sl;
+        stacks = st;
+    }
+
+    void render() override {
+        glPushMatrix();
+
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        for (int i = 0; i < stacks; ++i) {
+            float lat0 = M_PI * (-0.5 + (double)i / stacks);
+            float z0 = radius * sin(lat0);
+            float zr0 = radius * cos(lat0);
+
+            float lat1 = M_PI * (-0.5 + (double)(i + 1) / stacks);
+            float z1 = radius * sin(lat1);
+            float zr1 = radius * cos(lat1);
+
+            glBegin(GL_QUAD_STRIP);
+            for (int j = 0; j <= slices; ++j) {
+                float lng = 2 * M_PI * (double)(j) / slices;
+                float x = cos(lng);
+                float y = sin(lng);
+
+                glNormal3f(x * zr0, y * zr0, z0);
+                glVertex3f(x * zr0, y * zr0, z0);
+
+                glNormal3f(x * zr1, y * zr1, z1);
+                glVertex3f(x * zr1, y * zr1, z1);
+            }
+            glEnd();
+        }
+
+        glPopMatrix();
+    }
+};
+class Pyramid : public Object {
+public:
+    float base = 1.0f;
+    float height = 1.0f;
+
+    void setSize(float b, float h) {
+        base = b;
+        height = h;
+    }
+
+    void render() override {
+        glPushMatrix();
+
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        float b = base / 2.0f;
+
+        glBegin(GL_TRIANGLES);
+
+        // Front
+        glNormal3f(0, 0.5, 1);
+        glVertex3f(0, height, 0);
+        glVertex3f(-b, 0, b);
+        glVertex3f(b, 0, b);
+
+        // Right
+        glNormal3f(1, 0.5, 0);
+        glVertex3f(0, height, 0);
+        glVertex3f(b, 0, b);
+        glVertex3f(b, 0, -b);
+
+        // Back
+        glNormal3f(0, 0.5, -1);
+        glVertex3f(0, height, 0);
+        glVertex3f(b, 0, -b);
+        glVertex3f(-b, 0, -b);
+
+        // Left
+        glNormal3f(-1, 0.5, 0);
+        glVertex3f(0, height, 0);
+        glVertex3f(-b, 0, -b);
+        glVertex3f(-b, 0, b);
+
+        glEnd();
+
+        // Bottom
+        glBegin(GL_QUADS);
+        glNormal3f(0, -1, 0);
+        glVertex3f(-b, 0, -b);
+        glVertex3f(b, 0, -b);
+        glVertex3f(b, 0, b);
+        glVertex3f(-b, 0, b);
+        glEnd();
+
+        glPopMatrix();
+    }
+};
+class Prism : public Object {
+private:
+    int sides = 6;
+    float radius = 1.0f;
+    float height = 1.0f;
+
+public:
+    void setSize(int s, float r, float h) {
+        sides = s;
+        radius = r;
+        height = h;
+    }
+
+    void render() override {
+        glPushMatrix();
+
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        float halfH = height / 2.0f;
+
+        // SIDES
+        glBegin(GL_QUADS);
+        for (int i = 0; i < sides; i++) {
+            float a1 = 2 * M_PI * i / sides;
+            float a2 = 2 * M_PI * (i + 1) / sides;
+
+            float x1 = cos(a1) * radius;
+            float y1 = sin(a1) * radius;
+
+            float x2 = cos(a2) * radius;
+            float y2 = sin(a2) * radius;
+
+            glNormal3f(x1, y1, 0);
+            glVertex3f(x1, halfH, y1);
+            glVertex3f(x2, halfH, y2);
+            glVertex3f(x2, -halfH, y2);
+            glVertex3f(x1, -halfH, y1);
+        }
+        glEnd();
+
+        // TOP
+        glBegin(GL_TRIANGLE_FAN);
+        glNormal3f(0, 1, 0);
+        glVertex3f(0, halfH, 0);
+        for (int i = 0; i <= sides; i++) {
+            float a = 2 * M_PI * i / sides;
+            glVertex3f(cos(a) * radius, halfH, sin(a) * radius);
+        }
+        glEnd();
+
+        // BOTTOM
+        glBegin(GL_TRIANGLE_FAN);
+        glNormal3f(0, -1, 0);
+        glVertex3f(0, -halfH, 0);
+        for (int i = 0; i <= sides; i++) {
+            float a = 2 * M_PI * i / sides;
+            glVertex3f(cos(a) * radius, -halfH, sin(a) * radius);
+        }
+        glEnd();
+
+        glPopMatrix();
+    }
+};
+

@@ -18,7 +18,9 @@ int main(int argc, char* argv[]) {
     window.setWindowIcon(QIcon(":/logo.png"));
     window.show();
 
-    ogl->setMode("2D");
+    ogl->setMode("3D");
+
+
     gui.addMenu(&window,ogl);
 
     return app.exec();

@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <map>
 #include <qDebug>
-
+#include <QPainter>
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
 
@@ -34,12 +34,6 @@ void MyOpenGLWidget::initializeGL() {
 }
 void MyOpenGLWidget::resizeGL(int w, int h) {
     float aspect = float(w) / float(h);
-    left = -200 * aspect;
-    right = 200 * aspect;
-    bottom = -100 * aspect;
-    top = 100 * aspect;
-    zNear = -100 * aspect;
-    zFar = 100 * aspect;
 
     glViewport(0, 0, w, h);
 
@@ -47,30 +41,45 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
     glLoadIdentity();
 
     if (mode == "2D") {
+        // left/right/top/bottom могут быть какими хочешь
+        left = -400 * aspect;
+        right = 400 * aspect;
+        bottom = -200;
+        top = 200;
+
+        // НО near/far должны быть ПОЛОЖИТЕЛЬНЫМИ!
+        zNear = 0.1f;
+        zFar = 1000.0f;
+
         glOrtho(left, right, bottom, top, zNear, zFar);
     }
-    else {
+    else { // 3D
         perspective(60.0f, aspect, 0.1f, 1000.0f);
     }
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    // Камера назад
     glTranslatef(0, 0, -400);
 }
+
 void MyOpenGLWidget::paintGL() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+
+    // Камера
+    glTranslatef(0, 0, -400);
 
     for (auto& [name, data] : objects) {
         if (data.obj) {
-            glPushMatrix();
-            glTranslatef(data.x, data.y, data.z);
-            glColor3f(data.r, data.g, data.b);
-            data.obj->render();
-            glPopMatrix();
+            data.obj->render(); // уже сам делает translate/scale
         }
     }
 }
-void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const float& x,const float& y,const float z,float r, float g, float b) {
+
+void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const float& x,const float& y,const float z,
+    float r, float g, float b) {
     objects[name] = {obj,x,y,z,r,g,b};
     update(); 
 }
@@ -140,3 +149,4 @@ void MyOpenGLWidget::animateMove() {
 
     update();
 }
+

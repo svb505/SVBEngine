@@ -12,6 +12,7 @@
 #include <QPointer>
 #include <GUI.h>
 #include <MyOpenGLWidget.h>
+#include <QFile>
 
 QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
     QLabel* lbl = new QLabel(parent);
@@ -221,25 +222,62 @@ void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
 void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z,float colors[],std::map<std::string,float>& positions) {
     if (type == "rectangle") {
-        Box* obj = new Box();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["w"], positions["h"]);
-        ogl->addObj(obj, name, x,y,z, colors[0], colors[1], colors[2]);
+        if (ogl->mode == "2D") {
+            Box* obj = new Box();
+            obj->position = { x, y, z };
+            obj->color = { colors[0], colors[1], colors[2] };
+            obj->setSize(positions["w"], positions["h"]);
+            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        }
+        else {
+            Cube* cube = new Cube();
+            cube->position = { x, y, z };;
+            cube->scale = { 1, 1, 1 };       
+            cube->rotation = 45.0f;
+            cube->color = { colors[0], colors[1], colors[2] };
+            cube->setSize(positions["w"], positions["h"], positions["w"]);
+            ogl->addObj(cube, name, cube->position.x(), cube->position.y(), cube->position.z(),
+                cube->color.x(), cube->color.y(), cube->color.z());
+        }
     }
     else if (type == "triangle") {
-        Triangle* obj = new Triangle();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["base"], positions["h"]);
-        ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        if (ogl->mode == "2D") {
+            Triangle* obj = new Triangle();
+            obj->position = { x, y, z };
+            obj->color = { colors[0], colors[1], colors[2] };
+            obj->setSize(positions["base"], positions["h"]);
+            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        }
+        else {
+            Pyramid* pyr = new Pyramid();
+            pyr->position = { x,y,z };
+            pyr->scale = { 30, 30, 30 };
+            pyr->color = { colors[0], colors[1], colors[2] };
+            pyr->setSize(positions["base"], positions["h"]);  
+
+            ogl->addObj(pyr, name, pyr->position.x(), pyr->position.y(), pyr->position.z(),
+                pyr->color.x(), pyr->color.y(), pyr->color.z());
+
+        }
     }
     else if (type == "circle") {
-        Circle* obj = new Circle();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setRadius(positions["radius"]);
-        ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        if (ogl->mode == "2D") {
+            Circle* obj = new Circle();
+            obj->position = { x, y, z };
+            obj->color = { colors[0], colors[1], colors[2] };
+            obj->setRadius(positions["radius"]);
+            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        }
+        else {
+            Sphere* ball = new Sphere();
+            ball->position = { x, y, z };
+            ball->scale = { 40, 40, 40 };
+            ball->color = { colors[0], colors[1], colors[2] };
+            ball->setSize(positions["radius"], 32, 32);
+
+            ogl->addObj(ball, name, ball->position.x(), ball->position.y(), ball->position.z(),
+                ball->color.x(), ball->color.y(), ball->color.z());
+        }
     }
     else if (type == "star") {
         Star* obj = new Star();
@@ -249,11 +287,23 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "polygon") {
-        Polygon* obj = new Polygon();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["count"], positions["radius"]);
-        ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        if (ogl->mode == "2D") {
+            Polygon* obj = new Polygon();
+            obj->position = { x, y, z };
+            obj->color = { colors[0], colors[1], colors[2] };
+            obj->setSize(positions["count"], positions["radius"]);
+            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        }
+        else {
+            Prism* prism = new Prism();
+            prism->position = { x,y,z };
+            prism->scale = { 30, 30, 30 };
+            prism->color = { colors[0], colors[1], colors[2] };
+            prism->setSize(positions["count"], positions["radius"], 2.0f);   
+
+            ogl->addObj(prism, name, prism->position.x(), prism->position.y(), prism->position.z(),
+                prism->color.x(), prism->color.y(), prism->color.z());
+        }
     }
     else if (type == "line") {
         Line* obj = new Line();
@@ -439,17 +489,18 @@ void GUI::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& re
 
     (*runNextPtr)(0);
 }
-void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& speed,const std::string& vect,
-    const int time,  const int to,    std::function<void()> onFinished) {
+void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& speed,const std::string& vect,const int time,const int to,std::function<void()> onFinished
+)
+{
     int x = ogl->getX(name);
     int y = ogl->getY(name);
     int z = ogl->getZ(name);
 
-    int step = speed;      
-    int repeatCount = 0; 
-    int moved = 0;       
+    int step = speed;
+    int repeatCount = 0;
+    int moved = 0;
 
-    QTimer* timer = new QTimer();
+    QTimer* timer = new QTimer(ogl); // Родитель виджет, чтобы таймер не удалялся
     timer->setInterval(1000 / speed);
 
     QObject::connect(timer, &QTimer::timeout, [=]() mutable {
@@ -460,27 +511,53 @@ void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& sp
             return;
         }
 
-        int currentStep = std::min(step, to - moved); 
-        if (vect == "LEFT") x -= currentStep;
-        else if (vect == "RIGHT") x += currentStep;
-        else if (vect == "TOP") y += currentStep;
-        else if (vect == "BOTTOM") y -= currentStep;
-        else if (vect == "DLEFTTOP") { x -= currentStep; y += currentStep; }
-        else if (vect == "DLEFTBOTTOM") { x -= currentStep; y -= currentStep; }
-        else if (vect == "DRIGHTTOP") { x += currentStep; y += currentStep; }
-        else if (vect == "DRIGHTBOTTOM") { x += currentStep; y -= currentStep; }
+        int currentStep = std::min(step, to - moved);
+
+        if (vect == "LEFT") {
+            x -= currentStep;
+        }
+        else if (vect == "RIGHT") {
+            x += currentStep;
+        }
+        else if (vect == "TOP") {
+            y += currentStep;
+        }
+        else if (vect == "BOTTOM") {
+            y -= currentStep;
+        }
+        else if (vect == "DLEFTTOP") {
+            x -= currentStep;
+            y += currentStep;
+        }
+        else if (vect == "DLEFTBOTTOM") {
+            x -= currentStep;
+            y -= currentStep;
+        }
+        else if (vect == "DRIGHTTOP") {
+            x += currentStep;
+            y += currentStep;
+        }
+        else if (vect == "DRIGHTBOTTOM") {
+            x += currentStep;
+            y -= currentStep;
+        }
 
         moved += currentStep;
-
         ogl->moveObj(name, x, y, z);
+
         if (moved >= to) {
-            moved = 0; 
+            moved = 0;
             repeatCount++;
         }
         });
 
     timer->start();
 }
+
+
+
+
+
 
 
 

@@ -37,7 +37,6 @@ protected:
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
-    
     std::map < std::string, Data > objects;
     QTimer* animTimer = nullptr;
     std::string animName;

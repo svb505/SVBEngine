@@ -7,6 +7,7 @@
 
 struct Data {
     Object* obj;
+    std::string type;
     float x, y, z;
     float r, g, b;
 };
@@ -20,8 +21,9 @@ public:
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
+    std::string getType(const std::string& name);
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
-    void addObj(Object* obj, const std::string& name, const float& x,
+    void addObj(Object* obj, const std::string& name, const std::string& type, const float& x,
         const float& y, const float z,const float r, const float g, const float b);
     void clearScene();
     void removeObj(const std::string& name);

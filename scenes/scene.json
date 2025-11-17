@@ -1,0 +1,22 @@
+{
+    "objects": [
+        {
+            "color": {
+                "b": 1,
+                "g": 0.6666666865348816,
+                "r": 0.3333333432674408
+            },
+            "name": "figure1",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+                "height": 20,
+                "width": null
+            },
+            "type": "rectangle"
+        }
+    ]
+}

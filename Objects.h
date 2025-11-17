@@ -111,6 +111,8 @@ public:
         sides = s;
         radius = r;
     }
+    int getSides() { return sides; }
+    float getRadius() { return radius; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);
@@ -144,6 +146,8 @@ public:
         outerRadius = outer;
         innerRadius = inner;
     }
+    int getPoints() { return points; }
+    float getRadiuses() { return outerRadius; return innerRadius; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);
@@ -174,6 +178,8 @@ private:
     int y0 = 0;
     float lineW = 1.0f;
 public:
+    int getInfo() { return width; return x0;return y0; }
+    float getLineW() { return lineW; }
     void setSize(const int& w, const int& x, const int& y, const float& l) { width = w; x0 = x; y0 = y; lineW = l;}
     void render() override {
         glPushMatrix();
@@ -272,6 +278,8 @@ private:
     int stacks = 24;
 
 public:
+    int getInfo() { return slices; return stacks; }
+    float getRadius() { return radius; }
     void setSize(float r, int sl = 24, int st = 24) {
         radius = r;
         slices = sl;
@@ -380,6 +388,8 @@ private:
     float height = 1.0f;
 
 public:
+    float getInfo() { return radius; return height; }
+    int getSides() { return sides; }
     void setSize(int s, float r, float h) {
         sides = s;
         radius = r;

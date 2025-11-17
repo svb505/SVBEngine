@@ -13,7 +13,247 @@
 #include <GUI.h>
 #include <MyOpenGLWidget.h>
 #include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QDir>
 
+std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget* ogl)
+{
+    std::map<std::string, Data> result;
+
+    QFile file("scenes/" + fileName + ".json");
+    if (!file.open(QIODevice::ReadOnly))
+        return result;
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    QJsonArray arr = doc["objects"].toArray();
+
+    for (const auto& v : arr)
+    {
+        QJsonObject o = v.toObject();
+
+        std::string name = o["name"].toString().toStdString();
+        std::string type = o["type"].toString().toStdString();
+
+        QJsonObject pos = o["position"].toObject();
+        QJsonObject col = o["color"].toObject();
+        QJsonObject size = o["size"].toObject();
+
+        Data d;
+        d.x = pos["x"].toDouble();
+        d.y = pos["y"].toDouble();
+        d.z = pos["z"].toDouble();
+
+        d.r = col["r"].toDouble();
+        d.g = col["g"].toDouble();
+        d.b = col["b"].toDouble();
+
+        Object* obj = nullptr;
+
+        if (type == "rectangle") {
+            Box* b = new Box();
+            b->setSize(size["width"].toDouble(), size["height"].toDouble());
+            obj = b;
+        }
+        else if (type == "circle") {
+            Circle* c = new Circle();
+            c->setRadius(size["radius"].toDouble());
+            obj = c;
+        }
+        else if (type == "triangle") {
+            Triangle* t = new Triangle();
+            t->setSize(size["base"].toDouble(), size["height"].toDouble());
+            obj = t;
+        }
+        else if (type == "polygon") {
+            Polygon* p = new Polygon();
+            p->setSize(size["sides"].toInt(), size["radius"].toDouble());
+            obj = p;
+        }
+        else if (type == "star") {
+            Star* s = new Star();
+            s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble());
+            obj = s;
+        }
+        else if (type == "line") {
+            Line* ln = new Line();
+            ln->setSize(size["width"].toInt(), size["x0"].toInt(),
+                size["y0"].toInt(), size["lineW"].toDouble());
+            obj = ln;
+        }
+        else if (type == "cube") {
+            Cube* c = new Cube();
+            c->setSize(size["width"].toDouble(), size["height"].toDouble(),
+                size["depth"].toDouble());
+            obj = c;
+        }
+        else if (type == "sphere") {
+            Sphere* s = new Sphere();
+            s->setSize(size["radius"].toDouble(),
+                size["slices"].toInt(),
+                size["stacks"].toInt());
+            obj = s;
+        }
+        else if (type == "pyramid") {
+            Pyramid* p = new Pyramid();
+            p->setSize(size["base"].toDouble(), size["height"].toDouble());
+            obj = p;
+        }
+        else if (type == "prism") {
+            Prism* p = new Prism();
+            p->setSize(size["sides"].toInt(),
+                size["radius"].toDouble(),
+                size["height"].toDouble());
+            obj = p;
+        }
+
+        obj->position = { d.x, d.y, d.z };
+        obj->color = { d.r, d.g, d.b };
+
+        ogl->addObj(obj, name, type, d.x, d.y, d.z, d.r, d.g, d.b);
+
+        d.obj = obj;
+        result[name] = d;
+    }
+
+    return result;
+}
+std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl)
+{
+    QString fileName = QFileDialog::getOpenFileName(
+        nullptr,
+        "Open scene",
+        "scenes/",
+        "Scene Files (*.json)"
+    );
+
+    if (fileName.isEmpty())
+        return {};
+
+    QFileInfo fi(fileName);
+    return importScene(fi.baseName(),ogl);
+}
+void exportScene(
+    const QString& fileName,
+    const std::map<std::string, Data>& objects,
+    MyOpenGLWidget* ogl)
+{
+    QJsonArray objectArray;
+
+    for (const auto& [name, data] : objects)
+    {
+        Object* obj = data.obj;
+        if (!obj) continue;
+
+        QJsonObject o;
+        o["name"] = QString::fromStdString(name);
+        QString type = QString::fromStdString(ogl->getType(name));
+        o["type"] = type;
+
+        // position
+        QJsonObject pos;
+        pos["x"] = data.x;
+        pos["y"] = data.y;
+        pos["z"] = data.z;
+        o["position"] = pos;
+
+        // color
+        QJsonObject col;
+        col["r"] = data.r;
+        col["g"] = data.g;
+        col["b"] = data.b;
+        o["color"] = col;
+
+        // SIZE — зависит от типа
+        QJsonObject size;
+
+        if (type == "rectangle") {
+            Box* b = dynamic_cast<Box*>(obj);
+            size["width"], size["height"] = b->getSize();
+        }
+        else if (type == "circle") {
+            Circle* c = dynamic_cast<Circle*>(obj);
+            size["radius"] = c->getRadius();
+        }
+        else if (type == "triangle") {
+            Triangle* t = dynamic_cast<Triangle*>(obj);
+            size["base"], size["height"] = t->getSize();
+        }
+        else if (type == "polygon") {
+            Polygon* p = dynamic_cast<Polygon*>(obj);
+            size["sides"] = p->getSides();
+            size["radius"] = p->getRadius();
+        }
+        else if (type == "star") {
+            Star* s = dynamic_cast<Star*>(obj);
+            size["points"] = s->getPoints();
+            size["outer"], size["inner"] = s->getRadiuses();
+        }
+        else if (type == "line") {
+            Line* ln = dynamic_cast<Line*>(obj);
+            size["width"], size["x0"], size["y0"] = ln->getInfo();
+            size["lineW"] = ln->getLineW();
+        }
+        else if (type == "cube") {
+            Cube* c = dynamic_cast<Cube*>(obj);
+            size["width"] = c->width;
+            size["height"] = c->height;
+            size["depth"] = c->depth;
+        }
+        else if (type == "sphere") {
+            Sphere* s = dynamic_cast<Sphere*>(obj);
+            size["radius"] = s->getRadius();
+            size["slices"], size["stacks"] = s->getInfo();
+        }
+        else if (type == "pyramid") {
+            Pyramid* p = dynamic_cast<Pyramid*>(obj);
+            size["base"] = p->base;
+            size["height"] = p->height;
+        }
+        else if (type == "prism") {
+            Prism* p = dynamic_cast<Prism*>(obj);
+            size["sides"] = p->getSides();
+            size["radius"], size["height"] = p->getInfo();
+        }
+
+        o["size"] = size;
+
+        objectArray.append(o);
+    }
+
+    QJsonObject root;
+    root["objects"] = objectArray;
+
+    QDir().mkpath("scenes");
+
+    QFile file("scenes/" + fileName + ".json");
+    if (file.open(QIODevice::WriteOnly))
+        file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+}
+void exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
+{
+    QString fileName = QFileDialog::getSaveFileName(
+        nullptr,
+        "Save scene",
+        "scenes/scene.json",
+        "Scene Files (*.json)"
+    );
+
+    if (fileName.isEmpty())
+        return;
+
+    if (!fileName.endsWith(".json"))
+        fileName += ".json";
+
+    QFileInfo fi(fileName);
+    QDir().mkpath(fi.dir().path());
+
+    exportScene(fi.baseName(), objects, ogl);
+}
 QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
     QLabel* lbl = new QLabel(parent);
     lbl->setText(text);
@@ -81,6 +321,12 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         });
     QObject::connect(threeD, &QAction::triggered, [this,ogl]() {
         changeMode("3D",ogl);
+        });
+    QObject::connect(importAction, &QAction::triggered, [this, ogl]() {
+        exportSceneWithDialog(ogl->getObjects(),ogl);
+        });
+    QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {
+        importSceneWithDialog(ogl);
         });
 };
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
@@ -227,7 +473,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setSize(positions["w"], positions["h"]);
-            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+            ogl->addObj(obj, name, "rectangle",x, y, z, colors[0], colors[1], colors[2]);
         }
         else {
             Cube* cube = new Cube();
@@ -236,7 +482,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             cube->rotation = 45.0f;
             cube->color = { colors[0], colors[1], colors[2] };
             cube->setSize(positions["w"], positions["h"], positions["w"]);
-            ogl->addObj(cube, name, cube->position.x(), cube->position.y(), cube->position.z(),
+            ogl->addObj(cube, name, "cube",cube->position.x(), cube->position.y(), cube->position.z(),
                 cube->color.x(), cube->color.y(), cube->color.z());
         }
     }
@@ -246,7 +492,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setSize(positions["base"], positions["h"]);
-            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+            ogl->addObj(obj, name, "triangle",x, y, z, colors[0], colors[1], colors[2]);
         }
         else {
             Pyramid* pyr = new Pyramid();
@@ -255,7 +501,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             pyr->color = { colors[0], colors[1], colors[2] };
             pyr->setSize(positions["base"], positions["h"]);  
 
-            ogl->addObj(pyr, name, pyr->position.x(), pyr->position.y(), pyr->position.z(),
+            ogl->addObj(pyr, name, "pyramide",pyr->position.x(), pyr->position.y(), pyr->position.z(),
                 pyr->color.x(), pyr->color.y(), pyr->color.z());
 
         }
@@ -266,7 +512,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setRadius(positions["radius"]);
-            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+            ogl->addObj(obj, name, "circle",x, y, z, colors[0], colors[1], colors[2]);
         }
         else {
             Sphere* ball = new Sphere();
@@ -275,7 +521,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             ball->color = { colors[0], colors[1], colors[2] };
             ball->setSize(positions["radius"], 32, 32);
 
-            ogl->addObj(ball, name, ball->position.x(), ball->position.y(), ball->position.z(),
+            ogl->addObj(ball, name, "sphere",ball->position.x(), ball->position.y(), ball->position.z(),
                 ball->color.x(), ball->color.y(), ball->color.z());
         }
     }
@@ -284,7 +530,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         obj->position = { x, y, z };
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["points"], positions["outer"], positions["inner"]);
-        ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        ogl->addObj(obj, name, "star",x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "polygon") {
         if (ogl->mode == "2D") {
@@ -292,7 +538,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setSize(positions["count"], positions["radius"]);
-            ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+            ogl->addObj(obj, name, "polygon",x, y, z, colors[0], colors[1], colors[2]);
         }
         else {
             Prism* prism = new Prism();
@@ -301,7 +547,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             prism->color = { colors[0], colors[1], colors[2] };
             prism->setSize(positions["count"], positions["radius"], 2.0f);   
 
-            ogl->addObj(prism, name, prism->position.x(), prism->position.y(), prism->position.z(),
+            ogl->addObj(prism, name,"prism", prism->position.x(), prism->position.y(), prism->position.z(),
                 prism->color.x(), prism->color.y(), prism->color.z());
         }
     }
@@ -310,7 +556,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         obj->position = { x, y, z };
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["wL"], positions["x0"], positions["y0"], positions["lineW"]);
-        ogl->addObj(obj, name, x, y, z, colors[0], colors[1], colors[2]);
+        ogl->addObj(obj, name, "line",x, y, z, colors[0], colors[1], colors[2]);
     }
 }
 void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {

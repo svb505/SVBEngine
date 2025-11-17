@@ -41,12 +41,15 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
     glLoadIdentity();
 
     if (mode == "2D") {
-        left = -400 * aspect;
-        right = 400 * aspect;
-        bottom = -200;
-        top = 200;
+        float size = 400;
+
+        left = -size;
+        right = size;
+        bottom = -size / aspect;
+        top = size / aspect;
         zNear = 0.1f;
         zFar = 1000.0f;
+
 
         glOrtho(left, right, bottom, top, zNear, zFar);
     }
@@ -75,9 +78,9 @@ void MyOpenGLWidget::paintGL() {
 }
 
 
-void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const float& x,const float& y,const float z,
+void MyOpenGLWidget::addObj(Object* obj,const std::string& name, const std::string& type,const float& x,const float& y,const float z,
     float r, float g, float b) {
-    objects[name] = {obj,x,y,z,r,g,b};
+    objects[name] = {obj,type,x,y,z,r,g,b};
     update(); 
 }
 void MyOpenGLWidget::clearScene() {
@@ -148,39 +151,30 @@ void MyOpenGLWidget::animateMove() {
 }
 void MyOpenGLWidget::drawGrid(float spacing, int count) {
     glPushMatrix();
-    glColor3f(0.5f, 0.5f, 0.5f); // серый цвет сетки
+    glColor3f(0.5f, 0.5f, 0.5f);
     glLineWidth(1.0f);
 
     glBegin(GL_LINES);
 
     if (mode == "2D") {
-        // Рисуем линии по X и Y
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
-            // вертикальные линии
             glVertex3f(pos, -count * spacing, 0);
             glVertex3f(pos, count * spacing, 0);
-
-            // горизонтальные линии
             glVertex3f(-count * spacing, pos, 0);
             glVertex3f(count * spacing, pos, 0);
         }
     }
     else if (mode == "3D") {
-        // Рисуем линии по X и Z плоскости (Y - вверх)
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
-            // линии вдоль X
             glVertex3f(-count * spacing, 0, pos);
             glVertex3f(count * spacing, 0, pos);
 
-            // линии вдоль Z
             glVertex3f(pos, 0, -count * spacing);
             glVertex3f(pos, 0, count * spacing);
         }
-
-        // Можно добавить ось Y
-        glColor3f(1, 0, 0); // красная Y
+        glColor3f(1, 0, 0); 
         glVertex3f(0, -count * spacing, 0);
         glVertex3f(0, count * spacing, 0);
     }
@@ -188,5 +182,4 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
     glEnd();
     glPopMatrix();
 }
-
-
+std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }

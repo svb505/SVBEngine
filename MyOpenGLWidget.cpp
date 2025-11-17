@@ -41,26 +41,22 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
     glLoadIdentity();
 
     if (mode == "2D") {
-        // left/right/top/bottom могут быть какими хочешь
         left = -400 * aspect;
         right = 400 * aspect;
         bottom = -200;
         top = 200;
-
-        // НО near/far должны быть ПОЛОЖИТЕЛЬНЫМИ!
         zNear = 0.1f;
         zFar = 1000.0f;
 
         glOrtho(left, right, bottom, top, zNear, zFar);
     }
-    else { // 3D
+    else {
         perspective(60.0f, aspect, 0.1f, 1000.0f);
     }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Камера назад
     glTranslatef(0, 0, -400);
 }
 
@@ -68,15 +64,16 @@ void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    // Камера
     glTranslatef(0, 0, -400);
 
+    drawGrid(100.0f, 10);
     for (auto& [name, data] : objects) {
         if (data.obj) {
-            data.obj->render(); // уже сам делает translate/scale
+            data.obj->render();
         }
     }
 }
+
 
 void MyOpenGLWidget::addObj(Object* obj,const std::string& name,const float& x,const float& y,const float z,
     float r, float g, float b) {
@@ -149,4 +146,47 @@ void MyOpenGLWidget::animateMove() {
 
     update();
 }
+void MyOpenGLWidget::drawGrid(float spacing, int count) {
+    glPushMatrix();
+    glColor3f(0.5f, 0.5f, 0.5f); // серый цвет сетки
+    glLineWidth(1.0f);
+
+    glBegin(GL_LINES);
+
+    if (mode == "2D") {
+        // Рисуем линии по X и Y
+        for (int i = -count; i <= count; ++i) {
+            float pos = i * spacing;
+            // вертикальные линии
+            glVertex3f(pos, -count * spacing, 0);
+            glVertex3f(pos, count * spacing, 0);
+
+            // горизонтальные линии
+            glVertex3f(-count * spacing, pos, 0);
+            glVertex3f(count * spacing, pos, 0);
+        }
+    }
+    else if (mode == "3D") {
+        // Рисуем линии по X и Z плоскости (Y - вверх)
+        for (int i = -count; i <= count; ++i) {
+            float pos = i * spacing;
+            // линии вдоль X
+            glVertex3f(-count * spacing, 0, pos);
+            glVertex3f(count * spacing, 0, pos);
+
+            // линии вдоль Z
+            glVertex3f(pos, 0, -count * spacing);
+            glVertex3f(pos, 0, count * spacing);
+        }
+
+        // Можно добавить ось Y
+        glColor3f(1, 0, 0); // красная Y
+        glVertex3f(0, -count * spacing, 0);
+        glVertex3f(0, count * spacing, 0);
+    }
+
+    glEnd();
+    glPopMatrix();
+}
+
 

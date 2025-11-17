@@ -32,6 +32,7 @@ public:
     int getX(const std::string& name);
     int getY(const std::string& name);
     int getZ(const std::string& name);
+    void drawGrid(float spacing, int count);
 protected:
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 

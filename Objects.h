@@ -23,11 +23,14 @@ private:
     float width = 1.0f;
     float height = 1.0f;
 public:
+    float getW() { return width; }
+    float getH() { return height; }
     float getSize() { return width; return height; }
     void setSize(const float& w,const float& h) {
         width = w;
         height = h;
     }
+
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);
@@ -79,6 +82,8 @@ private:
     float base = 1.0f;
     float height = 1.0f;
 public:
+    float getH() { return height; }
+    float getBase() { return base; }
     float getSize() { return base; return height; }
     void setSize(const float& b, const float& h) {
         base = b;
@@ -146,8 +151,10 @@ public:
         outerRadius = outer;
         innerRadius = inner;
     }
+
     int getPoints() { return points; }
-    float getRadiuses() { return outerRadius; return innerRadius; }
+    float getOuter() { return outerRadius; }
+    float getInner(){ return innerRadius; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), 0);
@@ -178,7 +185,9 @@ private:
     int y0 = 0;
     float lineW = 1.0f;
 public:
-    int getInfo() { return width; return x0;return y0; }
+    int getWidth() { return width;}
+    int getX0(){ return x0;}
+    int getY0(){ return y0; }
     float getLineW() { return lineW; }
     void setSize(const int& w, const int& x, const int& y, const float& l) { width = w; x0 = x; y0 = y; lineW = l;}
     void render() override {
@@ -278,7 +287,8 @@ private:
     int stacks = 24;
 
 public:
-    int getInfo() { return slices; return stacks; }
+    int getSlices() { return slices;  }
+    int getStacks(){ return stacks; }
     float getRadius() { return radius; }
     void setSize(float r, int sl = 24, int st = 24) {
         radius = r;
@@ -388,8 +398,10 @@ private:
     float height = 1.0f;
 
 public:
-    float getInfo() { return radius; return height; }
+    float getHeight(){ return height; }
+    float getRadius() { return radius;}
     int getSides() { return sides; }
+
     void setSize(int s, float r, float h) {
         sides = s;
         radius = r;

@@ -54,62 +54,17 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
 
         Object* obj = nullptr;
 
-        if (type == "rectangle") {
-            Box* b = new Box();
-            b->setSize(size["width"].toDouble(), size["height"].toDouble());
-            obj = b;
-        }
-        else if (type == "circle") {
-            Circle* c = new Circle();
-            c->setRadius(size["radius"].toDouble());
-            obj = c;
-        }
-        else if (type == "triangle") {
-            Triangle* t = new Triangle();
-            t->setSize(size["base"].toDouble(), size["height"].toDouble());
-            obj = t;
-        }
-        else if (type == "polygon") {
-            Polygon* p = new Polygon();
-            p->setSize(size["sides"].toInt(), size["radius"].toDouble());
-            obj = p;
-        }
-        else if (type == "star") {
-            Star* s = new Star();
-            s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble());
-            obj = s;
-        }
-        else if (type == "line") {
-            Line* ln = new Line();
-            ln->setSize(size["width"].toInt(), size["x0"].toInt(),
-                size["y0"].toInt(), size["lineW"].toDouble());
-            obj = ln;
-        }
-        else if (type == "cube") {
-            Cube* c = new Cube();
-            c->setSize(size["width"].toDouble(), size["height"].toDouble(),
-                size["depth"].toDouble());
-            obj = c;
-        }
-        else if (type == "sphere") {
-            Sphere* s = new Sphere();
-            s->setSize(size["radius"].toDouble(),
-                size["slices"].toInt(),
-                size["stacks"].toInt());
-            obj = s;
-        }
-        else if (type == "pyramid") {
-            Pyramid* p = new Pyramid();
-            p->setSize(size["base"].toDouble(), size["height"].toDouble());
-            obj = p;
-        }
-        else if (type == "prism") {
-            Prism* p = new Prism();
-            p->setSize(size["sides"].toInt(),
-                size["radius"].toDouble(),
-                size["height"].toDouble());
-            obj = p;
-        }
+        // создаём объект по типу (как у тебя было)
+        if (type == "rectangle") { Box* b = new Box(); b->setSize(size["width"].toDouble(), size["height"].toDouble()); obj = b; }
+        else if (type == "circle") { Circle* c = new Circle(); c->setRadius(size["radius"].toDouble()); obj = c; }
+        else if (type == "triangle") { Triangle* t = new Triangle(); t->setSize(size["base"].toDouble(), size["height"].toDouble()); obj = t; }
+        else if (type == "polygon") { Polygon* p = new Polygon(); p->setSize(size["sides"].toInt(), size["radius"].toDouble()); obj = p; }
+        else if (type == "star") { Star* s = new Star(); s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble()); obj = s; }
+        else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
+        else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); obj = c; }
+        else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); obj = s; }
+        else if (type == "pyramid") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); obj = p; }
+        else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); obj = p; }
 
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };
@@ -122,25 +77,7 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
 
     return result;
 }
-std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl)
-{
-    QString fileName = QFileDialog::getOpenFileName(
-        nullptr,
-        "Open scene",
-        "scenes/",
-        "Scene Files (*.json)"
-    );
-
-    if (fileName.isEmpty())
-        return {};
-
-    QFileInfo fi(fileName);
-    return importScene(fi.baseName(),ogl);
-}
-void exportScene(
-    const QString& fileName,
-    const std::map<std::string, Data>& objects,
-    MyOpenGLWidget* ogl)
+void exportScene(const QString& fileName, const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
 {
     QJsonArray objectArray;
 
@@ -168,12 +105,13 @@ void exportScene(
         col["b"] = data.b;
         o["color"] = col;
 
-        // SIZE — зависит от типа
+        // size / parameters
         QJsonObject size;
 
         if (type == "rectangle") {
             Box* b = dynamic_cast<Box*>(obj);
-            size["width"], size["height"] = b->getSize();
+            size["width"] = b->getW();
+            size["height"] = b->getH();
         }
         else if (type == "circle") {
             Circle* c = dynamic_cast<Circle*>(obj);
@@ -181,7 +119,8 @@ void exportScene(
         }
         else if (type == "triangle") {
             Triangle* t = dynamic_cast<Triangle*>(obj);
-            size["base"], size["height"] = t->getSize();
+            size["base"] = t->getBase();
+            size["height"] = t->getH();
         }
         else if (type == "polygon") {
             Polygon* p = dynamic_cast<Polygon*>(obj);
@@ -191,11 +130,15 @@ void exportScene(
         else if (type == "star") {
             Star* s = dynamic_cast<Star*>(obj);
             size["points"] = s->getPoints();
-            size["outer"], size["inner"] = s->getRadiuses();
+            size["outer"] = s->getOuter();
+            size["inner"] = s->getInner();
+
         }
         else if (type == "line") {
             Line* ln = dynamic_cast<Line*>(obj);
-            size["width"], size["x0"], size["y0"] = ln->getInfo();
+            size["width"] = ln->getWidth();
+            size["x0"] = ln->getX0();
+            size["y0"] = ln->getY0();
             size["lineW"] = ln->getLineW();
         }
         else if (type == "cube") {
@@ -207,7 +150,8 @@ void exportScene(
         else if (type == "sphere") {
             Sphere* s = dynamic_cast<Sphere*>(obj);
             size["radius"] = s->getRadius();
-            size["slices"], size["stacks"] = s->getInfo();
+            size["slices"] = s->getSlices();
+            size["stacks"] = s->getStacks();
         }
         else if (type == "pyramid") {
             Pyramid* p = dynamic_cast<Pyramid*>(obj);
@@ -217,11 +161,11 @@ void exportScene(
         else if (type == "prism") {
             Prism* p = dynamic_cast<Prism*>(obj);
             size["sides"] = p->getSides();
-            size["radius"], size["height"] = p->getInfo();
+            size["radius"] = p->getRadius();
+            size["height"] = p->getHeight();
         }
 
         o["size"] = size;
-
         objectArray.append(o);
     }
 
@@ -234,6 +178,7 @@ void exportScene(
     if (file.open(QIODevice::WriteOnly))
         file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
 }
+
 void exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
 {
     QString fileName = QFileDialog::getSaveFileName(
@@ -254,6 +199,22 @@ void exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLW
 
     exportScene(fi.baseName(), objects, ogl);
 }
+std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl)
+{
+    QString fileName = QFileDialog::getOpenFileName(
+        nullptr,
+        "Open scene",
+        "scenes/",
+        "Scene Files (*.json)"
+    );
+
+    if (fileName.isEmpty())
+        return {};
+
+    QFileInfo fi(fileName);
+    return importScene(fi.baseName(), ogl);
+}
+
 QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
     QLabel* lbl = new QLabel(parent);
     lbl->setText(text);
@@ -323,10 +284,10 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         changeMode("3D",ogl);
         });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {
-        exportSceneWithDialog(ogl->getObjects(),ogl);
+        importSceneWithDialog(ogl);
         });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {
-        importSceneWithDialog(ogl);
+        exportSceneWithDialog(ogl->getObjects(),ogl);
         });
 };
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {

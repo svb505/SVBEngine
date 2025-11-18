@@ -91,21 +91,18 @@ void exportScene(const QString& fileName, const std::map<std::string, Data>& obj
         QString type = QString::fromStdString(ogl->getType(name));
         o["type"] = type;
 
-        // position
         QJsonObject pos;
         pos["x"] = data.x;
         pos["y"] = data.y;
         pos["z"] = data.z;
         o["position"] = pos;
 
-        // color
         QJsonObject col;
         col["r"] = data.r;
         col["g"] = data.g;
         col["b"] = data.b;
         o["color"] = col;
 
-        // size / parameters
         QJsonObject size;
 
         if (type == "rectangle") {
@@ -458,7 +455,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         else {
             Pyramid* pyr = new Pyramid();
             pyr->position = { x,y,z };
-            pyr->scale = { 30, 30, 30 };
+            pyr->scale = { 1, 1, 1 };
             pyr->color = { colors[0], colors[1], colors[2] };
             pyr->setSize(positions["base"], positions["h"]);  
 
@@ -478,7 +475,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         else {
             Sphere* ball = new Sphere();
             ball->position = { x, y, z };
-            ball->scale = { 40, 40, 40 };
+            ball->scale = { 1, 1, 1 };
             ball->color = { colors[0], colors[1], colors[2] };
             ball->setSize(positions["radius"], 32, 32);
 
@@ -504,7 +501,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         else {
             Prism* prism = new Prism();
             prism->position = { x,y,z };
-            prism->scale = { 30, 30, 30 };
+            prism->scale =  { 1, 1, 1 } ;
             prism->color = { colors[0], colors[1], colors[2] };
             prism->setSize(positions["count"], positions["radius"], 2.0f);   
 

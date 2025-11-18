@@ -5,6 +5,14 @@
 #include <map>
 #include <qDebug>
 #include <QPainter>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <GL/gl.h>
+#include <GL/glu.h>   // <-- здесь gluProject
+
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
 
@@ -67,7 +75,9 @@ void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    glTranslatef(0, 0, -400);
+    glTranslatef(camX, camY, -camDistance);
+    glRotatef(camPitch, 1, 0, 0);
+    glRotatef(camYaw, 0, 1, 0);
 
     drawGrid(100.0f, 10);
     for (auto& [name, data] : objects) {
@@ -76,8 +86,47 @@ void MyOpenGLWidget::paintGL() {
         }
     }
 }
+void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    QPoint d = event->pos() - lastMouse;
+    lastMouse = event->pos();
 
+    // ПКМ — вращение камеры
+    if (event->buttons() & Qt::RightButton)
+    {
+        camYaw += d.x() * 0.3f;
+        camPitch += d.y() * 0.3f;
 
+        if (camPitch > 89) camPitch = 89;
+        if (camPitch < -89) camPitch = -89;
+    }
+
+    // ЛКМ — перемещение камеры
+    if (event->buttons() & Qt::LeftButton)
+    {
+        float panSpeed = camDistance * 0.002f;
+
+        camX += -d.x() * panSpeed;
+        camY += d.y() * panSpeed;
+    }
+
+    update();
+}
+
+void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
+{
+    lastMouse = event->pos();
+}
+
+void MyOpenGLWidget::wheelEvent(QWheelEvent* event)
+{
+    float delta = event->angleDelta().y() / 120.0f; // один "шаг"
+    camDistance -= delta * 20.0f;
+
+    if (camDistance < 10) camDistance = 10;
+
+    update();
+}
 void MyOpenGLWidget::addObj(Object* obj,const std::string& name, const std::string& type,const float& x,const float& y,const float z,
     float r, float g, float b) {
     objects[name] = {obj,type,x,y,z,r,g,b};
@@ -151,6 +200,7 @@ void MyOpenGLWidget::animateMove() {
 }
 void MyOpenGLWidget::drawGrid(float spacing, int count) {
     glPushMatrix();
+
     glColor3f(0.5f, 0.5f, 0.5f);
     glLineWidth(1.0f);
 
@@ -159,8 +209,12 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
     if (mode == "2D") {
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
+
+            // Вертикальные линии
             glVertex3f(pos, -count * spacing, 0);
             glVertex3f(pos, count * spacing, 0);
+
+            // Горизонтальные линии
             glVertex3f(-count * spacing, pos, 0);
             glVertex3f(count * spacing, pos, 0);
         }
@@ -168,13 +222,18 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
     else if (mode == "3D") {
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
+
+            // Линии вдоль X
             glVertex3f(-count * spacing, 0, pos);
             glVertex3f(count * spacing, 0, pos);
 
+            // Линии вдоль Z
             glVertex3f(pos, 0, -count * spacing);
             glVertex3f(pos, 0, count * spacing);
         }
-        glColor3f(1, 0, 0); 
+
+        // Красная ось Y
+        glColor3f(1.0f, 0.0f, 0.0f);
         glVertex3f(0, -count * spacing, 0);
         glVertex3f(0, count * spacing, 0);
     }

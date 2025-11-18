@@ -36,10 +36,20 @@ public:
     int getZ(const std::string& name);
     void drawGrid(float spacing, int count);
 protected:
+    void wheelEvent(QWheelEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
+    float camYaw = 0.0f;     // Вращение по горизонтали
+    float camPitch = 25.0f;  // Наклон камеры
+    float camDistance = 400; // Дистанция от центра
+    float camX = 0.0f;       // Смещение камеры
+    float camY = 0.0f;
+
+    QPoint lastMouse;
     std::map < std::string, Data > objects;
     QTimer* animTimer = nullptr;
     std::string animName;

@@ -11,7 +11,7 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <GL/gl.h>
-#include <GL/glu.h>   // <-- здесь gluProject
+#include <GL/glu.h>   
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -70,7 +70,6 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
 
     glTranslatef(0, 0, -400);
 }
-
 void MyOpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -91,7 +90,6 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
     QPoint d = event->pos() - lastMouse;
     lastMouse = event->pos();
 
-    // ПКМ — вращение камеры
     if (event->buttons() & Qt::RightButton)
     {
         camYaw += d.x() * 0.3f;
@@ -101,7 +99,6 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
         if (camPitch < -89) camPitch = -89;
     }
 
-    // ЛКМ — перемещение камеры
     if (event->buttons() & Qt::LeftButton)
     {
         float panSpeed = camDistance * 0.002f;
@@ -112,15 +109,13 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 
     update();
 }
-
 void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
     lastMouse = event->pos();
 }
-
 void MyOpenGLWidget::wheelEvent(QWheelEvent* event)
 {
-    float delta = event->angleDelta().y() / 120.0f; // один "шаг"
+    float delta = event->angleDelta().y() / 120.0f; 
     camDistance -= delta * 20.0f;
 
     if (camDistance < 10) camDistance = 10;
@@ -210,11 +205,11 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
 
-            // Вертикальные линии
+            // Vertical lines
             glVertex3f(pos, -count * spacing, 0);
             glVertex3f(pos, count * spacing, 0);
 
-            // Горизонтальные линии
+            // Horizontal lines
             glVertex3f(-count * spacing, pos, 0);
             glVertex3f(count * spacing, pos, 0);
         }
@@ -222,17 +217,16 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
     else if (mode == "3D") {
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
-
-            // Линии вдоль X
+            //X
+            glColor3f(1.0f, 1.0f, 1.0f);
             glVertex3f(-count * spacing, 0, pos);
             glVertex3f(count * spacing, 0, pos);
-
-            // Линии вдоль Z
+            //Z
+            glColor3f(0.0f, 1.0f, 0.0f);
             glVertex3f(pos, 0, -count * spacing);
             glVertex3f(pos, 0, count * spacing);
         }
 
-        // Красная ось Y
         glColor3f(1.0f, 0.0f, 0.0f);
         glVertex3f(0, -count * spacing, 0);
         glVertex3f(0, count * spacing, 0);

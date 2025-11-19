@@ -112,6 +112,14 @@
   <ItemGroup>
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Objects.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="logo.png" />
+    <Image Include="logotype.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

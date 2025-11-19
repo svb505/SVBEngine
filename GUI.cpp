@@ -30,6 +30,10 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
         return result;
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    if (doc["mode"].isString())
+        ogl->setMode(doc["mode"].toString().toStdString());
+    else
+        ogl->setMode("2D");
     QJsonArray arr = doc["objects"].toArray();
 
     for (const auto& v : arr)
@@ -168,6 +172,7 @@ void exportScene(const QString& fileName, const std::map<std::string, Data>& obj
 
     QJsonObject root;
     root["objects"] = objectArray;
+    root["mode"] = QString::fromStdString(ogl->mode);
 
     QDir().mkpath("scenes");
 

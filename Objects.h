@@ -286,7 +286,7 @@ private:
     float radius = 1.0f;
     int slices = 24;
     int stacks = 24;
-
+    float mode = 1.0f;
 public:
     int getSlices() { return slices;  }
     int getStacks(){ return stacks; }
@@ -296,7 +296,7 @@ public:
         slices = sl;
         stacks = st;
     }
-
+    void setMode(float& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
 
@@ -313,8 +313,8 @@ public:
             float lat1 = M_PI * (-0.5 + (double)(i + 1) / stacks);
             float z1 = radius * sin(lat1);
             float zr1 = radius * cos(lat1);
-
-            glBegin(GL_QUAD_STRIP);
+            if (mode == 2.0f) glBegin(GL_QUAD_STRIP);
+            else glBegin(GL_LINE_STRIP);
             for (int j = 0; j <= slices; ++j) {
                 float lng = 2 * M_PI * (double)(j) / slices;
                 float x = cos(lng);

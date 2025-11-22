@@ -530,6 +530,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             ball->position = { x, y, z };
             ball->scale = { 1, 1, 1 };
             ball->color = { colors[0], colors[1], colors[2] };
+            ball->setMode(positions["m"]);
             ball->setSize(positions["radius"], 32, 32);
 
             ogl->addObj(ball, name, "sphere",ball->position.x(), ball->position.y(), ball->position.z(),
@@ -672,6 +673,12 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         QLineEdit* radius = new QLineEdit("Enter radius");
         radius->setText("6");
         layout->addRow("Enter radius", radius);
+        if (ogl->mode == "3D") {
+            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+            mode->setText("2.0");
+            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+            (*fields)["m"] = mode;
+        }
         (*fields)["radius"] = radius;
     }
     else if (type == "star") {

@@ -20,6 +20,7 @@
 #include <QJsonDocument>
 #include <QJsonValue>
 #include <QDir>
+#include <QFormLayout>
 
 std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget* ogl)
 {
@@ -179,7 +180,6 @@ void exportScene(const QString& fileName, const std::map<std::string, Data>& obj
     if (file.open(QIODevice::WriteOnly))
         file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
 }
-
 void exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
 {
     QString fileName = QFileDialog::getSaveFileName(
@@ -214,22 +214,6 @@ std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl)
 
     QFileInfo fi(fileName);
     return importScene(fi.baseName(), ogl);
-}
-
-QLabel* GUI::makeLabel(QWidget* parent, const QString& text, const int& x, const int& y) {
-    QLabel* lbl = new QLabel(parent);
-    lbl->setText(text);
-    lbl->move(x,y);
-    lbl->show();
-    return lbl;
-}
-QLineEdit* GUI::makeLineEdit(QWidget* parent, const QString& text, const QString& setTxt, const int& x, const int& y) {
-    QLineEdit* entry = new QLineEdit(parent);
-    entry->setPlaceholderText(text);
-    entry->setText(setTxt);
-    entry->move(x, y);
-    entry->show();
-    return entry;
 }
 void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QMenuBar* menubar = w->menuBar();
@@ -298,15 +282,20 @@ void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     child->setWindowTitle("Scene info");
     child->show();
 
+    QFormLayout* layout = new QFormLayout(child);
+
     std::string lR = std::format("X from {:.1f}; X to {:.1f}", params.left, params.right);
     std::string bT = std::format("Y from {:.1f}; Y to {:.1f}", params.bottom, params.top);
     std::string znZF = std::format("Z from {:.1f}; Z to {:.1f}", params.zNear, params.zFar);
 
-    QLabel* infoScene = makeLabel(child,"Scene info",10,10);
-
-    QLabel* infoX = makeLabel(child, QString::fromStdString(lR), 10, 40);
-    QLabel* infoY = makeLabel(child, QString::fromStdString(bT), 10, 70);
-    QLabel* infoZ = makeLabel(child, QString::fromStdString(znZF), 10, 100);
+    QLabel* infoScene = new QLabel("Scene info");
+    layout->addRow(infoScene);
+    QLabel* infoX = new QLabel(QString::fromStdString(lR));
+    layout->addRow(infoX);
+    QLabel* infoY = new QLabel(QString::fromStdString(bT));
+    layout->addRow(infoY);
+    QLabel* infoZ = new QLabel(QString::fromStdString(znZF));
+    layout->addRow(infoZ);
 };
 void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     std::map<std::string, std::string> scenarios;
@@ -324,36 +313,39 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     child->setWindowTitle("Scenarios");
     child->show();
 
-    QLabel* lbl1 = makeLabel(child, "Select object", 10, 10);
+    QFormLayout* layout = new QFormLayout(child);
 
-    QComboBox* combo1 = new QComboBox(child);
-    combo1->move(10, 30);
+    QLabel* lbl1 = new QLabel("Select object");
+    layout->addRow(lbl1);
+
+    QComboBox* combo1 = new QComboBox();
     for (auto name : ogl->getObjects()) {
         combo1->addItem(QString::fromStdString(name.first));
     }
-    combo1->show();
-    QLabel* pix = makeLabel(child, "Move on ... pixels", 10, 55);
-    QLineEdit* pixels = makeLineEdit(child, "On", "10", 10, 70);
+    layout->addRow(combo1);
 
-    QLabel* lbl2 = makeLabel(child, "Select scenario", 100, 10);
+    QLabel* pix = new QLabel("Move on ... pixels");
+    layout->addRow(pix);
+    QLineEdit* pixels = new QLineEdit("50");
+    layout->addRow(pixels);
 
-    QComboBox* combo2 = new QComboBox(child);
-    combo2->move(100, 30);
+    QLabel* lbl2 = new QLabel("Select scenario");
+    layout->addRow(lbl2);
+
+    QComboBox* combo2 = new QComboBox();
     for (auto name : scenarios) {
         combo2->addItem(QString::fromStdString(name.second));
     }
-    combo2->show();
+    layout->addRow(combo2);
 
-    QLabel* lbl3 = makeLabel(child, "Added scenarios", 340, 10);
-    QListWidget* list1 = new QListWidget(child);
-    list1->move(350, 30);
+    QLabel* lbl3 = new QLabel("Added scenarios");
+    layout->addRow(lbl3);
+    QListWidget* list1 = new QListWidget();
     list1->resize(190, 100);
-    list1->show();
+    layout->addRow(list1);
 
-    QPushButton* add = new QPushButton(child);
-    add->setText("Add scenario");
-    add->move(10, 95);
-    add->show();
+    QPushButton* add = new QPushButton("Add scenario");
+    layout->addRow(add);
 
     QObject::connect(add, &QPushButton::clicked, [combo2, list1, pixels]() {
         QString item = combo2->currentText();
@@ -365,15 +357,11 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
         list1->addItem(str);
         });
 
-    QPushButton* exportBtn = new QPushButton(child);
-    exportBtn->setText("Export scenarios");
-    exportBtn->move(350, 135);
-    exportBtn->show();
+    QPushButton* exportBtn = new QPushButton("Export scenarios");
+    layout->addRow(exportBtn);
 
-    QPushButton* importBtn = new QPushButton(child);
-    importBtn->setText("Import scenarios");
-    importBtn->move(350, 165);
-    importBtn->show();
+    QPushButton* importBtn = new QPushButton("Import scenarios");
+    layout->addRow(importBtn);
 
     QObject::connect(exportBtn, &QPushButton::clicked, [list1, child]() {
         QString fileName = QFileDialog::getSaveFileName(
@@ -424,22 +412,23 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
         });
 
 
-    QLabel* lbl4 = makeLabel(child, "How many times to repeat", 10, 120);
-    QComboBox* combo3 = new QComboBox(child);
-    combo3->move(10, 135);
+    QLabel* lbl4 = new QLabel("How many times to repeat");
+    layout->addRow(lbl4);
+    QComboBox* combo3 = new QComboBox();
     combo3->addItem("1");
     combo3->addItem("2");
     combo3->addItem("5");
     combo3->addItem("10");
-    combo3->show();
+    layout->addRow(combo3);
 
-    QLabel* lbl5 = makeLabel(child, "Enter speed", 160, 120);
-    QLineEdit* speed = makeLineEdit(child, "Enter speed", "5", 160, 135);
+    QLabel* lbl5 = new QLabel("Enter speed");
+    layout->addRow(lbl5);
+    QLineEdit* speed = new QLineEdit("Enter speed");
+    speed->setText("20");
+    layout->addRow(speed);
 
-    QPushButton* start = new QPushButton(child);
-    start->setText("Start");
-    start->move(10, 160);
-    start->show();
+    QPushButton* start = new QPushButton("Start");
+    layout->addRow(start);
 
     QObject::connect(start, &QPushButton::clicked,
         [this, ogl, combo1, combo3, list1, scenarios, pixels, speed]() {
@@ -457,27 +446,25 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
             );
         });
 }
-
 void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
     QWidget* child = new QWidget();
     child->setWindowTitle("Removing object");
     child->resize(250, 150);
     child->show();
+    QFormLayout* layout = new QFormLayout(child);
 
-    QLabel* lbl = makeLabel(child, "Avaibles objects",10,10);
+    QLabel* lbl = new QLabel("Avaibles objects");
+    layout->addRow(lbl);
 
-    QComboBox* combo = new QComboBox(child);
-    combo->move(10, 30);
+    QComboBox* combo = new QComboBox();
     for (auto name : ogl->getObjects()) {
         combo->addItem(QString::fromStdString(name.first));
     }
-    combo->show();
+    layout->addRow(combo);
     
     
-    QPushButton* btn = new QPushButton(child);
-    btn->setText("Remove object");
-    btn->move(10, 50);
-    btn->show();
+    QPushButton* btn = new QPushButton("Remove object");
+    layout->addRow(btn);
 
     QObject::connect(btn, &QPushButton::clicked, [combo,ogl]() {
         if (combo->currentIndex() >= 0) {
@@ -487,9 +474,6 @@ void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
             QMessageBox::warning(nullptr,"Empty choice","Choice the object from combobox!");
         }
     });
-
-
-
 }
 void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z,float colors[],std::map<std::string,float>& positions) {
@@ -596,27 +580,37 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     child->setWindowTitle("Adding object");
     child->resize(450,450);
     child->show();
+    QFormLayout* layout = new QFormLayout(child);
 
-    QLabel* lbl0 = makeLabel(child,"Enter object name",10,10);
-    QLineEdit* name = makeLineEdit(child, "Enter object name", "figure1", 10, 30);
-
-    QLabel* lbl1 = makeLabel(child, "Set X position", 10, 50);
-    QLineEdit* xPos = makeLineEdit(child, "Set X position", "0", 10, 70);
+    QLabel* lbl0 = new QLabel("Enter object name");
+    layout->addRow(lbl0);
+    QLineEdit* name = new QLineEdit("Enter object name");
+    name->setText("figure1");
+    layout->addRow(name);
+    QLabel* lbl1 = new QLabel("Set X position");
+    layout->addRow(lbl1);
+    QLineEdit* xPos = new QLineEdit("Set X position");
+    xPos->setText("0");
+    layout->addRow(xPos);
     
-    QLabel* lbl2 = makeLabel(child, "Set Y position", 10, 90);
-    QLineEdit* yPos = makeLineEdit(child, "Set Y position", "0", 10, 110);
+    QLabel* lbl2 = new QLabel("Set Y position");
+    layout->addRow(lbl2);
+    QLineEdit* yPos = new QLineEdit("Set Y position");
+    yPos->setText("0");
+    layout->addRow(yPos);
     
-    QLabel* lbl3 = makeLabel(child, "Set Z position(leave 0 if 2D mode)", 10, 130);
-    QLineEdit* zPos = makeLineEdit(child, "Set Z position", "0", 10, 150);
+    QLabel* lbl3 = new QLabel("Set Z position(leave 0 if 2D mode)");
+    layout->addRow(lbl3);
+    QLineEdit* zPos = new QLineEdit("Set Z position");
+    zPos->setText("0");
+    layout->addRow(zPos);
 
-    QPushButton* colorBtn = new QPushButton("Select object color", child);
-    colorBtn->move(10,180);
-    colorBtn->show();
-    QLabel* colorPreview = new QLabel("Color not choiced",child);
+    QPushButton* colorBtn = new QPushButton("Select object color");
+    layout->addRow(colorBtn);
+    QLabel* colorPreview = new QLabel("Color not choiced");
     colorPreview->setAlignment(Qt::AlignCenter);
     colorPreview->setStyleSheet("background: #cccccc; padding: 10px;");
-    colorPreview->move(10,200);
-    colorPreview->show();
+    layout->addRow(colorPreview);
     QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
         QColor color = QColorDialog::getColor(Qt::white, child, "Color selection");
         if (color.isValid()) {
@@ -639,69 +633,81 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
 
     if (type == "rectangle") {
         *typeObj = "rectangle";
-        QLabel* lbl4 = makeLabel(child, "Enter width", 10, 240);
-        QLineEdit* weight = makeLineEdit(child, "Enter width", "20", 10, 260);
-        QLabel* lbl5 = makeLabel(child, "Enter height", 10, 280);
-        QLineEdit* height = makeLineEdit(child, "Enter height", "20", 10, 300);
-        (*fields)["w"] = weight;
+        QLineEdit* width = new QLineEdit("Enter width");
+        width->setText("20");
+        layout->addRow("Enter width",width);
+        QLineEdit* height = new QLineEdit("Enter height");
+        height->setText("20");
+        layout->addRow("Enter height",height);
+        (*fields)["w"] = width;
         (*fields)["h"] = height;
     }
     else if (type == "triangle") {
         *typeObj = "triangle";
-        QLabel* lbl4 = makeLabel(child, "Enter width", 10, 240);
-        QLineEdit* weight = makeLineEdit(child, "Enter width", "7", 10, 260);
-        QLabel* lbl5 = makeLabel(child, "Enter height", 10, 280);
-        QLineEdit* height = makeLineEdit(child, "Enter height", "7", 10, 300);
+        QLineEdit* weight = new QLineEdit("Enter width");
+        weight->setText("7");
+        layout->addRow("Enter width",weight);
+        QLineEdit* height = new QLineEdit("Enter height");
+        height->setText("7");
+        layout->addRow("Enter height", weight);
         (*fields)["base"] = weight;
         (*fields)["h"] = height;
     }
     else if (type == "circle") {
         *typeObj = "circle";
-        QLabel* lbl4 = makeLabel(child, "Enter radius", 10, 240);
-        QLineEdit* radius = makeLineEdit(child, "Enter radius", "6", 10, 260);
+        QLineEdit* radius = new QLineEdit("Enter radius");
+        radius->setText("6");
+        layout->addRow("Enter radius", radius);
         (*fields)["radius"] = radius;
     }
     else if (type == "star") {
         *typeObj = "star";
-        QLabel* lbl4 = makeLabel(child, "Enter points count", 10, 240);
-        QLineEdit* points = makeLineEdit(child, "Enter points count", "6", 10, 260);
-        QLabel* lbl5 = makeLabel(child, "Enter outer radius", 10, 280);
-        QLineEdit* outer = makeLineEdit(child, "Enter outer radius", "5", 10, 300);
-        QLabel* lbl6 = makeLabel(child, "Enter inner radius", 10, 320);
-        QLineEdit* inner = makeLineEdit(child, "Enter inner radius", "6", 10, 340);
+        QLineEdit* points = new QLineEdit("Enter points count");
+        points->setText("6");
+        layout->addRow("Enter points count", points);
+        QLineEdit* outer = new QLineEdit("Enter outer radius");
+        outer->setText("5");
+        layout->addRow("Enter outer radius", outer);
+        QLineEdit* inner = new QLineEdit("Enter inner radius");
+        inner->setText("6");
+        layout->addRow("Enter inner radius", inner);
         (*fields)["points"] = points;
         (*fields)["outer"] = outer;
         (*fields)["inner"] = inner;
     }
     else if (type == "polygon") {
         *typeObj = "polygon";
-        QLabel* lbl4 = makeLabel(child, "Enter angles count", 10, 240);
-        QLineEdit* angles = makeLineEdit(child, "Enter angles count", "5", 10, 260);
-        QLabel* lbl5 = makeLabel(child, "Enter radius", 10, 280);
-        QLineEdit* radius = makeLineEdit(child, "Enter radius", "10", 10, 300);
+        QLineEdit* angles = new QLineEdit("Enter angles count");
+        angles->setText("5");
+        layout->addRow("Enter angles count",angles);
+        QLineEdit* radius = new QLineEdit("Enter radius");
+        radius->setText("10");
+        layout->addRow("Enter radius",radius);
         (*fields)["count"] = angles;
         (*fields)["radius"] = radius;
     }
     else if (type == "line") {
         *typeObj = "line";
-        QLabel* lbl4 = makeLabel(child, "Enter line length", 10, 240);
-        QLineEdit* weight = makeLineEdit(child, "Enter line length", "10", 10, 260);
-        QLabel* lbl5 = makeLabel(child, "Enter start X coordinate", 10, 280);
-        QLineEdit* Xcoord = makeLineEdit(child, "Enter start X coordinate", "0", 10, 300);
-        QLabel* lbl6 = makeLabel(child, "Enter start Y coordinate", 10, 320);
-        QLineEdit* Ycoord = makeLineEdit(child, "Enter start Y coordinate", "0", 10, 340);
-        QLabel* lbl7 = makeLabel(child, "Enter line width", 10, 360);
-        QLineEdit* lineW = makeLineEdit(child, "Enter line width","3",10, 380);
-        (*fields)["wL"] = weight;
+        QLineEdit* len = new QLineEdit("Enter line length");
+        len->setText("10");
+        layout->addRow("Enter line length", len);
+        QLineEdit* Xcoord = new QLineEdit("Enter start X coordinate");
+        Xcoord->setText("0");
+        layout->addRow("Enter start X coordinate", Xcoord);
+        QLineEdit* Ycoord = new QLineEdit("Enter start Y coordinate");
+        Ycoord->setText("0");
+        layout->addRow("Enter start Y coordinate", Ycoord);
+        QLineEdit* lineW = new QLineEdit("Enter line width");
+        lineW->setText("3");
+        layout->addRow("Enter line width", lineW);
+        (*fields)["wL"] = len;
         (*fields)["x0"] = Xcoord;
         (*fields)["y0"] = Ycoord;
         (*fields)["lineW"] = lineW;
     }
 
-    QPushButton* create = new QPushButton(child);
-    create->setText("Create object");
-    create->move(10,400);
-    create->show();
+    QPushButton* create = new QPushButton("Create object");
+    layout->addRow(create);
 
     QObject::connect(create, &QPushButton::clicked, [=]()mutable {
         for (auto& p : *fields)
@@ -761,8 +767,7 @@ void GUI::movingParcer(MyOpenGLWidget* ogl,const std::string& name,const int& re
 
     (*runNextPtr)(0);
 }
-void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& speed,const std::string& vect,const int time,const int to,std::function<void()> onFinished
-)
+void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& speed,const std::string& vect,const int time,const int to,std::function<void()> onFinished)
 {
     int x = ogl->getX(name);
     int y = ogl->getY(name);

@@ -212,13 +212,14 @@ public:
     float width = 1.0f;
     float height = 1.0f;
     float depth = 1.0f;
+    float mode = 1.0F;
 
     void setSize(float w, float h, float d) {
         width = w;
         height = h;
         depth = d;
     }
-
+    void setMode(float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -230,9 +231,9 @@ public:
         float w = width / 2.0f;
         float h = height / 2.0f;
         float d = depth / 2.0f;
-
-        glBegin(GL_QUADS);
-
+        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        else glBegin(GL_QUADS);
+        
         // Front
         glNormal3f(0, 0, 1);
         glVertex3f(-w, -h, d);
@@ -335,12 +336,12 @@ class Pyramid : public Object {
 public:
     float base = 1.0f;
     float height = 1.0f;
-
+    float mode = 1.0f;
     void setSize(float b, float h) {
         base = b;
         height = h;
     }
-
+    void setMode(float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -351,8 +352,9 @@ public:
 
         float b = base / 2.0f;
 
-        glBegin(GL_TRIANGLES);
-
+        if (mode == 2.0f) glBegin(GL_TRIANGLES); 
+        else glBegin(GL_LINE_STRIP);
+        
         // Front
         glNormal3f(0, 0.5, 1);
         glVertex3f(0, height, 0);
@@ -380,7 +382,8 @@ public:
         glEnd();
 
         // Bottom
-        glBegin(GL_QUADS);
+        if (mode == 2.0f) glBegin(GL_QUADS);
+        else glBegin(GL_LINE_STRIP);
         glNormal3f(0, -1, 0);
         glVertex3f(-b, 0, -b);
         glVertex3f(b, 0, -b);
@@ -396,7 +399,7 @@ private:
     int sides = 6;
     float radius = 1.0f;
     float height = 1.0f;
-
+    float mode = 1.0f;
 public:
     float getHeight(){ return height; }
     float getRadius() { return radius;}
@@ -407,7 +410,7 @@ public:
         radius = r;
         height = h;
     }
-
+    void setMode(float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -419,7 +422,8 @@ public:
         float halfH = height / 2.0f;
 
         // SIDES
-        glBegin(GL_QUADS);
+        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        else glBegin(GL_QUADS);
         for (int i = 0; i < sides; i++) {
             float a1 = 2 * M_PI * i / sides;
             float a2 = 2 * M_PI * (i + 1) / sides;
@@ -439,7 +443,8 @@ public:
         glEnd();
 
         // TOP
-        glBegin(GL_TRIANGLE_FAN);
+        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        else glBegin(GL_TRIANGLE_FAN);
         glNormal3f(0, 1, 0);
         glVertex3f(0, halfH, 0);
         for (int i = 0; i <= sides; i++) {
@@ -449,7 +454,8 @@ public:
         glEnd();
 
         // BOTTOM
-        glBegin(GL_TRIANGLE_FAN);
+        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        else glBegin(GL_TRIANGLE_FAN);
         glNormal3f(0, -1, 0);
         glVertex3f(0, -halfH, 0);
         for (int i = 0; i <= sides; i++) {

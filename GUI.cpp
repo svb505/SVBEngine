@@ -492,6 +492,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             cube->rotation = 45.0f;
             cube->color = { colors[0], colors[1], colors[2] };
             cube->setSize(positions["w"], positions["h"], positions["w"]);
+            cube->setMode(positions["m"]);
             ogl->addObj(cube, name, "cube",cube->position.x(), cube->position.y(), cube->position.z(),
                 cube->color.x(), cube->color.y(), cube->color.z());
         }
@@ -510,7 +511,7 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             pyr->scale = { 1, 1, 1 };
             pyr->color = { colors[0], colors[1], colors[2] };
             pyr->setSize(positions["base"], positions["h"]);  
-
+            pyr->setMode(positions["m"]);
             ogl->addObj(pyr, name, "pyramide",pyr->position.x(), pyr->position.y(), pyr->position.z(),
                 pyr->color.x(), pyr->color.y(), pyr->color.z());
 
@@ -555,7 +556,8 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
             prism->position = { x,y,z };
             prism->scale =  { 1, 1, 1 } ;
             prism->color = { colors[0], colors[1], colors[2] };
-            prism->setSize(positions["count"], positions["radius"], 2.0f);   
+            prism->setMode(positions["m"]);
+            prism->setSize(positions["count"], positions["radius"], positions["h"]);
 
             ogl->addObj(prism, name,"prism", prism->position.x(), prism->position.y(), prism->position.z(),
                 prism->color.x(), prism->color.y(), prism->color.z());
@@ -639,18 +641,30 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         QLineEdit* height = new QLineEdit("Enter height");
         height->setText("20");
         layout->addRow("Enter height",height);
+        if (ogl->mode == "3D") {
+            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+            mode->setText("2.0");
+            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+            (*fields)["m"] = mode;
+        }
         (*fields)["w"] = width;
         (*fields)["h"] = height;
     }
     else if (type == "triangle") {
         *typeObj = "triangle";
-        QLineEdit* weight = new QLineEdit("Enter width");
-        weight->setText("7");
-        layout->addRow("Enter width",weight);
+        QLineEdit* width = new QLineEdit("Enter width");
+        width->setText("30");
+        layout->addRow("Enter width", width);
         QLineEdit* height = new QLineEdit("Enter height");
-        height->setText("7");
-        layout->addRow("Enter height", weight);
-        (*fields)["base"] = weight;
+        height->setText("30");
+        layout->addRow("Enter height", height);
+        if (ogl->mode == "3D") {
+            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+            mode->setText("2.0");
+            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+            (*fields)["m"] = mode;
+        }
+        (*fields)["base"] = width;
         (*fields)["h"] = height;
     }
     else if (type == "circle") {
@@ -683,6 +697,17 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         QLineEdit* radius = new QLineEdit("Enter radius");
         radius->setText("10");
         layout->addRow("Enter radius",radius);
+        if (ogl->mode == "3D") {
+            QLineEdit* h = new QLineEdit("Enter height");
+            h->setText("10");
+            layout->addRow("Enter height", h);
+            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+            mode->setText("2.0");
+            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+            (*fields)["m"] = mode;
+            (*fields)["h"] = h;
+        }
+
         (*fields)["count"] = angles;
         (*fields)["radius"] = radius;
     }

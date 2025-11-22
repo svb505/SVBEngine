@@ -58,7 +58,6 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
 
         Object* obj = nullptr;
 
-        // создаём объект по типу (как у тебя было)
         if (type == "rectangle") { Box* b = new Box(); b->setSize(size["width"].toDouble(), size["height"].toDouble()); obj = b; }
         else if (type == "circle") { Circle* c = new Circle(); c->setRadius(size["radius"].toDouble()); obj = c; }
         else if (type == "triangle") { Triangle* t = new Triangle(); t->setSize(size["base"].toDouble(), size["height"].toDouble()); obj = t; }
@@ -320,7 +319,6 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     scenarios["DRIGHTTOP"] = "Moving to diagonal(right -> top) on";
     scenarios["DRIGHTBOTTOM"] = "Moving to diagonal(right -> bottom) on";
 
-
     QWidget* child = new QWidget();
     child->resize(550, 400);
     child->setWindowTitle("Scenarios");
@@ -354,7 +352,7 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
 
     QPushButton* add = new QPushButton(child);
     add->setText("Add scenario");
-    add->move(10,95);
+    add->move(10, 95);
     add->show();
 
     QObject::connect(add, &QPushButton::clicked, [combo2, list1, pixels]() {
@@ -365,6 +363,64 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
 
         QString str = QString("%1 %2").arg(item).arg(pix);
         list1->addItem(str);
+        });
+
+    QPushButton* exportBtn = new QPushButton(child);
+    exportBtn->setText("Export scenarios");
+    exportBtn->move(350, 135);
+    exportBtn->show();
+
+    QPushButton* importBtn = new QPushButton(child);
+    importBtn->setText("Import scenarios");
+    importBtn->move(350, 165);
+    importBtn->show();
+
+    QObject::connect(exportBtn, &QPushButton::clicked, [list1, child]() {
+        QString fileName = QFileDialog::getSaveFileName(
+            child,
+            "Export scenarios",
+            "scenarios/",
+            "JSON (*.json)"
+        );
+        if (fileName.isEmpty()) return;
+
+        QJsonArray arr;
+        for (int i = 0; i < list1->count(); i++) {
+            arr.append(list1->item(i)->text());
+        }
+
+        QJsonObject root;
+        root["scenarios"] = arr;
+
+        QFile f(fileName);
+        if (f.open(QIODevice::WriteOnly)) {
+            f.write(QJsonDocument(root).toJson());
+            f.close();
+        }
+        });
+    QObject::connect(importBtn, &QPushButton::clicked, [list1, child]() {
+        QString fileName = QFileDialog::getOpenFileName(
+            child,
+            "Import scenarios",
+            "scenarios/",
+            "JSON (*.json)"
+        );
+        if (fileName.isEmpty()) return;
+
+        QFile f(fileName);
+        if (!f.open(QIODevice::ReadOnly)) return;
+
+        QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
+        f.close();
+        if (!doc.isObject()) return;
+
+        QJsonArray arr = doc.object()["scenarios"].toArray();
+
+        list1->clear();
+        for (auto v : arr) {
+            if (v.isString())
+                list1->addItem(v.toString());
+        }
         });
 
 
@@ -385,16 +441,23 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     start->move(10, 160);
     start->show();
 
-    QObject::connect(start, &QPushButton::clicked, [this,ogl,combo1,combo3,list1,scenarios,pixels,speed]() {
-        QStringList texts;
-        for (int i = 0; i < list1->count(); i++) {
-            texts << list1->item(i)->text();
-        }
-        movingParcer(ogl,combo1->currentText().toStdString(), combo3->currentText().toInt(), texts,
-            scenarios,speed->text().toInt());
-    });
+    QObject::connect(start, &QPushButton::clicked,
+        [this, ogl, combo1, combo3, list1, scenarios, pixels, speed]() {
+            QStringList texts;
+            for (int i = 0; i < list1->count(); i++) {
+                texts << list1->item(i)->text();
+            }
+            movingParcer(
+                ogl,
+                combo1->currentText().toStdString(),
+                combo3->currentText().toInt(),
+                texts,
+                scenarios,
+                speed->text().toInt()
+            );
+        });
+}
 
-};
 void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
     QWidget* child = new QWidget();
     child->setWindowTitle("Removing object");
@@ -709,7 +772,7 @@ void GUI::startMoveObj(MyOpenGLWidget* ogl,const std::string& name,const int& sp
     int repeatCount = 0;
     int moved = 0;
 
-    QTimer* timer = new QTimer(ogl); // Родитель виджет, чтобы таймер не удалялся
+    QTimer* timer = new QTimer(ogl);
     timer->setInterval(1000 / speed);
 
     QObject::connect(timer, &QTimer::timeout, [=]() mutable {

@@ -43,18 +43,7 @@ protected:
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
-    float camYaw = 0.0f;     // Вращение по горизонтали
-    float camPitch = 25.0f;  // Наклон камеры
-    float camDistance = 400; // Дистанция от центра
-    float camX = 0.0f;       // Смещение камеры
-    float camY = 0.0f;
-
-    QPoint lastMouse;
-    std::map < std::string, Data > objects;
-    QTimer* animTimer = nullptr;
-    std::string animName;
-    int animTargetX = 0;
-    int animSpeed = 5;   
+    //Widget coordinates
     float aspect = 1.0f;
     float left = 0.0f;
     float right = 0.0f;
@@ -62,6 +51,17 @@ private:
     float bottom = 0.0f;
     float zNear = 0.0f;
     float zFar = 0.0f;
+    float camYaw = 0.0f;     // Horizontal rotate
+    float camPitch = 25.0f;  // Camera incline
+    float camDistance = 400; // Distance from center
+    float camX = 0.0f;       // Camera offcet
+    float camY = 0.0f;
+    int animTargetX = 0;
+    int animSpeed = 5;
+    QPoint lastMouse;
+    QTimer* animTimer = nullptr;
+    std::string animName;
+    std::map < std::string, Data > objects;// list of all objects
 private slots:
     void animateMove();
 };

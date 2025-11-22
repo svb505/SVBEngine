@@ -65,11 +65,12 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
         else if (type == "polygon") { Polygon* p = new Polygon(); p->setSize(size["sides"].toInt(), size["radius"].toDouble()); obj = p; }
         else if (type == "star") { Star* s = new Star(); s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble()); obj = s; }
         else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
-        else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); obj = c; }
-        else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); obj = s; }
-        else if (type == "pyramid") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); obj = p; }
-        else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); obj = p; }
-
+        else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->setMode(size["mode"].toDouble()); obj = c; }
+        else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); s->setMode(size["mode"].toDouble()); obj = s; }
+        else if (type == "pyramid") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };
 
@@ -147,23 +148,40 @@ void exportScene(const QString& fileName, const std::map<std::string, Data>& obj
             size["width"] = c->width;
             size["height"] = c->height;
             size["depth"] = c->depth;
+            size["mode"] = c->getMode();
         }
         else if (type == "sphere") {
             Sphere* s = dynamic_cast<Sphere*>(obj);
             size["radius"] = s->getRadius();
             size["slices"] = s->getSlices();
             size["stacks"] = s->getStacks();
+            size["mode"] = s->getMode();
         }
         else if (type == "pyramid") {
             Pyramid* p = dynamic_cast<Pyramid*>(obj);
             size["base"] = p->base;
             size["height"] = p->height;
+            size["mode"] = p->getMode();
         }
         else if (type == "prism") {
             Prism* p = dynamic_cast<Prism*>(obj);
             size["sides"] = p->getSides();
             size["radius"] = p->getRadius();
             size["height"] = p->getHeight();
+            size["mode"] = p->getMode();
+        }
+        else if (type == "cylinder") {
+            Cylinder* p = dynamic_cast<Cylinder*>(obj);
+            size["rTop"] = p->getRT();
+            size["rBottom"] = p->getRB();
+            size["mode"] = p->getMode();
+            size["h"] = p->getH();
+        }
+        else if (type == "cone") {
+            Cone* p = dynamic_cast<Cone*>(obj);
+            size["radius"] = p->getR();
+            size["mode"] = p->getMode();
+            size["h"] = p->getH();
         }
 
         o["size"] = size;
@@ -232,6 +250,10 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QAction* starAction = addMenu->addAction("Add star");
     QAction* polyAction = addMenu->addAction("Add polygon");
     QAction* lineAction = addMenu->addAction("Add line");
+    QAction* coneAction = addMenu->addAction("Add cone");
+    QAction* cylinderAction = addMenu->addAction("Add cylinder");
+    coneAction->setVisible(ogl->mode == "3D");
+    cylinderAction->setVisible(ogl->mode == "3D");
 
     QAction* twoD= modeMenu->addAction("Set 2D mode");
     QAction* threeD = modeMenu->addAction("Set 3D mode");
@@ -262,10 +284,20 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QObject::connect(lineAction, &QAction::triggered, [&]() {
         addObjWindow("line", ogl);
         });
-    QObject::connect(twoD, &QAction::triggered, [this,ogl]() {
+    QObject::connect(coneAction, &QAction::triggered, [&]() {
+        addObjWindow("cone", ogl);
+        });
+    QObject::connect(cylinderAction, &QAction::triggered, [&]() {
+        addObjWindow("cylinder", ogl);
+        });
+    QObject::connect(twoD, &QAction::triggered, [this,ogl, coneAction, cylinderAction]() {
+        coneAction->setVisible(false);
+        cylinderAction->setVisible(false);
         changeMode("2D",ogl);
         });
-    QObject::connect(threeD, &QAction::triggered, [this,ogl]() {
+    QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction]() {
+        coneAction->setVisible(true);
+        cylinderAction->setVisible(true);
         changeMode("3D",ogl);
         });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {
@@ -571,17 +603,33 @@ void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* 
         obj->setSize(positions["wL"], positions["x0"], positions["y0"], positions["lineW"]);
         ogl->addObj(obj, name, "line",x, y, z, colors[0], colors[1], colors[2]);
     }
+    else if (type == "cone") {
+        Cone* obj = new Cone();
+        obj->position = { x, y, z };
+        obj->color = { colors[0], colors[1], colors[2] };
+        obj->setSize(positions["r"], positions["h"]);
+        obj->setMode(positions["m"]);
+        ogl->addObj(obj, name, "cone", x, y, z, colors[0], colors[1], colors[2]);
+    }
+    else if (type == "cylinder") {
+        Cylinder* obj = new Cylinder();
+        obj->position = { x, y, z };
+        obj->color = { colors[0], colors[1], colors[2] };
+        obj->setSize(positions["rT"], positions["rB"], positions["h"]);
+        obj->setMode(positions["m"]);
+        ogl->addObj(obj, name, "cylinder", x, y, z, colors[0], colors[1], colors[2]);
+    }
 }
 void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
     auto positions = std::make_shared<std::map<std::string, float>>();
     auto fields = std::make_shared<std::map<std::string, QLineEdit*>>();
     auto typeObj = std::make_shared<std::string>();
-    
 
-    QWidget *child = new QWidget();
+
+    QWidget* child = new QWidget();
     child->setWindowTitle("Adding object");
-    child->resize(450,450);
+    child->resize(450, 450);
     child->show();
     QFormLayout* layout = new QFormLayout(child);
 
@@ -595,13 +643,13 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     QLineEdit* xPos = new QLineEdit("Set X position");
     xPos->setText("0");
     layout->addRow(xPos);
-    
+
     QLabel* lbl2 = new QLabel("Set Y position");
     layout->addRow(lbl2);
     QLineEdit* yPos = new QLineEdit("Set Y position");
     yPos->setText("0");
     layout->addRow(yPos);
-    
+
     QLabel* lbl3 = new QLabel("Set Z position(leave 0 if 2D mode)");
     layout->addRow(lbl3);
     QLineEdit* zPos = new QLineEdit("Set Z position");
@@ -627,7 +675,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
                 .arg(color.green())
                 .arg(color.blue());
 
-            colorPreview->setText(rgbText);       
+            colorPreview->setText(rgbText);
             colorPreview->setStyleSheet(QString(
                 "background: rgb(%1,%2,%3); padding: 10px;")
                 .arg(color.red()).arg(color.green()).arg(color.blue()));
@@ -638,10 +686,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         *typeObj = "rectangle";
         QLineEdit* width = new QLineEdit("Enter width");
         width->setText("20");
-        layout->addRow("Enter width",width);
+        layout->addRow("Enter width", width);
         QLineEdit* height = new QLineEdit("Enter height");
         height->setText("20");
-        layout->addRow("Enter height",height);
+        layout->addRow("Enter height", height);
         if (ogl->mode == "3D") {
             QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
             mode->setText("2.0");
@@ -700,10 +748,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         *typeObj = "polygon";
         QLineEdit* angles = new QLineEdit("Enter angles count");
         angles->setText("5");
-        layout->addRow("Enter angles count",angles);
+        layout->addRow("Enter angles count", angles);
         QLineEdit* radius = new QLineEdit("Enter radius");
         radius->setText("10");
-        layout->addRow("Enter radius",radius);
+        layout->addRow("Enter radius", radius);
         if (ogl->mode == "3D") {
             QLineEdit* h = new QLineEdit("Enter height");
             h->setText("10");
@@ -736,6 +784,41 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         (*fields)["x0"] = Xcoord;
         (*fields)["y0"] = Ycoord;
         (*fields)["lineW"] = lineW;
+    }
+    else if (type == "cone") {
+        *typeObj = "cone";
+        QLineEdit* radius = new QLineEdit("Enter radius");
+        radius->setText("20");
+        layout->addRow("Enter width", radius);
+        QLineEdit* height = new QLineEdit("Enter height");
+        height->setText("20");
+        layout->addRow("Enter height", height);
+        QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+        mode->setText("2.0");
+        layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+        (*fields)["m"] = mode;
+        (*fields)["r"] = radius;
+        (*fields)["h"] = height;
+
+    }
+    else if (type == "cylinder") {
+        *typeObj = "cylinder";
+        QLineEdit* rTop = new QLineEdit("Enter top radius");
+        rTop->setText("20");
+        layout->addRow("Enter top radius", rTop);
+        QLineEdit* rBottom = new QLineEdit("Enter bottom radius");
+        rBottom->setText("20");
+        layout->addRow("Enter bottom radius", rBottom);
+        QLineEdit* h = new QLineEdit("Enter height");
+        h->setText("20");
+        layout->addRow("Enter height", h);
+        QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
+        mode->setText("2.0");
+        layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
+        (*fields)["m"] = mode; 
+        (*fields)["rB"] = rBottom;
+        (*fields)["rT"] = rTop;
+        (*fields)["h"] = h;
     }
 
     QPushButton* create = new QPushButton("Create object");

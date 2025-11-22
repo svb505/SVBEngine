@@ -212,14 +212,15 @@ public:
     float width = 1.0f;
     float height = 1.0f;
     float depth = 1.0f;
-    float mode = 1.0F;
+    float mode = 2.0f;
 
     void setSize(float w, float h, float d) {
         width = w;
         height = h;
         depth = d;
     }
-    void setMode(float& _mode) {mode = _mode;}
+    float getMode() { return mode; }
+    void setMode(const float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -286,7 +287,7 @@ private:
     float radius = 1.0f;
     int slices = 24;
     int stacks = 24;
-    float mode = 1.0f;
+    float mode = 2.0f;
 public:
     int getSlices() { return slices;  }
     int getStacks(){ return stacks; }
@@ -296,7 +297,8 @@ public:
         slices = sl;
         stacks = st;
     }
-    void setMode(float& _mode) { mode = _mode; }
+    float getMode() { return mode; }
+    void setMode(const float& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
 
@@ -336,12 +338,13 @@ class Pyramid : public Object {
 public:
     float base = 1.0f;
     float height = 1.0f;
-    float mode = 1.0f;
+    float mode = 2.0f;
     void setSize(float b, float h) {
         base = b;
         height = h;
     }
-    void setMode(float& _mode) {mode = _mode;}
+    float getMode() { return mode; }
+    void setMode(const float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -399,7 +402,7 @@ private:
     int sides = 6;
     float radius = 1.0f;
     float height = 1.0f;
-    float mode = 1.0f;
+    float mode = 2.0f;
 public:
     float getHeight(){ return height; }
     float getRadius() { return radius;}
@@ -410,7 +413,8 @@ public:
         radius = r;
         height = h;
     }
-    void setMode(float& _mode) {mode = _mode;}
+    float getMode() { return mode; }
+    void setMode(const float& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -467,4 +471,112 @@ public:
         glPopMatrix();
     }
 };
+class Cylinder : public Object {
+private:
+    float radiusTop = 0.5f;
+    float radiusBottom = 0.5f;
+    float height = 1.0f;
+    int segments = 36; 
+    float mode = 2.0f;
+public:
+    float getRT() { return radiusTop; }
+    float getRB() { return radiusBottom; }
+    float getH() { return height; }
+    void setSize(float rTop, float rBottom, float h) {
+        radiusTop = rTop;
+        radiusBottom = rBottom;
+        height = h;
+    }
+    float getMode() { return mode; }
+    void setSegments(int seg) { segments = seg; }
+    void setMode(const float& _mode) { mode = _mode; }
+    void render() override {
+        glPushMatrix();
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        if (mode == 2.0f) glBegin(GL_TRIANGLE_STRIP);
+        else glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= segments; ++i) {
+            float angle = i * 2.0f * M_PI / segments;
+            float xTop = radiusTop * cos(angle);
+            float zTop = radiusTop * sin(angle);
+            float xBottom = radiusBottom * cos(angle);
+            float zBottom = radiusBottom * sin(angle);
+
+            glVertex3f(xTop, height / 2, zTop);
+            glVertex3f(xBottom, -height / 2, zBottom);
+        }
+        glEnd();
+
+        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        else  glBegin(GL_LINE_STRIP);
+        glVertex3f(0, height / 2, 0); 
+        for (int i = 0; i <= segments; ++i) {
+            float angle = i * 2.0f * M_PI / segments;
+            glVertex3f(radiusTop * cos(angle), height / 2, radiusTop * sin(angle));
+        }
+        glEnd();
+
+        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        else  glBegin(GL_LINE_STRIP);
+        glVertex3f(0, -height / 2, 0); 
+        for (int i = 0; i <= segments; ++i) {
+            float angle = i * 2.0f * M_PI / segments;
+            glVertex3f(radiusBottom * cos(angle), -height / 2, radiusBottom * sin(angle));
+        }
+        glEnd();
+
+        glPopMatrix();
+    }
+};
+class Cone : public Object {
+private:
+    float radius = 0.5f;
+    float height = 1.0f;
+    int segments = 36;
+    float mode = 2.0f;
+public:
+    void setSize(float r, float h) {
+        radius = r;
+        height = h;
+    }
+    float getR() { return radius; }
+    float getH() { return height; }
+    float getMode() { return mode; }
+    void setSegments(int seg) { segments = seg; }
+    void setMode(const float& _mode) { mode = _mode; }
+    void render() override {
+        glPushMatrix();
+        glTranslatef(position.x(), position.y(), position.z());
+        glRotatef(rotation, 0, 1, 0);
+        glScalef(scale.x(), scale.y(), scale.z());
+        glColor3f(color.x(), color.y(), color.z());
+
+        if (mode == 2.0f) glBegin(GL_TRIANGLES);
+        else glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < segments; ++i) {
+            float angle1 = i * 2.0f * M_PI / segments;
+            float angle2 = (i + 1) * 2.0f * M_PI / segments;
+            glVertex3f(0, height / 2, 0);
+            glVertex3f(radius * cos(angle1), -height / 2, radius * sin(angle1));
+            glVertex3f(radius * cos(angle2), -height / 2, radius * sin(angle2));
+        }
+        glEnd();
+
+        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        else glBegin(GL_LINE_STRIP);
+        glVertex3f(0, -height / 2, 0); 
+        for (int i = 0; i <= segments; ++i) {
+            float angle = i * 2.0f * M_PI / segments;
+            glVertex3f(radius * cos(angle), -height / 2, radius * sin(angle));
+        }
+        glEnd();
+
+        glPopMatrix();
+    }
+};
+
 

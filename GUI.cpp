@@ -233,6 +233,117 @@ std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl)
     QFileInfo fi(fileName);
     return importScene(fi.baseName(), ogl);
 }
+void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
+    auto colorRGB = std::make_shared<std::array<float, 3>>();
+
+    QWidget* child = new QWidget();
+    child->setWindowTitle("Changing object");
+    child->resize(250, 200);
+
+    QFormLayout* layout = new QFormLayout(child);
+
+    QComboBox* combo = new QComboBox();
+    layout->addRow(combo);
+
+    auto objects = ogl->getObjects();
+    for (auto& name : objects) {
+        combo->addItem(QString::fromStdString(name.first));
+    }
+
+    QLabel* lbl1 = new QLabel("Set new X position");
+    QLineEdit* xPos = new QLineEdit();
+    layout->addRow(lbl1, xPos);
+
+    QLabel* lbl2 = new QLabel("Set new Y position");
+    QLineEdit* yPos = new QLineEdit();
+    layout->addRow(lbl2, yPos);
+
+    QLabel* lbl3 = new QLabel("Set new Z position");
+    QLineEdit* zPos = new QLineEdit();
+    layout->addRow(lbl3, zPos);
+
+    QPushButton* colorBtn = new QPushButton("Select new object color");
+    QLabel* colorPreview = new QLabel("Color not chosen");
+    colorPreview->setAlignment(Qt::AlignCenter);
+    layout->addRow(colorBtn);
+    layout->addRow(colorPreview);
+
+    auto updateFields = [=]() {
+        if (combo->currentIndex() < 0) return;
+
+        std::string name = combo->currentText().toStdString();
+
+        auto objs = ogl->getObjects();
+        if (!objs.count(name)) return;
+
+        float x = ogl->getX(name);
+        float y = ogl->getY(name);
+        float z = ogl->getZ(name);
+
+        xPos->setText(QString::number(x));
+        yPos->setText(QString::number(y));
+        zPos->setText(QString::number(z));
+
+        auto cols = ogl->getColors(name);
+
+        if (cols.size() >= 3) {
+            (*colorRGB)[0] = cols[0];
+            (*colorRGB)[1] = cols[1];
+            (*colorRGB)[2] = cols[2];
+
+            colorPreview->setText(
+                QString("R: %1  G: %2  B: %3")
+                .arg(cols[0]).arg(cols[1]).arg(cols[2])
+            );
+
+            colorPreview->setStyleSheet(
+                QString("background: rgb(%1,%2,%3); padding: 10px;")
+                .arg(cols[0]).arg(cols[1]).arg(cols[2])
+            );
+        }
+        };
+
+    QObject::connect(combo,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [=](int) { updateFields(); }
+    );
+
+    if (!objects.empty()) {
+        combo->setCurrentIndex(0);
+        updateFields();
+    }
+
+    QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
+        QColor color = QColorDialog::getColor(Qt::white, child);
+        if (!color.isValid()) return;
+
+        (*colorRGB)[0] = color.redF();
+        (*colorRGB)[1] = color.greenF();
+        (*colorRGB)[2] = color.blueF();
+
+        colorPreview->setText(
+            QString("R: %1  G: %2  B: %3")
+            .arg(color.red()).arg(color.green()).arg(color.blue())
+        );
+
+        colorPreview->setStyleSheet(
+            QString("background: rgb(%1,%2,%3); padding: 10px;")
+            .arg(color.red()).arg(color.green()).arg(color.blue())
+        );
+        });
+
+    QPushButton* btn = new QPushButton("Change object");
+    layout->addRow(btn);
+
+    QObject::connect(btn, &QPushButton::clicked, [=]() {
+        if (combo->currentIndex() < 0) return;
+        ogl->changeObj(combo->currentText().toStdString(),xPos->text().toFloat(), yPos->text().toFloat(),
+            zPos->text().toFloat(),colorRGB->data());});
+
+    child->show();
+}
+
+
 void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QMenuBar* menubar = w->menuBar();
     QAction* importAction = menubar->addAction("Import");
@@ -240,6 +351,7 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QMenu* modeMenu = menubar->addMenu("Mode");
     QMenu* objectsMenu = menubar->addMenu("Objects");
     QMenu* addMenu = objectsMenu->addMenu("Add");
+    QAction* changeAction = objectsMenu->addAction("Change");
     QAction* removeAction = objectsMenu->addAction("Remove");
     QAction* sceneAction = menubar->addAction("Scene");
     QAction* scenariosAction = menubar->addAction("Scenarios");    
@@ -260,6 +372,9 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QAction* threeD = modeMenu->addAction("Set 3D mode");
     QObject::connect(removeAction, &QAction::triggered, [&]() {
         openRemoveWindow(ogl);
+        });
+    QObject::connect(changeAction, &QAction::triggered, [&]() {
+        openChangeWindow(ogl);
         });
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {
         openScenariosWindow(ogl);
@@ -829,6 +944,13 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     layout->addRow(create);
 
     QObject::connect(create, &QPushButton::clicked, [=]()mutable {
+        auto objects = ogl->getObjects();
+        for (auto obj : objects) {
+            if (obj.first == name->text().toStdString()) {
+                QMessageBox::warning(child, "warning", "Objects with this name exists!");
+                return;
+            }
+        }
         for (auto& p : *fields)
             if (p.first == "count" || p.first == "points" ||
                 p.first == "wL" || p.first == "x" || p.first == "y") {

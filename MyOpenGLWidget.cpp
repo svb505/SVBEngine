@@ -141,6 +141,30 @@ void MyOpenGLWidget::removeObj(const std::string& name) {
 std::map <std::string, Data> MyOpenGLWidget::getObjects() {
     return objects;
 }
+std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
+    std::vector<float> vect = { objects[name].r,objects[name].g, objects[name].b };
+    return vect;
+}
+void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[])
+{
+    auto it = objects.find(name);
+    if (it == objects.end()) {
+        qDebug() << "Object not found!";
+        return;
+    }
+    it->second.obj->position = { x, y, z };
+    it->second.obj->color = { colors[0], colors[1], colors[2] };
+
+    it->second.x = x;
+    it->second.y = y;
+    it->second.z = z;
+    it->second.r = colors[0];
+    it->second.g = colors[1];
+    it->second.b = colors[2];
+
+    update();
+}
+
 void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
     update();

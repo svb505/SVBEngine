@@ -10,6 +10,7 @@ public:
 	void openSceneWindow(MyOpenGLWidget* ogl);
 	void openScenariosWindow(MyOpenGLWidget* ogl);
 	void openRemoveWindow(MyOpenGLWidget* ogl);
+	void openChangeWindow(MyOpenGLWidget* ogl);
 	void addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
 		const float& y, const float& z,float colors[], std::map<std::string, float>& positions);
 	void addObjWindow(const std::string& type,MyOpenGLWidget* ogl);

@@ -22,10 +22,12 @@ public:
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
     std::string getType(const std::string& name);
+    std::vector<float> getColors(const std::string& name);
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
     void addObj(Object* obj, const std::string& name, const std::string& type, const float& x,
         const float& y, const float z,const float r, const float g, const float b);
     void clearScene();
+    void changeObj(const std::string& name, float x, float y, float z, float colors[]);
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);

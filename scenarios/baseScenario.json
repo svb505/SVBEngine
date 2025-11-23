@@ -1,0 +1,12 @@
+{
+    "scenarios": [
+        "Moving to left on 50",
+        "Moving to top on 50",
+        "Moving to right on 50",
+        "Moving to bottom on 50",
+        "Moving to diagonal(left -> top) on 50",
+        "Moving to diagonal(right -> bottom) on 50",
+        "Moving to diagonal(left -> bottom) on 50",
+        "Moving to diagonal(right -> top) on 50"
+    ]
+}

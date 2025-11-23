@@ -67,7 +67,7 @@ std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget*
         else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
         else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->setMode(size["mode"].toDouble()); obj = c; }
         else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); s->setMode(size["mode"].toDouble()); obj = s; }
-        else if (type == "pyramid") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "pyramide") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }

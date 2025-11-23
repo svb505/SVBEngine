@@ -1,0 +1,120 @@
+{
+    "mode": "3D",
+    "objects": [
+        {
+            "color": {
+                "b": 1,
+                "g": 0.3333333432674408,
+                "r": 1
+            },
+            "name": "figure1",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+                "depth": 20,
+                "height": 20,
+                "mode": 2,
+                "width": 20
+            },
+            "type": "cube"
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 0.3333333432674408
+            },
+            "name": "figure2",
+            "position": {
+                "x": 0,
+                "y": 100,
+                "z": 0
+            },
+            "size": {
+                "h": 20,
+                "mode": 2,
+                "rBottom": 20,
+                "rTop": 20
+            },
+            "type": "cylinder"
+        },
+        {
+            "color": {
+                "b": 0.49803921580314636,
+                "g": 1,
+                "r": 1
+            },
+            "name": "figure3",
+            "position": {
+                "x": 0,
+                "y": -100,
+                "z": 0
+            },
+            "size": {
+                "mode": 1,
+                "radius": 15,
+                "slices": 32,
+                "stacks": 32
+            },
+            "type": "sphere"
+        },
+        {
+            "color": {
+                "b": 0.49803921580314636,
+                "g": 0.6666666865348816,
+                "r": 1
+            },
+            "name": "figure4",
+            "position": {
+                "x": 100,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+            },
+            "type": "pyramide"
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0.3333333432674408,
+                "r": 0
+            },
+            "name": "figure5",
+            "position": {
+                "x": -100,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+                "height": 10,
+                "mode": 1,
+                "radius": 10,
+                "sides": 5
+            },
+            "type": "prism"
+        },
+        {
+            "color": {
+                "b": 0.49803921580314636,
+                "g": 1,
+                "r": 0.3333333432674408
+            },
+            "name": "figure6",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 50
+            },
+            "size": {
+                "h": 20,
+                "mode": 2,
+                "radius": 20
+            },
+            "type": "cone"
+        }
+    ]
+}

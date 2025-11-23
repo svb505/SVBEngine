@@ -243,6 +243,7 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QAction* removeAction = objectsMenu->addAction("Remove");
     QAction* sceneAction = menubar->addAction("Scene");
     QAction* scenariosAction = menubar->addAction("Scenarios");    
+    QAction* cleanAction = menubar->addAction("Clean scene");
 
     QAction* rectAction = addMenu->addAction("Add rectangle");
     QAction* circleAction = addMenu->addAction("Add circle");
@@ -305,6 +306,9 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {
         exportSceneWithDialog(ogl->getObjects(),ogl);
+        });
+    QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {
+        ogl->clearScene();
         });
 };
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {

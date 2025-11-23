@@ -578,5 +578,3 @@ public:
         glPopMatrix();
     }
 };
-
-

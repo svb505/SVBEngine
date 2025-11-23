@@ -1,7 +1,7 @@
 ﻿#include <QApplication>
 #include <QMainWindow>
 #include <iostream>
-#include <GUI.h>
+#include "GUI.h"
 #include "MyOpenGLWidget.h"
 #include "Objects.h"
 
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     window.setCentralWidget(ogl);
     window.showMaximized();
     window.setWindowTitle("SVBEngine - Render: OpenGL");
-    window.setWindowIcon(QIcon(":/logo.png"));
+    window.setWindowIcon(QIcon(":/windowLogo.png"));
     window.show();
 
     ogl->setMode("2D");

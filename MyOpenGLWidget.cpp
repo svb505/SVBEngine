@@ -1,10 +1,8 @@
 ﻿#include "MyOpenGLWidget.h"
 #include <QTimer>
 #include <iostream>
-#include <QDebug>
 #include <map>
 #include <qDebug>
-#include <QPainter>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -164,7 +162,6 @@ void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float 
 
     update();
 }
-
 void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
     update();

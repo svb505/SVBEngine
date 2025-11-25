@@ -17,7 +17,6 @@ public:
     float z() const { return position.z(); }
     virtual ~Object() {}
 };
-
 class Box : public Object {
 private:
     float width = 1.0f;

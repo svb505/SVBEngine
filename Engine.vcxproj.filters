@@ -52,6 +52,9 @@
     <ClCompile Include="ImportExport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectsAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyOpenGLWidget.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="ImportExport.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectsAction.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -153,8 +153,10 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QAction* lineAction = addMenu->addAction("Add line");
     QAction* coneAction = addMenu->addAction("Add cone");
     QAction* cylinderAction = addMenu->addAction("Add cylinder");
+    QAction* flatAction = addMenu->addAction("Add flat");
     coneAction->setVisible(ogl->mode == "3D");
     cylinderAction->setVisible(ogl->mode == "3D");
+    flatAction->setVisible(ogl->mode == "3D");
 
     QAction* twoD= modeMenu->addAction("Set 2D mode");
     QAction* threeD = modeMenu->addAction("Set 3D mode");
@@ -194,14 +196,19 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QObject::connect(cylinderAction, &QAction::triggered, [&]() {
         addObjWindow("cylinder", ogl);
         });
-    QObject::connect(twoD, &QAction::triggered, [this,ogl, coneAction, cylinderAction]() {
+    QObject::connect(flatAction, &QAction::triggered, [&]() {
+        addObjWindow("flat", ogl);
+        });
+    QObject::connect(twoD, &QAction::triggered, [this,ogl, coneAction, cylinderAction,flatAction]() {
         coneAction->setVisible(false);
         cylinderAction->setVisible(false);
+        flatAction->setVisible(false);
         changeMode("2D",ogl);
         });
-    QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction]() {
+    QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction,flatAction]() {
         coneAction->setVisible(true);
         cylinderAction->setVisible(true);
+        flatAction->setVisible(true);
         changeMode("3D",ogl);
         });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {
@@ -379,13 +386,13 @@ void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
 }
 void GUI::addObject(std::string& type, const  std::string& name,MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z,float colors[],std::map<std::string,float>& positions) {
-    if (type == "rectangle") {
-        if (ogl->mode == "2D") {
+    if (type == "rectangle" || type == "flat") {
+        if (ogl->mode == "2D" || type == "flat") {
             Box* obj = new Box();
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setSize(positions["w"], positions["h"]);
-            ogl->addObj(obj, name, "rectangle",x, y, z, colors[0], colors[1], colors[2]);
+            ogl->addObj(obj, name, type,x, y, z, colors[0], colors[1], colors[2]);
         }
         else {
             Cube* cube = new Cube();
@@ -552,8 +559,8 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         }
         });
 
-    if (type == "rectangle") {
-        *typeObj = "rectangle";
+    if (type == "rectangle" || type == "flat") {
+        *typeObj = type;
         QLineEdit* width = new QLineEdit("Enter width");
         width->setText("20");
         layout->addRow("Enter width", width);

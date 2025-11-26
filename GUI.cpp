@@ -200,13 +200,13 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         coneAction->setVisible(false);
         cylinderAction->setVisible(false);
         flatAction->setVisible(false);
-        changeMode("2D",ogl);
+        ogl->setMode("2D");
         });
     QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction,flatAction]() {
         coneAction->setVisible(true);
         cylinderAction->setVisible(true);
         flatAction->setVisible(true);
-        changeMode("3D",ogl);
+        ogl->setMode("3D");
         });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {
         ImpExp scene;
@@ -382,13 +382,11 @@ void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
         }
     });
 }
-
 void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
     auto positions = std::make_shared<std::map<std::string, float>>();
     auto fields = std::make_shared<std::map<std::string, QLineEdit*>>();
     auto typeObj = std::make_shared<std::string>();
-
 
     QWidget* child = new QWidget();
     child->setWindowTitle("Adding object");
@@ -608,7 +606,3 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
             yPos->text().toFloat(), zPos->text().toFloat(),colorRGB->data(), *positions);
     });
 }
-void GUI::changeMode(const std::string& mode,MyOpenGLWidget* ogl) {
-    ogl->setMode(mode);
-};
-

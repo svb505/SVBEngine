@@ -12,5 +12,4 @@ public:
 	void openRemoveWindow(MyOpenGLWidget* ogl);
 	void openChangeWindow(MyOpenGLWidget* ogl);
 	void addObjWindow(const std::string& type,MyOpenGLWidget* ogl);
-	void changeMode(const std::string& mode,MyOpenGLWidget* ogl);
 };

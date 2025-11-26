@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
     window.setCentralWidget(ogl);
     window.showMaximized();
-    window.setWindowTitle("SVBEngine - Render: OpenGL");
+    window.setWindowTitle("SVBEngine - Render: OpenGL - FPS: ");
     window.setWindowIcon(QIcon(":/windowLogo.png"));
     window.show();
 

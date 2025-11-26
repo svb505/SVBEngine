@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include <GL/gl.h>
 #include <GL/glu.h>   
+#include <QELapsedTimer>
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -28,7 +29,10 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
 {
     animTimer = new QTimer(this);
     connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
+
+    fpsTimer.start();   
 }
+
 ProjectionParams MyOpenGLWidget::getProjectionParams() const {
     return { left, right, top, bottom, zNear, zFar };
 }
@@ -37,6 +41,8 @@ void MyOpenGLWidget::initializeGL() {
     glEnable(GL_BLEND);                 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.1f, 0.1f, 0.0f, 1.0f); 
+    fpsTimer.start();    
+    fpsFrames = 0;
 }
 void MyOpenGLWidget::resizeGL(int w, int h) {
     float aspect = float(w) / float(h);
@@ -69,6 +75,16 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
     glTranslatef(0, 0, -400);
 }
 void MyOpenGLWidget::paintGL() {
+    fpsFrames++;
+    if (fpsTimer.elapsed() >= 1000) {   
+        int fps = fpsFrames;
+        fpsFrames = 0;
+        fpsTimer.restart();
+
+        if (parentWidget()) {
+            parentWidget()->setWindowTitle(QString("SVBEngine - Render: OpenGL - FPS: %1").arg(fps));
+        }
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
@@ -82,6 +98,7 @@ void MyOpenGLWidget::paintGL() {
             data.obj->render();
         }
     }
+    update();
 }
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 {

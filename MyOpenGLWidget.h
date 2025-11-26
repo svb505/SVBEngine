@@ -45,6 +45,8 @@ protected:
     void resizeGL(int w,int h) override; 
     void paintGL() override;
 private:
+    QElapsedTimer fpsTimer;
+    int fpsFrames = 0;
     //Widget coordinates
     float aspect = 1.0f;
     float left = 0.0f;

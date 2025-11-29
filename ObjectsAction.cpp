@@ -3,9 +3,11 @@
 #include "ObjectsAction.h"
 #include "MyOpenGLWidget.h"
 #include "Objects.h"
+#include <qDebug>
 
 void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions) {
+    qDebug() << type;
     if (type == "rectangle" || type == "flat") {
         if (ogl->mode == "2D" || type == "flat") {
             Box* obj = new Box();
@@ -25,6 +27,13 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             ogl->addObj(cube, name, "cube", cube->position.x(), cube->position.y(), cube->position.z(),
                 cube->color.x(), cube->color.y(), cube->color.z());
         }
+    }
+    else if (type == "point") {
+        Point* obj = new Point();
+        obj->position = { x, y, z };
+        obj->color = { colors[0], colors[1], colors[2] };
+        obj->setSize(positions["size"]);
+        ogl->addObj(obj, name, "point", x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "triangle") {
         if (ogl->mode == "2D") {

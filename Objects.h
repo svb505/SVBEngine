@@ -76,6 +76,33 @@ public:
         glPopMatrix();
     }
 };
+class Point : public Object {
+private:
+    float pointSize = 5.0f; 
+public:
+    float getSize() { return pointSize; }
+    void setSize(const float& s) { pointSize = s; }
+
+    void render() override {
+        glPushMatrix();
+        glTranslatef(position.x(), position.y(), position.z());
+
+        glColor3f(color.x(), color.y(), color.z());
+
+        glEnable(GL_POINT_SMOOTH); 
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+
+        glPointSize(pointSize);
+
+        glBegin(GL_POINTS);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glEnd();
+
+        glPopMatrix();
+    }
+
+};
+
 class Triangle : public Object {
 private:
     float base = 1.0f;
@@ -231,6 +258,7 @@ public:
         float w = width / 2.0f;
         float h = height / 2.0f;
         float d = depth / 2.0f;
+
         if (mode == 1.0f) glBegin(GL_LINE_STRIP);
         else glBegin(GL_QUADS);
         

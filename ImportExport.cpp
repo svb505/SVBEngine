@@ -60,9 +60,10 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
         else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
         else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "point") { Point* p = new Point(); p->setSize(size["size"].toInt()); obj = p;}
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };
-
+        
         ogl->addObj(obj, name, type, d.x, d.y, d.z, d.r, d.g, d.b);
 
         d.obj = obj;
@@ -103,6 +104,10 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
             Box* b = dynamic_cast<Box*>(obj);
             size["width"] = b->getW();
             size["height"] = b->getH();
+        }
+        else if (type == "point") {
+            Point* b = dynamic_cast<Point*>(obj);
+            size["size"] = b->getSize();
         }
         else if (type == "circle") {
             Circle* c = dynamic_cast<Circle*>(obj);

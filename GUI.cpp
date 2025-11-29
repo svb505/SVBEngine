@@ -139,6 +139,7 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QMenu* objectsMenu = menubar->addMenu("Objects");
     QMenu* addMenu = objectsMenu->addMenu("Add");
     QAction* rectAction = addMenu->addAction("Add rectangle");
+    QAction* pointAction = addMenu->addAction("Add point");
     QAction* circleAction = addMenu->addAction("Add circle");
     QAction* trianglAction = addMenu->addAction("Add triangle");
     QAction* starAction = addMenu->addAction("Add star");
@@ -171,6 +172,9 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
         });
     QObject::connect(rectAction, &QAction::triggered, [&]() {
         addObjWindow("rectangle",ogl);
+        });
+    QObject::connect(pointAction, &QAction::triggered, [&]() {
+        addObjWindow("point", ogl);
         });
     QObject::connect(circleAction, &QAction::triggered, [&]() {
         addObjWindow("circle", ogl);
@@ -581,6 +585,13 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         (*fields)["rT"] = rTop;
         (*fields)["h"] = h;
     }
+    else if (type == "point") {
+        *typeObj = "point";
+        QLineEdit* size = new QLineEdit("Enter point size");
+        size->setText("5");
+        layout->addRow("Enter size", size);
+        (*fields)["size"] = size;
+        }
 
     QPushButton* create = new QPushButton("Create object");
     layout->addRow(create);

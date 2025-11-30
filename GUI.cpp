@@ -16,10 +16,57 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QFormLayout>
+#include <QVBoxLayout>
+#include <QFormLayout>
+#include <QGroupBox>
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"
 
+void GUI::aboutWindow() {
+    QWidget* Win = new QWidget();
+    Win->setWindowTitle("About");
+    Win->show();
+
+    QVBoxLayout* layout = new QVBoxLayout(Win);
+    QGroupBox* aboutDev = new QGroupBox("About Developper");
+    QFormLayout* aboutDevL = new QFormLayout(aboutDev);
+    QLabel* infoD = new QLabel("Developper SVB(Svyatoslav) started programming at age 13"
+        " in Python and at age 14 in C++.\nMy age when i write this engine is 15."
+        " My goal is to become a senior game developer.");
+    
+    QGroupBox* aboutSoft = new QGroupBox("About Engine");
+    QFormLayout* aboutSoftL = new QFormLayout(aboutSoft);
+    QLabel* infoS = new QLabel("SVBEngine is a project for practices my programming skills "
+        "and projects for future CV. \nSVBEngine writed full in the C++ and he counted ~3.000 lines of code");
+    
+
+    QGroupBox* links = new QGroupBox("Links");
+    QFormLayout* linksL = new QFormLayout(links);
+    QLabel* patreon = new QLabel("<a href=\"https://www.patreon.com/c/SVB278\">Donut to Patreon</a>");
+    patreon->setTextFormat(Qt::RichText);
+    patreon->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    patreon->setOpenExternalLinks(true);       
+    QLabel* boosty = new QLabel("<a href = \https://boosty.to/developsvb\">Donut to Boosty<a/>");
+    boosty->setTextFormat(Qt::RichText);
+    boosty->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    boosty->setOpenExternalLinks(true);
+    QLabel* github = new QLabel("<a href=\"https://github.com/svb505\">My GitHub</a>");
+    github->setTextFormat(Qt::RichText);
+    github->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    github->setOpenExternalLinks(true);
+
+
+    aboutDevL->addRow(infoD);
+    aboutSoftL->addRow(infoS);
+    linksL->addRow(patreon);
+    linksL->addRow(boosty);
+    linksL->addRow(github);
+    layout->addWidget(aboutDev);
+    layout->addWidget(aboutSoft);
+    layout->addWidget(links);
+
+}
 void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
 
@@ -153,6 +200,8 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QAction* sceneAction = menubar->addAction("Scene");
     QAction* scenariosAction = menubar->addAction("Scenarios");    
     QAction* cleanAction = menubar->addAction("Clean scene");
+    QAction* aboutAction = menubar->addAction("About");
+
 
     coneAction->setVisible(ogl->mode == "3D");
     cylinderAction->setVisible(ogl->mode == "3D");
@@ -223,6 +272,10 @@ void GUI::addMenu(QMainWindow* w,MyOpenGLWidget* ogl) {
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {
         ogl->clearScene();
         });
+    QObject::connect(aboutAction, &QAction::triggered, [&]() {
+        aboutWindow();
+    });
+
 };
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     auto params = ogl->getProjectionParams();

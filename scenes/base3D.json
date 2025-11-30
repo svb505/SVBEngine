@@ -115,6 +115,23 @@
                 "radius": 20
             },
             "type": "cone"
+        },
+        {
+            "color": {
+                "b": 0.49803921580314636,
+                "g": 1,
+                "r": 1
+            },
+            "name": "point",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 160
+            },
+            "size": {
+                "size": 35
+            },
+            "type": "point"
         }
     ]
 }

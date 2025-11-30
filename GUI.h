@@ -6,6 +6,7 @@
 class MyOpenGLWidget;
 class GUI {
 public:
+	void aboutWindow();
 	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
 	void openSceneWindow(MyOpenGLWidget* ogl);
 	void openScenariosWindow(MyOpenGLWidget* ogl);

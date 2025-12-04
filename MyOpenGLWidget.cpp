@@ -11,6 +11,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>   
 #include <QELapsedTimer>
+#include "Camera.h"
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -32,7 +33,6 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget* parent)
 
     fpsTimer.start();   
 }
-
 ProjectionParams MyOpenGLWidget::getProjectionParams() const {
     return { left, right, top, bottom, zNear, zFar };
 }
@@ -85,12 +85,13 @@ void MyOpenGLWidget::paintGL() {
             parentWidget()->setWindowTitle(QString("SVBEngine - Render: OpenGL - FPS: %1").arg(fps));
         }
     }
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    glTranslatef(camX, camY, -camDistance);
-    glRotatef(camPitch, 1, 0, 0);
-    glRotatef(camYaw, 0, 1, 0);
+    glTranslatef(cam.camX, cam.camY, cam.negativeCamDistance);
+    glRotatef(cam.camPitch, 1, 0, 0);
+    glRotatef(cam.camYaw, 0, 1, 0);
 
     drawGrid(100.0f, 10);
     for (auto& [name, data] : objects) {
@@ -102,38 +103,17 @@ void MyOpenGLWidget::paintGL() {
 }
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    QPoint d = event->pos() - lastMouse;
-    lastMouse = event->pos();
-
-    if (event->buttons() & Qt::RightButton)
-    {
-        camYaw += d.x() * 0.3f;
-        camPitch += d.y() * 0.3f;
-
-        if (camPitch > 89) camPitch = 89;
-        if (camPitch < -89) camPitch = -89;
-    }
-
-    if (event->buttons() & Qt::LeftButton)
-    {
-        float panSpeed = camDistance * 0.002f;
-
-        camX += -d.x() * panSpeed;
-        camY += d.y() * panSpeed;
-    }
-
+    cam.mouseWheel(event);
     update();
 }
 void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
-    lastMouse = event->pos();
+    cam.changeLastMouse(event);
+    update();
 }
 void MyOpenGLWidget::wheelEvent(QWheelEvent* event)
 {
-    float delta = event->angleDelta().y() / 120.0f; 
-    camDistance -= delta * 20.0f;
-
-    if (camDistance < 10) camDistance = 10;
+    cam.wheelEvent(event);
 
     update();
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Objects.h"
 #include <QElapsedTimer>
+#include "Camera.h"
 
 struct Data {
     Object* obj;
@@ -18,6 +19,7 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
+    Camera cam;
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
@@ -55,14 +57,8 @@ private:
     float bottom = 0.0f;
     float zNear = 0.0f;
     float zFar = 0.0f;
-    float camYaw = 0.0f;     // Horizontal rotate
-    float camPitch = 25.0f;  // Camera incline
-    float camDistance = 400; // Distance from center
-    float camX = 0.0f;       // Camera offcet
-    float camY = 0.0f;
     int animTargetX = 0;
     int animSpeed = 5;
-    QPoint lastMouse;
     QTimer* animTimer = nullptr;
     std::string animName;
     std::map < std::string, Data > objects;// list of all objects

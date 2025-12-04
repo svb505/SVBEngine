@@ -10,15 +10,14 @@
 #include <QMessageBox>
 #include <QListWidget>
 #include <QPointer>
-#include <MyOpenGLWidget.h>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDir>
 #include <QFormLayout>
 #include <QVBoxLayout>
-#include <QFormLayout>
 #include <QGroupBox>
+#include <MyOpenGLWidget.h>
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"

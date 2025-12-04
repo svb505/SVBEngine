@@ -97,6 +97,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="ImportExport.cpp" />
     <ClCompile Include="MyOpenGLWidget.cpp" />
@@ -112,6 +113,7 @@
     <QtMoc Include="MyOpenGLWidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="ImportExport.h" />
     <ClInclude Include="Objects.h" />

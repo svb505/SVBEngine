@@ -102,7 +102,6 @@ public:
     }
 
 };
-
 class Triangle : public Object {
 private:
     float base = 1.0f;
@@ -238,7 +237,7 @@ public:
     float width = 1.0f;
     float height = 1.0f;
     float depth = 1.0f;
-    float mode = 2.0f;
+    bool mode = 2.0f;
 
     void setSize(float w, float h, float d) {
         width = w;
@@ -246,7 +245,7 @@ public:
         depth = d;
     }
     float getMode() { return mode; }
-    void setMode(const float& _mode) {mode = _mode;}
+    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -259,7 +258,7 @@ public:
         float h = height / 2.0f;
         float d = depth / 2.0f;
 
-        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        if (mode) glBegin(GL_LINE_STRIP);
         else glBegin(GL_QUADS);
         
         // Front
@@ -314,7 +313,7 @@ private:
     float radius = 1.0f;
     int slices = 24;
     int stacks = 24;
-    float mode = 2.0f;
+    bool mode = 2.0f;
 public:
     int getSlices() { return slices;  }
     int getStacks(){ return stacks; }
@@ -325,7 +324,7 @@ public:
         stacks = st;
     }
     float getMode() { return mode; }
-    void setMode(const float& _mode) { mode = _mode; }
+    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
 
@@ -342,7 +341,7 @@ public:
             float lat1 = M_PI * (-0.5 + (double)(i + 1) / stacks);
             float z1 = radius * sin(lat1);
             float zr1 = radius * cos(lat1);
-            if (mode == 2.0f) glBegin(GL_QUAD_STRIP);
+            if (!mode) glBegin(GL_QUAD_STRIP);
             else glBegin(GL_LINE_STRIP);
             for (int j = 0; j <= slices; ++j) {
                 float lng = 2 * M_PI * (double)(j) / slices;
@@ -365,13 +364,13 @@ class Pyramid : public Object {
 public:
     float base = 1.0f;
     float height = 1.0f;
-    float mode = 2.0f;
+    bool mode = 2.0f;
     void setSize(float b, float h) {
         base = b;
         height = h;
     }
     float getMode() { return mode; }
-    void setMode(const float& _mode) {mode = _mode;}
+    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -382,7 +381,7 @@ public:
 
         float b = base / 2.0f;
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLES); 
+        if (!mode) glBegin(GL_TRIANGLES); 
         else glBegin(GL_LINE_STRIP);
         
         // Front
@@ -412,7 +411,7 @@ public:
         glEnd();
 
         // Bottom
-        if (mode == 2.0f) glBegin(GL_QUADS);
+        if (!mode) glBegin(GL_QUADS);
         else glBegin(GL_LINE_STRIP);
         glNormal3f(0, -1, 0);
         glVertex3f(-b, 0, -b);
@@ -429,7 +428,7 @@ private:
     int sides = 6;
     float radius = 1.0f;
     float height = 1.0f;
-    float mode = 2.0f;
+    bool mode = 2.0f;
 public:
     float getHeight(){ return height; }
     float getRadius() { return radius;}
@@ -441,7 +440,7 @@ public:
         height = h;
     }
     float getMode() { return mode; }
-    void setMode(const float& _mode) {mode = _mode;}
+    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -453,7 +452,7 @@ public:
         float halfH = height / 2.0f;
 
         // SIDES
-        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        if (mode) glBegin(GL_LINE_STRIP);
         else glBegin(GL_QUADS);
         for (int i = 0; i < sides; i++) {
             float a1 = 2 * M_PI * i / sides;
@@ -474,7 +473,7 @@ public:
         glEnd();
 
         // TOP
-        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        if (mode) glBegin(GL_LINE_STRIP);
         else glBegin(GL_TRIANGLE_FAN);
         glNormal3f(0, 1, 0);
         glVertex3f(0, halfH, 0);
@@ -485,7 +484,7 @@ public:
         glEnd();
 
         // BOTTOM
-        if (mode == 1.0f) glBegin(GL_LINE_STRIP);
+        if (mode) glBegin(GL_LINE_STRIP);
         else glBegin(GL_TRIANGLE_FAN);
         glNormal3f(0, -1, 0);
         glVertex3f(0, -halfH, 0);
@@ -504,7 +503,7 @@ private:
     float radiusBottom = 0.5f;
     float height = 1.0f;
     int segments = 36; 
-    float mode = 2.0f;
+    bool mode = 2.0f;
 public:
     float getRT() { return radiusTop; }
     float getRB() { return radiusBottom; }
@@ -516,7 +515,7 @@ public:
     }
     float getMode() { return mode; }
     void setSegments(int seg) { segments = seg; }
-    void setMode(const float& _mode) { mode = _mode; }
+    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());
@@ -524,7 +523,7 @@ public:
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLE_STRIP);
+        if (!mode) glBegin(GL_TRIANGLE_STRIP);
         else glBegin(GL_LINE_STRIP);
         for (int i = 0; i <= segments; ++i) {
             float angle = i * 2.0f * M_PI / segments;
@@ -538,7 +537,7 @@ public:
         }
         glEnd();
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        if (!mode) glBegin(GL_TRIANGLE_FAN);
         else  glBegin(GL_LINE_STRIP);
         glVertex3f(0, height / 2, 0); 
         for (int i = 0; i <= segments; ++i) {
@@ -547,7 +546,7 @@ public:
         }
         glEnd();
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        if (!mode) glBegin(GL_TRIANGLE_FAN);
         else  glBegin(GL_LINE_STRIP);
         glVertex3f(0, -height / 2, 0); 
         for (int i = 0; i <= segments; ++i) {
@@ -564,7 +563,7 @@ private:
     float radius = 0.5f;
     float height = 1.0f;
     int segments = 36;
-    float mode = 2.0f;
+    bool mode = 2.0f;
 public:
     void setSize(float r, float h) {
         radius = r;
@@ -574,7 +573,7 @@ public:
     float getH() { return height; }
     float getMode() { return mode; }
     void setSegments(int seg) { segments = seg; }
-    void setMode(const float& _mode) { mode = _mode; }
+    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());
@@ -582,7 +581,7 @@ public:
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLES);
+        if (!mode) glBegin(GL_TRIANGLES);
         else glBegin(GL_LINE_STRIP);
         for (int i = 0; i < segments; ++i) {
             float angle1 = i * 2.0f * M_PI / segments;
@@ -593,7 +592,7 @@ public:
         }
         glEnd();
 
-        if (mode == 2.0f) glBegin(GL_TRIANGLE_FAN);
+        if (!mode) glBegin(GL_TRIANGLE_FAN);
         else glBegin(GL_LINE_STRIP);
         glVertex3f(0, -height / 2, 0); 
         for (int i = 0; i <= segments; ++i) {

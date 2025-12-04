@@ -6,7 +6,7 @@
 #include <qDebug>
 
 void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
-    const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions) {
+    const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode) {
     qDebug() << type;
     if (type == "rectangle" || type == "flat") {
         if (ogl->mode == "2D" || type == "flat") {
@@ -23,7 +23,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             cube->rotation = 45.0f;
             cube->color = { colors[0], colors[1], colors[2] };
             cube->setSize(positions["w"], positions["h"], positions["w"]);
-            cube->setMode(positions["m"]);
+            cube->setMode(dMode);
             ogl->addObj(cube, name, "cube", cube->position.x(), cube->position.y(), cube->position.z(),
                 cube->color.x(), cube->color.y(), cube->color.z());
         }
@@ -49,7 +49,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             pyr->scale = { 1, 1, 1 };
             pyr->color = { colors[0], colors[1], colors[2] };
             pyr->setSize(positions["base"], positions["h"]);
-            pyr->setMode(positions["m"]);
+            pyr->setMode(dMode);
             ogl->addObj(pyr, name, "pyramide", pyr->position.x(), pyr->position.y(), pyr->position.z(),
                 pyr->color.x(), pyr->color.y(), pyr->color.z());
 
@@ -68,7 +68,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             ball->position = { x, y, z };
             ball->scale = { 1, 1, 1 };
             ball->color = { colors[0], colors[1], colors[2] };
-            ball->setMode(positions["m"]);
+            ball->setMode(dMode);
             ball->setSize(positions["radius"], 32, 32);
 
             ogl->addObj(ball, name, "sphere", ball->position.x(), ball->position.y(), ball->position.z(),
@@ -95,7 +95,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             prism->position = { x,y,z };
             prism->scale = { 1, 1, 1 };
             prism->color = { colors[0], colors[1], colors[2] };
-            prism->setMode(positions["m"]);
+            prism->setMode(dMode);
             prism->setSize(positions["count"], positions["radius"], positions["h"]);
 
             ogl->addObj(prism, name, "prism", prism->position.x(), prism->position.y(), prism->position.z(),
@@ -114,7 +114,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
         obj->position = { x, y, z };
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["r"], positions["h"]);
-        obj->setMode(positions["m"]);
+        obj->setMode(dMode);
         ogl->addObj(obj, name, "cone", x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "cylinder") {
@@ -122,7 +122,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
         obj->position = { x, y, z };
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["rT"], positions["rB"], positions["h"]);
-        obj->setMode(positions["m"]);
+        obj->setMode(dMode);
         ogl->addObj(obj, name, "cylinder", x, y, z, colors[0], colors[1], colors[2]);
     }
 }

@@ -18,6 +18,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <MyOpenGLWidget.h>
+#include <QCheckBox>
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"
@@ -442,6 +443,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
     auto positions = std::make_shared<std::map<std::string, float>>();
     auto fields = std::make_shared<std::map<std::string, QLineEdit*>>();
+    auto designModes = std::make_shared<std::map<std::string, QCheckBox*>>();
     auto typeObj = std::make_shared<std::string>();
 
     QWidget* child = new QWidget();
@@ -508,10 +510,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         height->setText("20");
         layout->addRow("Enter height", height);
         if (ogl->mode == "3D") {
-            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-            mode->setText("2.0");
-            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-            (*fields)["m"] = mode;
+            QCheckBox* cb = new QCheckBox("WireFrame mode");
+            cb->setChecked(false);
+            layout->addRow("Select design mode", cb);
+            (*designModes)["m"] = cb;
         }
         (*fields)["w"] = width;
         (*fields)["h"] = height;
@@ -525,10 +527,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         height->setText("30");
         layout->addRow("Enter height", height);
         if (ogl->mode == "3D") {
-            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-            mode->setText("2.0");
-            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-            (*fields)["m"] = mode;
+            QCheckBox* cb = new QCheckBox("WireFrame mode");
+            cb->setChecked(false);
+            layout->addRow("Select design mode", cb);
+            (*designModes)["m"] = cb;
         }
         (*fields)["base"] = width;
         (*fields)["h"] = height;
@@ -539,10 +541,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         radius->setText("6");
         layout->addRow("Enter radius", radius);
         if (ogl->mode == "3D") {
-            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-            mode->setText("2.0");
-            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-            (*fields)["m"] = mode;
+            QCheckBox* cb = new QCheckBox("WireFrame mode");
+            cb->setChecked(false);
+            layout->addRow("Select design mode", cb);
+            (*designModes)["m"] = cb;
         }
         (*fields)["radius"] = radius;
     }
@@ -573,10 +575,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
             QLineEdit* h = new QLineEdit("Enter height");
             h->setText("10");
             layout->addRow("Enter height", h);
-            QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-            mode->setText("2.0");
-            layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-            (*fields)["m"] = mode;
+            QCheckBox* cb = new QCheckBox("WireFrame mode");
+            cb->setChecked(false);
+            layout->addRow("Select design mode", cb);
+            (*designModes)["m"] = cb;
             (*fields)["h"] = h;
         }
 
@@ -610,10 +612,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         QLineEdit* height = new QLineEdit("Enter height");
         height->setText("20");
         layout->addRow("Enter height", height);
-        QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-        mode->setText("2.0");
-        layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-        (*fields)["m"] = mode;
+        QCheckBox* cb = new QCheckBox("WireFrame mode");
+        cb->setChecked(false);
+        layout->addRow("Select design mode", cb);
+        (*designModes)["m"] = cb;
         (*fields)["r"] = radius;
         (*fields)["h"] = height;
 
@@ -629,10 +631,10 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         QLineEdit* h = new QLineEdit("Enter height");
         h->setText("20");
         layout->addRow("Enter height", h);
-        QLineEdit* mode = new QLineEdit("Enter mode(1.0 - for lines/2.0 - for quads)");
-        mode->setText("2.0");
-        layout->addRow("Enter mode(1.0 - for lines/2.0 - for quads)", mode);
-        (*fields)["m"] = mode; 
+        QCheckBox* cb = new QCheckBox("WireFrame mode");
+        cb->setChecked(false);
+        layout->addRow("Select design mode", cb);
+        (*designModes)["m"] = cb;
         (*fields)["rB"] = rBottom;
         (*fields)["rT"] = rTop;
         (*fields)["h"] = h;
@@ -650,6 +652,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
 
     QObject::connect(create, &QPushButton::clicked, [=]()mutable {
         auto objects = ogl->getObjects();
+        bool dMode = false;
         for (auto obj : objects) {
             if (obj.first == name->text().toStdString()) {
                 QMessageBox::warning(child, "warning", "Objects with this name exists!");
@@ -664,8 +667,13 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
             else {
                 (*positions)[p.first] = p.second->text().toFloat();
             }
+        for (auto& md : *designModes) {
+            if (md.second->isChecked()) {
+                dMode = true;
+            }
+        }
         Action act;
         act.addObject(*typeObj,name->text().toStdString(),ogl,xPos->text().toFloat(),
-            yPos->text().toFloat(), zPos->text().toFloat(),colorRGB->data(), *positions);
+            yPos->text().toFloat(), zPos->text().toFloat(),colorRGB->data(), *positions,dMode);
     });
 }

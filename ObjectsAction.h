@@ -14,5 +14,5 @@ public:
 	void startMoveObj(MyOpenGLWidget* ogl, const std::string& name, const int& speed, const std::string& vect,
 		const int time, const int to, std::function<void()> onFinished);
 	void addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
-		const float& y, const float& z, float colors[], std::map<std::string, float>& positions);
+		const float& y, const float& z, float colors[], std::map<std::string, float>& positions, bool& dMode);
 };

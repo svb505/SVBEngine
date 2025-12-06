@@ -32,7 +32,9 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
 
         std::string name = o["name"].toString().toStdString();
         std::string type = o["type"].toString().toStdString();
-
+        int turnX = o["turnX"].toInt();
+        int turnY = o["turnY"].toInt();
+        int turnZ = o["turnZ"].toInt();
         QJsonObject pos = o["position"].toObject();
         QJsonObject col = o["color"].toObject();
         QJsonObject size = o["size"].toObject();
@@ -62,6 +64,10 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
         else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); obj = p; }
         else if (type == "point") { Point* p = new Point(); p->setSize(size["size"].toInt()); obj = p;}
         obj->position = { d.x, d.y, d.z };
+        obj->turnX = turnX;
+        obj->turnY = turnY;
+        obj->turnZ = turnZ;
+
         obj->color = { d.r, d.g, d.b };
         
         ogl->addObj(obj, name, type, d.x, d.y, d.z, d.r, d.g, d.b);
@@ -85,6 +91,10 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
         o["name"] = QString::fromStdString(name);
         QString type = QString::fromStdString(ogl->getType(name));
         o["type"] = type;
+        o["turnX"] = obj->turnX;
+        o["turnY"] = obj->turnY;
+        o["turnZ"] = obj->turnZ;
+
 
         QJsonObject pos;
         pos["x"] = data.x;

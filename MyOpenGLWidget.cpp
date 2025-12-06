@@ -140,7 +140,8 @@ std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
     std::vector<float> vect = { objects[name].r,objects[name].g, objects[name].b };
     return vect;
 }
-void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[])
+void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[],int turnX,
+    int turnY,int turnZ)
 {
     auto it = objects.find(name);
     if (it == objects.end()) {
@@ -149,6 +150,9 @@ void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float 
     }
     it->second.obj->position = { x, y, z };
     it->second.obj->color = { colors[0], colors[1], colors[2] };
+    it->second.obj->turnX = turnX;
+    it->second.obj->turnY = turnY;
+    it->second.obj->turnZ = turnZ;
 
     it->second.x = x;
     it->second.y = y;
@@ -156,7 +160,7 @@ void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float 
     it->second.r = colors[0];
     it->second.g = colors[1];
     it->second.b = colors[2];
-
+    
     update();
 }
 void MyOpenGLWidget::setMode(const std::string& m) {
@@ -191,6 +195,9 @@ int MyOpenGLWidget::getY(const std::string& name) {
 int MyOpenGLWidget::getZ(const std::string& name) {
     return objects[name].z;
 };
+int MyOpenGLWidget::getTurnX(std::string& name) { return objects[name].obj->turnX; }
+int MyOpenGLWidget::getTurnY(std::string& name) { return objects[name].obj->turnY; }
+int MyOpenGLWidget::getTurnZ(std::string& name) { return objects[name].obj->turnZ; }
 void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed)
 {
     animName = name;

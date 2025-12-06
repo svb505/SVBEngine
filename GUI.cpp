@@ -69,6 +69,9 @@ void GUI::aboutWindow() {
 }
 void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
+    int xTurn = 0;
+    int yTurn = 0;
+    int zTurn = 0;
 
     QWidget* child = new QWidget();
     child->setWindowTitle("Changing object");
@@ -102,6 +105,16 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     layout->addRow(colorBtn);
     layout->addRow(colorPreview);
 
+    QLineEdit* turnX = new QLineEdit();
+    turnX->setText("0");
+    layout->addRow("New angle turn in X axe", turnX);
+    QLineEdit* turnY = new QLineEdit();
+    turnY->setText("0");
+    layout->addRow("New angle turn in Y axe", turnY);
+    QLineEdit* turnZ = new QLineEdit();
+    turnZ->setText("0");
+    layout->addRow("New angle turn in Z axe", turnZ);
+
     auto updateFields = [=]() {
         if (combo->currentIndex() < 0) return;
 
@@ -117,6 +130,10 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
         xPos->setText(QString::number(x));
         yPos->setText(QString::number(y));
         zPos->setText(QString::number(z));
+
+        turnX->setText(QString::number(ogl->getTurnX(name)));
+        turnY->setText(QString::number(ogl->getTurnY(name)));
+        turnZ->setText(QString::number(ogl->getTurnZ(name)));
 
         auto cols = ogl->getColors(name);
 
@@ -145,6 +162,8 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
         updateFields();
     }
 
+    
+
     QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
         QColor color = QColorDialog::getColor(Qt::white, child);
         if (!color.isValid()) return;
@@ -169,7 +188,8 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     QObject::connect(btn, &QPushButton::clicked, [=]() {
         if (combo->currentIndex() < 0) return;
         ogl->changeObj(combo->currentText().toStdString(),xPos->text().toFloat(), yPos->text().toFloat(),
-            zPos->text().toFloat(),colorRGB->data());});
+            zPos->text().toFloat(),colorRGB->data(),turnX->text().toInt(), turnY->text().toInt(),
+            turnZ->text().toInt()); });
 
     child->show();
 }
@@ -643,17 +663,18 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         layout->addRow("Enter size", size);
         (*fields)["size"] = size;
     }
-    if (ogl->mode == "3D") {
-        QLineEdit* turnX = new QLineEdit();
-        turnX->setText("0");
-        layout->addRow("Angle turn in X axe", turnX);
-        (*fields)["turnX"] = turnX;
-        QLineEdit* turnZ = new QLineEdit();
-        turnZ->setText("0");
-        layout->addRow("Angle turn in Z axe", turnZ);
-        (*fields)["turnY"] = turnZ;
-
-    }
+    QLineEdit* turnX = new QLineEdit();
+    turnX->setText("0");
+    layout->addRow("Angle turn in X axe", turnX);
+    (*fields)["turnX"] = turnX;
+    QLineEdit* turnY = new QLineEdit();
+    turnY->setText("0");
+    layout->addRow("Angle turn in Y axe", turnY);
+    (*fields)["turnY"] = turnY;
+    QLineEdit* turnZ = new QLineEdit();
+    turnZ->setText("0");
+    layout->addRow("Angle turn in Z axe", turnZ);
+    (*fields)["turnY"] = turnZ;
     
 
     QPushButton* create = new QPushButton("Create object");

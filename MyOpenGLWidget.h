@@ -29,7 +29,8 @@ public:
     void addObj(Object* obj, const std::string& name, const std::string& type, const float& x,
         const float& y, const float z,const float r, const float g, const float b);
     void clearScene();
-    void changeObj(const std::string& name, float x, float y, float z, float colors[]);
+    void changeObj(const std::string& name, float x, float y, float z, float colors[],int turnX,
+        int turnY, int turnZ);
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
@@ -38,7 +39,11 @@ public:
     int getX(const std::string& name);
     int getY(const std::string& name);
     int getZ(const std::string& name);
+    int getTurnX(std::string& name);
+    int getTurnY(std::string& name);
+    int getTurnZ(std::string& name);
     void drawGrid(float spacing, int count);
+
 protected:
     void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;

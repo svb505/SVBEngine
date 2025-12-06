@@ -5,11 +5,12 @@
 
 class Object : protected QOpenGLFunctions {
 public:
-    QVector3D position{ 0, 0, 0 };
-    QVector3D scale{ 1, 1, 1 };
-    float rotation = 0.0f;       
+    float rotation = 0.0f;
     int turnX = 0;
     int turnZ = 0;
+    bool mode = false;
+    QVector3D position{ 0, 0, 0 };
+    QVector3D scale{ 1, 1, 1 };
     QVector3D color{ 1, 1, 1 };    
 
     Object() { initializeOpenGLFunctions(); }
@@ -17,6 +18,7 @@ public:
     float x() const { return position.x(); }
     float y() const { return position.y(); }
     float z() const { return position.z(); }
+    bool getMode(){ return mode; }
     virtual ~Object() {}
 };
 class Box : public Object {
@@ -239,15 +241,12 @@ public:
     float width = 1.0f;
     float height = 1.0f;
     float depth = 1.0f;
-    bool mode = 2.0f;
 
     void setSize(float w, float h, float d) {
         width = w;
         height = h;
         depth = d;
     }
-    float getMode() { return mode; }
-    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -315,7 +314,6 @@ private:
     float radius = 1.0f;
     int slices = 24;
     int stacks = 24;
-    bool mode = 2.0f;
 public:
     int getSlices() { return slices;  }
     int getStacks(){ return stacks; }
@@ -326,8 +324,6 @@ public:
         slices = sl;
         stacks = st;
     }
-    float getMode() { return mode; }
-    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
 
@@ -367,13 +363,10 @@ class Pyramid : public Object {
 public:
     float base = 1.0f;
     float height = 1.0f;
-    bool mode = 2.0f;
     void setSize(float b, float h) {
         base = b;
         height = h;
     }
-    float getMode() { return mode; }
-    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -431,7 +424,6 @@ private:
     int sides = 6;
     float radius = 1.0f;
     float height = 1.0f;
-    bool mode = 2.0f;
 public:
     float getHeight(){ return height; }
     float getRadius() { return radius;}
@@ -442,8 +434,6 @@ public:
         radius = r;
         height = h;
     }
-    float getMode() { return mode; }
-    void setMode(const bool& _mode) {mode = _mode;}
     void render() override {
         glPushMatrix();
 
@@ -506,7 +496,6 @@ private:
     float radiusBottom = 0.5f;
     float height = 1.0f;
     int segments = 36; 
-    bool mode = 2.0f;
 public:
     float getRT() { return radiusTop; }
     float getRB() { return radiusBottom; }
@@ -516,9 +505,7 @@ public:
         radiusBottom = rBottom;
         height = h;
     }
-    float getMode() { return mode; }
     void setSegments(int seg) { segments = seg; }
-    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());
@@ -566,7 +553,6 @@ private:
     float radius = 0.5f;
     float height = 1.0f;
     int segments = 36;
-    bool mode = 2.0f;
 public:
     void setSize(float r, float h) {
         radius = r;
@@ -574,9 +560,7 @@ public:
     }
     float getR() { return radius; }
     float getH() { return height; }
-    float getMode() { return mode; }
     void setSegments(int seg) { segments = seg; }
-    void setMode(const bool& _mode) { mode = _mode; }
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());

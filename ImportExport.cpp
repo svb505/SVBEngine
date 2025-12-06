@@ -54,12 +54,12 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
         else if (type == "polygon") { Polygon* p = new Polygon(); p->setSize(size["sides"].toInt(), size["radius"].toDouble()); obj = p; }
         else if (type == "star") { Star* s = new Star(); s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble()); obj = s; }
         else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
-        else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->setMode(size["mode"].toDouble()); obj = c; }
-        else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); s->setMode(size["mode"].toDouble()); obj = s; }
-        else if (type == "pyramide") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
-        else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
-        else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
-        else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->setMode(size["mode"].toDouble()); obj = p; }
+        else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->mode = size["mode"].toDouble(); obj = c; }
+        else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); s->mode = size["mode"].toDouble(); obj = s; }
+        else if (type == "pyramide") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->mode = size["mode"].toDouble(); obj = p; }
+        else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->mode = size["mode"].toDouble(); obj = p; }
+        else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); obj = p; }
+        else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); obj = p; }
         else if (type == "point") { Point* p = new Point(); p->setSize(size["size"].toInt()); obj = p;}
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };

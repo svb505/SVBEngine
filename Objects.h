@@ -8,6 +8,8 @@ public:
     QVector3D position{ 0, 0, 0 };
     QVector3D scale{ 1, 1, 1 };
     float rotation = 0.0f;       
+    int turnX = 0;
+    int turnZ = 0;
     QVector3D color{ 1, 1, 1 };    
 
     Object() { initializeOpenGLFunctions(); }
@@ -250,7 +252,7 @@ public:
         glPushMatrix();
 
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
@@ -318,6 +320,7 @@ public:
     int getSlices() { return slices;  }
     int getStacks(){ return stacks; }
     float getRadius() { return radius; }
+    
     void setSize(float r, int sl = 24, int st = 24) {
         radius = r;
         slices = sl;
@@ -329,7 +332,7 @@ public:
         glPushMatrix();
 
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
@@ -375,7 +378,7 @@ public:
         glPushMatrix();
 
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
@@ -445,7 +448,7 @@ public:
         glPushMatrix();
 
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
@@ -519,7 +522,7 @@ public:
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 
@@ -577,7 +580,7 @@ public:
     void render() override {
         glPushMatrix();
         glTranslatef(position.x(), position.y(), position.z());
-        glRotatef(rotation, 0, 1, 0);
+        glRotatef(rotation, turnX, 1, turnZ);
         glScalef(scale.x(), scale.y(), scale.z());
         glColor3f(color.x(), color.y(), color.z());
 

@@ -22,6 +22,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             cube->scale = { 1, 1, 1 };
             cube->rotation = 45.0f;
             cube->color = { colors[0], colors[1], colors[2] };
+            cube->turnX = positions["turnX"];
+            cube->turnZ = positions["turnZ"];
             cube->setSize(positions["w"], positions["h"], positions["w"]);
             cube->setMode(dMode);
             ogl->addObj(cube, name, "cube", cube->position.x(), cube->position.y(), cube->position.z(),
@@ -50,6 +52,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             pyr->color = { colors[0], colors[1], colors[2] };
             pyr->setSize(positions["base"], positions["h"]);
             pyr->setMode(dMode);
+            pyr->turnX = positions["turnX"];
+            pyr->turnZ = positions["turnZ"];
             ogl->addObj(pyr, name, "pyramide", pyr->position.x(), pyr->position.y(), pyr->position.z(),
                 pyr->color.x(), pyr->color.y(), pyr->color.z());
 
@@ -69,6 +73,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             ball->scale = { 1, 1, 1 };
             ball->color = { colors[0], colors[1], colors[2] };
             ball->setMode(dMode);
+            ball->turnX = positions["turnX"];
+            ball->turnZ = positions["turnZ"];
             ball->setSize(positions["radius"], 32, 32);
 
             ogl->addObj(ball, name, "sphere", ball->position.x(), ball->position.y(), ball->position.z(),
@@ -96,6 +102,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             prism->scale = { 1, 1, 1 };
             prism->color = { colors[0], colors[1], colors[2] };
             prism->setMode(dMode);
+            prism->turnX = positions["turnX"];
+            prism->turnZ = positions["turnZ"];
             prism->setSize(positions["count"], positions["radius"], positions["h"]);
 
             ogl->addObj(prism, name, "prism", prism->position.x(), prism->position.y(), prism->position.z(),
@@ -115,6 +123,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["r"], positions["h"]);
         obj->setMode(dMode);
+        obj->turnX = positions["turnX"];
+        obj->turnZ = positions["turnZ"];
         ogl->addObj(obj, name, "cone", x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "cylinder") {
@@ -123,6 +133,8 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
         obj->color = { colors[0], colors[1], colors[2] };
         obj->setSize(positions["rT"], positions["rB"], positions["h"]);
         obj->setMode(dMode);
+        obj->turnX = positions["turnX"];
+        obj->turnZ = positions["turnZ"];
         ogl->addObj(obj, name, "cylinder", x, y, z, colors[0], colors[1], colors[2]);
     }
 }

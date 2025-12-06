@@ -136,12 +136,10 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
             );
         }
         };
-
     QObject::connect(combo,
         QOverload<int>::of(&QComboBox::currentIndexChanged),
         [=](int) { updateFields(); }
     );
-
     if (!objects.empty()) {
         combo->setCurrentIndex(0);
         updateFields();
@@ -165,7 +163,6 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
             .arg(color.red()).arg(color.green()).arg(color.blue())
         );
         });
-
     QPushButton* btn = new QPushButton("Change object");
     layout->addRow(btn);
 
@@ -645,7 +642,19 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         size->setText("5");
         layout->addRow("Enter size", size);
         (*fields)["size"] = size;
-        }
+    }
+    if (ogl->mode == "3D") {
+        QLineEdit* turnX = new QLineEdit();
+        turnX->setText("0");
+        layout->addRow("Angle turn in X axe", turnX);
+        (*fields)["turnX"] = turnX;
+        QLineEdit* turnZ = new QLineEdit();
+        turnZ->setText("0");
+        layout->addRow("Angle turn in Z axe", turnZ);
+        (*fields)["turnY"] = turnZ;
+
+    }
+    
 
     QPushButton* create = new QPushButton("Create object");
     layout->addRow(create);
@@ -661,7 +670,8 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         }
         for (auto& p : *fields)
             if (p.first == "count" || p.first == "points" ||
-                p.first == "wL" || p.first == "x" || p.first == "y") {
+                p.first == "wL" || p.first == "x" || p.first == "y" || p.first == "turnX" || 
+                p.first == "turnZ") {
                 (*positions)[p.first] = p.second->text().toInt();
             }
             else {

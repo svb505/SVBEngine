@@ -12,6 +12,7 @@
 #include <GL/glu.h>   
 #include <QELapsedTimer>
 #include "Camera.h"
+#include <QPainter>
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -93,12 +94,20 @@ void MyOpenGLWidget::paintGL() {
     glRotatef(cam.camPitch, 1, 0, 0);
     glRotatef(cam.camYaw, 0, 1, 0);
 
-    drawGrid(100.0f, 10);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setFont(QFont("Consolas", 11));
+    painter.setPen(Qt::white);
+
+    drawGrid(100.0f, 10,painter);
+
+    painter.end();
     for (auto& [name, data] : objects) {
         if (data.obj) {
             data.obj->render();
         }
     }
+
     update();
 }
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event)
@@ -180,6 +189,7 @@ void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const floa
     float b = it->second.b;
     obj->position = { float(x), float(y), float(z) };
     obj->color = { r, g, b };
+
     it->second.x = x;
     it->second.y = y;
     it->second.z = z;
@@ -195,9 +205,9 @@ int MyOpenGLWidget::getY(const std::string& name) {
 int MyOpenGLWidget::getZ(const std::string& name) {
     return objects[name].z;
 };
-int MyOpenGLWidget::getTurnX(std::string& name) { return objects[name].obj->turnX; }
-int MyOpenGLWidget::getTurnY(std::string& name) { return objects[name].obj->turnY; }
-int MyOpenGLWidget::getTurnZ(std::string& name) { return objects[name].obj->turnZ; }
+int MyOpenGLWidget::getTurnX(const std::string& name) { return objects[name].obj->turnX; }
+int MyOpenGLWidget::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
+int MyOpenGLWidget::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
 void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed)
 {
     animName = name;
@@ -218,7 +228,11 @@ void MyOpenGLWidget::animateMove() {
 
     update();
 }
-void MyOpenGLWidget::drawGrid(float spacing, int count) {
+void MyOpenGLWidget::drawText(QPainter& painter,int x,int y,int text) {
+    QPointF p = worldToScreen(x + 0.1, y + 0.2);
+    painter.drawText(p, QString::number(text));
+}
+void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
     glPushMatrix();
 
     glColor3f(0.5f, 0.5f, 0.5f);
@@ -259,5 +273,25 @@ void MyOpenGLWidget::drawGrid(float spacing, int count) {
 
     glEnd();
     glPopMatrix();
+    if (mode == "2D") {
+        for (int x = left; x < right; x += spacing) {
+            drawText(painter, x, 0, x);
+        }
+        for (int y = bottom; y < top; y += spacing) {
+            if (y != 3) {
+                drawText(painter, 0, y, y);
+            }
+
+        }
+    }
+   
+    
 }
 std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }
+QPointF MyOpenGLWidget::worldToScreen(float x, float y) const
+{
+    float sx = (x - left) / (right - left) * width();
+    float sy = height() - (y - bottom) / (top - bottom) * height();
+    return QPointF(sx, sy);
+}
+

@@ -21,7 +21,7 @@
             },
             "turnX": 100,
             "turnY": 40,
-            "turnZ": 0,
+            "turnZ": 100,
             "type": "cube"
         }
     ]

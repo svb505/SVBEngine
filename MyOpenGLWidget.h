@@ -39,11 +39,11 @@ public:
     int getX(const std::string& name);
     int getY(const std::string& name);
     int getZ(const std::string& name);
-    int getTurnX(std::string& name);
-    int getTurnY(std::string& name);
-    int getTurnZ(std::string& name);
-    void drawGrid(float spacing, int count);
-
+    int getTurnX(const std::string& name);
+    int getTurnY(const std::string& name);
+    int getTurnZ(const std::string& name);
+    void drawGrid(float spacing, int count,QPainter& painter);
+    void drawText(QPainter& painter,int x, int y,int text);
 protected:
     void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -51,6 +51,7 @@ protected:
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 
     void paintGL() override;
+    QPointF worldToScreen(float x, float y) const;
 private:
     QElapsedTimer fpsTimer;
     int fpsFrames = 0;

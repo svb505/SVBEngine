@@ -235,15 +235,20 @@ void MyOpenGLWidget::drawText(QPainter& painter,int x,int y,int text) {
 void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
     glPushMatrix();
 
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glLineWidth(1.0f);
-
+    
     glBegin(GL_LINES);
 
     if (mode == "2D") {
         for (int i = -count; i <= count; ++i) {
+            if (i == 0) {
+                glLineWidth(2.0f);
+                glColor3f(1.0f, 0.0f, 0.0f);
+            }
+            else {
+                glLineWidth(1.0f);
+                glColor3f(0.5f, 0.5f, 0.5f);
+            }
             float pos = i * spacing;
-
             // Vertical lines
             glVertex3f(pos, -count * spacing, 0);
             glVertex3f(pos, count * spacing, 0);
@@ -251,9 +256,11 @@ void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
             // Horizontal lines
             glVertex3f(-count * spacing, pos, 0);
             glVertex3f(count * spacing, pos, 0);
+
         }
     }
     else if (mode == "3D") {
+        glLineWidth(1.0f);
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
             //X

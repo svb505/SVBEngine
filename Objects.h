@@ -262,7 +262,7 @@ public:
 
         if (mode) glBegin(GL_LINE_STRIP);
         else glBegin(GL_QUADS);
-        
+
         // Front
         glNormal3f(0, 0, 1);
         glVertex3f(-w, -h, d);

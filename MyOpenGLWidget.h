@@ -6,7 +6,6 @@
 #include <QElapsedTimer>
 #include "Camera.h"
 #include "GUI.h"
-#include "SceneManager.h"
 
 struct ProjectionParams {
     float left, right, top, bottom, zNear, zFar;
@@ -15,7 +14,6 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
-    Scene scene;
     GUI gui;
     Camera cam;
     QMap<QString, QTimer*> timers;
@@ -44,6 +42,7 @@ public:
     void drawText(QPainter& painter,int x, int y,int text);
     QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
 protected:
+    void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void initializeGL() override; 

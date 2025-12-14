@@ -43,6 +43,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MyOpenGLWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,9 +58,11 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyOpenGLWidget.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MyOpenGLWidget.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects.h">
@@ -97,10 +102,5 @@
     <Image Include="windowLogo.png">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="MyOpenGLWidget.h">
-      <Filter>Source Files</Filter>
-    </QtMoc>
   </ItemGroup>
 </Project>

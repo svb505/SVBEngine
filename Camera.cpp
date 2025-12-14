@@ -1,7 +1,7 @@
+#include "Camera.h"
 #include <QPoint>
 #include <QMouseEvent>
 #include <QWheelEvent>
-#include "Camera.h"
 
 void Camera::mouseWheel(QMouseEvent* event) {
     QPoint d = event->pos() - lastMouse;
@@ -26,4 +26,11 @@ void Camera::mouseWheel(QMouseEvent* event) {
 }
 void Camera::changeLastMouse(QMouseEvent* event){
     lastMouse = event->pos();
+}
+void Camera::wheelEvent(QWheelEvent* event){
+    float delta = event->angleDelta().y() / 120.0f;
+    camDistance -= delta * 20.0f;
+
+    if (camDistance < 10) camDistance = 10;
+   
 }

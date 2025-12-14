@@ -16,7 +16,7 @@
             "size": {
                 "depth": 20,
                 "height": 20,
-                "mode": false,
+                "mode": 2,
                 "width": 20
             },
             "type": "cube"
@@ -35,7 +35,7 @@
             },
             "size": {
                 "h": 20,
-                "mode": false,
+                "mode": 2,
                 "rBottom": 20,
                 "rTop": 20
             },
@@ -54,7 +54,7 @@
                 "z": 0
             },
             "size": {
-                "mode": true,
+                "mode": 1,
                 "radius": 15,
                 "slices": 32,
                 "stacks": 32
@@ -91,7 +91,7 @@
             },
             "size": {
                 "height": 10,
-                "mode": true,
+                "mode": 1,
                 "radius": 10,
                 "sides": 5
             },
@@ -111,7 +111,7 @@
             },
             "size": {
                 "h": 20,
-                "mode": false,
+                "mode": 2,
                 "radius": 20
             },
             "type": "cone"

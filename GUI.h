@@ -6,7 +6,6 @@
 class MyOpenGLWidget;
 class GUI {
 public:
-	void addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow);
 	void aboutWindow();
 	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
 	void openSceneWindow(MyOpenGLWidget* ogl);

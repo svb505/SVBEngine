@@ -6,13 +6,8 @@
 #include <QElapsedTimer>
 #include "Camera.h"
 #include "GUI.h"
+#include "SceneManager.h"
 
-struct Data {
-    Object* obj;
-    std::string type;
-    float x, y, z;
-    float r, g, b;
-};
 struct ProjectionParams {
     float left, right, top, bottom, zNear, zFar;
 };
@@ -20,6 +15,7 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
+    Scene scene;
     GUI gui;
     Camera cam;
     QMap<QString, QTimer*> timers;
@@ -46,17 +42,15 @@ public:
     int getTurnZ(const std::string& name);
     void drawGrid(float spacing, int count,QPainter& painter);
     void drawText(QPainter& painter,int x, int y,int text);
+    QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void initializeGL() override; 
     void resizeGL(int w,int h) override; 
     void paintGL() override;
-    QPointF worldToScreen(float x, float y) const;
 private:
-    QElapsedTimer fpsTimer;
-    int fpsFrames = 0;
-    //Widget coordinates
+    //Scene coordinates
     float aspect = 1.0f;
     float left = 0.0f;
     float right = 0.0f;
@@ -64,11 +58,13 @@ private:
     float bottom = 0.0f;
     float zNear = 0.0f;
     float zFar = 0.0f;
+    QElapsedTimer fpsTimer;
+    int fpsFrames = 0;
     int animTargetX = 0;
     int animSpeed = 5;
     QTimer* animTimer = nullptr;
     std::string animName;
-    std::map < std::string, Data > objects;// list of all objects
+
 private slots:
     void animateMove();
 };

@@ -119,6 +119,7 @@
     <ClInclude Include="Objects.h" />
     <ClInclude Include="ObjectsAction.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SceneManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />

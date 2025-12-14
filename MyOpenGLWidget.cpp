@@ -15,6 +15,7 @@
 #include <QPainter>
 #include <QMenu>
 
+
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
 
@@ -35,7 +36,7 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget* parent): QOpenGLWidget(parent)
     fpsTimer.start();   
 }
 ProjectionParams MyOpenGLWidget::getProjectionParams() const {
-    return { left, right, top, bottom, zNear, zFar };
+    return { left,right, top, bottom, zNear, zFar };
 }
 void MyOpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
@@ -60,8 +61,6 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
         right = size;
         bottom = -size / aspect;
         top = size / aspect;
-        zNear = 0.1f;
-        zFar = 1000.0f;
 
 
         glOrtho(left, right, bottom, top, zNear, zFar);
@@ -102,7 +101,7 @@ void MyOpenGLWidget::paintGL() {
     drawGrid(100.0f, 10,painter);
 
     painter.end();
-    for (auto& [name, data] : objects) {
+    for (auto& [name, data] : scene.objects) {
         if (data.obj) {
             data.obj->render();
         }
@@ -126,19 +125,16 @@ void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
 }
 void MyOpenGLWidget::addObj(Object* obj,const std::string& name, const std::string& type,const float& x,const float& y,const float z,
     float r, float g, float b) {
-    objects[name] = {obj,type,x,y,z,r,g,b};
+    scene.addObj(name, obj, type, x, y, z, r, g, b);
     update(); 
 }
-void MyOpenGLWidget::clearScene() {
-    objects.clear();
+void MyOpenGLWidget::removeObj(const std::string& name) {
+    scene.removeObj(name);
     update();
 }
-void MyOpenGLWidget::removeObj(const std::string& name) {
-    auto it = objects.find(name);
-    if (it != objects.end()) {
-        objects.erase(it);
-        update();
-    }
+void MyOpenGLWidget::clearScene() {
+    scene.clearScene();
+    update();
 }
 void MyOpenGLWidget::setMode(const std::string& m) {
     mode = m;
@@ -146,8 +142,8 @@ void MyOpenGLWidget::setMode(const std::string& m) {
 }
 void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const float& y, const float z)
 {
-    auto it = objects.find(name);
-    if (it == objects.end()) {
+    auto it = scene.objects.find(name);
+    if (it == scene.objects.end()) {
         qDebug() << "Object not found:" << QString::fromStdString(name);
         return;
     }
@@ -173,7 +169,7 @@ void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed)
     animTimer->start(16); 
 }
 void MyOpenGLWidget::animateMove() {
-    auto& data = objects[animName];
+    auto& data = scene.objects[animName];
 
     if (data.x < animTargetX)
         data.x += animSpeed;
@@ -184,8 +180,8 @@ void MyOpenGLWidget::animateMove() {
 
     update();
 }
-void MyOpenGLWidget::drawText(QPainter& painter,int x,int y,int text) {
-    QPointF p = worldToScreen(x + 0.1, y + 0.2);
+void MyOpenGLWidget::drawText(QPainter& painter, int x, int y, int text) {
+    QPointF p = worldToScreen(x + 0.1, y + 0.2, this->width(), this->height());
     painter.drawText(p, QString::number(text));
 }
 void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
@@ -193,7 +189,11 @@ void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
     glLineWidth(1.0f);
     glBegin(GL_LINES);
 
+    qDebug() << "draw";
+    qDebug() << mode;
+
     if (mode == "2D") {
+        qDebug() << "yes1";
         for (int i = -count; i <= count; ++i) {
             if (i == 0) {
                 glColor3f(1.0f, 0.0f, 0.0f);
@@ -201,6 +201,7 @@ void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
             else {
                 glColor3f(0.5f, 0.5f, 0.5f);
             }
+            qDebug() << "yes2";
             float pos = i * spacing;
             // Vertical lines
             glVertex3f(pos, -count * spacing, 0);
@@ -232,6 +233,7 @@ void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
 
     glEnd();
     glPopMatrix();
+
     if (mode == "2D") {
         for (int x = left; x < right; x += spacing) {
             drawText(painter, x, 0, x);
@@ -242,41 +244,39 @@ void MyOpenGLWidget::drawGrid(float spacing, int count, QPainter& painter) {
             }
 
         }
-    }
-   
-    
+    } 
 }
-QPointF MyOpenGLWidget::worldToScreen(float x, float y) const
+QPointF MyOpenGLWidget::worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const
 {
-    float sx = (x - left) / (right - left) * width();
-    float sy = height() - (y - bottom) / (top - bottom) * height();
+    float sx = (x - left) / (right - left) * widgetWidth;
+    float sy = widgetHeight - (y - bottom) / (top - bottom) * widgetHeight;
     return QPointF(sx, sy);
 }
 int MyOpenGLWidget::getX(const std::string& name) {
-    return objects[name].x;
+    return scene.objects[name].x;
 };
 int MyOpenGLWidget::getY(const std::string& name) {
-    return objects[name].y;
+    return scene.objects[name].y;
 };
 int MyOpenGLWidget::getZ(const std::string& name) {
-    return objects[name].z;
+    return scene.objects[name].z;
 };
-int MyOpenGLWidget::getTurnX(const std::string& name) { return objects[name].obj->turnX; }
-int MyOpenGLWidget::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
-int MyOpenGLWidget::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
-std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }
+int MyOpenGLWidget::getTurnX(const std::string& name) { return scene.objects[name].obj->turnX; }
+int MyOpenGLWidget::getTurnY(const std::string& name) { return scene.objects[name].obj->turnY; }
+int MyOpenGLWidget::getTurnZ(const std::string& name) { return scene.objects[name].obj->turnZ; }
+std::string MyOpenGLWidget::getType(const std::string& name) { return scene.objects[name].type; }
 std::map <std::string, Data> MyOpenGLWidget::getObjects() {
-    return objects;
+    return scene.objects;
 }
 std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
-    std::vector<float> vect = { objects[name].r,objects[name].g, objects[name].b };
+    std::vector<float> vect = { scene.objects[name].r,scene.objects[name].g, scene.objects[name].b };
     return vect;
 }
 void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
     int turnY, int turnZ)
 {
-    auto it = objects.find(name);
-    if (it == objects.end()) {
+    auto it = scene.objects.find(name);
+    if (it == scene.objects.end()) {
         qDebug() << "Object not found!";
         return;
     }
@@ -295,5 +295,3 @@ void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float 
 
     update();
 }
-
-

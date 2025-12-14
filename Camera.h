@@ -13,5 +13,4 @@ public:
     float camY = 0.0f;
 	void mouseWheel(QMouseEvent* event);
     void changeLastMouse(QMouseEvent* event);
-    void wheelEvent(QWheelEvent* event);
 };

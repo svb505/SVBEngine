@@ -5,6 +5,7 @@
 #include "Objects.h"
 #include <QElapsedTimer>
 #include "Camera.h"
+#include "GUI.h"
 
 struct Data {
     Object* obj;
@@ -19,6 +20,7 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
+    GUI gui;
     Camera cam;
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
@@ -45,7 +47,6 @@ public:
     void drawGrid(float spacing, int count,QPainter& painter);
     void drawText(QPainter& painter,int x, int y,int text);
 protected:
-    void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void initializeGL() override; 

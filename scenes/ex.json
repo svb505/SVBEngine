@@ -1,0 +1,28 @@
+{
+    "mode": "3D",
+    "objects": [
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 0
+            },
+            "name": "figure1",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+                "depth": 20,
+                "height": 20,
+                "mode": false,
+                "width": 20
+            },
+            "turnX": 0,
+            "turnY": 0,
+            "turnZ": 0,
+            "type": "cube"
+        }
+    ]
+}

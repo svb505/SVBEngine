@@ -11,7 +11,6 @@ public:
     float negativeCamDistance = -camDistance;
     float camX = 0.0f;       // Camera offcet
     float camY = 0.0f;
-	void mouseWheel(QMouseEvent* event);
+    void mouseWheel(QMouseEvent* event);
     void changeLastMouse(QMouseEvent* event);
-    void wheelEvent(QWheelEvent* event);
 };

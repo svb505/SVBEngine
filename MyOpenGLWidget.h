@@ -6,7 +6,12 @@
 #include <QElapsedTimer>
 #include "Camera.h"
 #include "GUI.h"
-
+struct Data {
+    Object* obj;
+    std::string type;
+    float x, y, z;
+    float r, g, b;
+};
 struct ProjectionParams {
     float left, right, top, bottom, zNear, zFar;
 };
@@ -22,10 +27,11 @@ public:
     std::string getType(const std::string& name);
     std::vector<float> getColors(const std::string& name);
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
-    void addObj(Object* obj, const std::string& name, const std::string& type, const float& x,
-        const float& y, const float z,const float r, const float g, const float b);
+    void addObj(Object* obj, const std::string& name,  const std::string& type,
+        float x, float y, float z, float r, float g, float b);
     void clearScene();
-    void changeObj(const std::string& name, float x, float y, float z, float colors[],int turnX,
+    void drawText(QPainter& painter, int x, int y, int text);
+    void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
         int turnY, int turnZ);
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
@@ -38,17 +44,17 @@ public:
     int getTurnX(const std::string& name);
     int getTurnY(const std::string& name);
     int getTurnZ(const std::string& name);
-    void drawGrid(float spacing, int count,QPainter& painter);
-    void drawText(QPainter& painter,int x, int y,int text);
+    void drawGridText(QPainter& painter, float spacing, int count);
+    void drawGridOpenGL(float spacing, int count);
     QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
 protected:
-    void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
-    void initializeGL() override; 
-    void resizeGL(int w,int h) override; 
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
     void paintGL() override;
 private:
+    std::map<std::string, Data> objects; // List of objects
     //Scene coordinates
     float aspect = 1.0f;
     float left = 0.0f;

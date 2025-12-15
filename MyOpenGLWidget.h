@@ -6,6 +6,9 @@
 #include <QElapsedTimer>
 #include "Camera.h"
 #include "GUI.h"
+#include "HUD.h"
+
+
 struct Data {
     Object* obj;
     std::string type;
@@ -21,6 +24,7 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 public:
     GUI gui;
     Camera cam;
+    HUD HUD;
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
@@ -30,7 +34,7 @@ public:
     void addObj(Object* obj, const std::string& name,  const std::string& type,
         float x, float y, float z, float r, float g, float b);
     void clearScene();
-    void drawText(QPainter& painter, int x, int y, int text);
+    void drawText(QPainter& painter, int x, int y, QString text);
     void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
         int turnY, int turnZ);
     void removeObj(const std::string& name);
@@ -54,6 +58,7 @@ protected:
     void resizeGL(int w, int h) override;
     void paintGL() override;
 private:
+    int fps = 0;
     std::map<std::string, Data> objects; // List of objects
     //Scene coordinates
     float aspect = 1.0f;
@@ -72,4 +77,5 @@ private:
 
 private slots:
     void animateMove();
+friend class HUD;
 };

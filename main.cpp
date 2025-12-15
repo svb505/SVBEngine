@@ -4,6 +4,7 @@
 #include "GUI.h"
 #include "MyOpenGLWidget.h"
 #include "Objects.h"
+#include "HUD.h"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -14,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     window.setCentralWidget(ogl);
     window.showMaximized();
-    window.setWindowTitle("SVBEngine - Render: OpenGL - FPS: ");
+    window.setWindowTitle("SVBEngine - Render: OpenGL");
     window.setWindowIcon(QIcon(":/windowLogo.png"));
     window.show();
 
@@ -22,6 +23,7 @@ int main(int argc, char* argv[]) {
 
 
     gui.addMenu(&window,ogl);
+    
 
     return app.exec();
 }

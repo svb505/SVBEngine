@@ -69,13 +69,10 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
 void MyOpenGLWidget::paintGL() {
     fpsFrames++;
     if (fpsTimer.elapsed() >= 1000) {
-        int fps = fpsFrames;
+        fps = fpsFrames;
         fpsFrames = 0;
         fpsTimer.restart();
-        if (parentWidget())
-            parentWidget()->setWindowTitle(QString("SVBEngine - Render: OpenGL - FPS: %1").arg(fps));
     }
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
@@ -96,7 +93,7 @@ void MyOpenGLWidget::paintGL() {
         if (data.obj)
             data.obj->render();
     }
-
+    HUD.drawHud(this,&cam);
     update();
 }
 void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
@@ -141,17 +138,16 @@ void MyOpenGLWidget::drawGridText(QPainter& painter, float spacing, int count) {
     if (mode != "2D") return;
 
     for (int x = int(left); x < int(right); x += int(spacing))
-        drawText(painter, x, 0, x);
+        drawText(painter, x, 0, QString::number(x));
 
     for (int y = int(bottom); y < int(top); y += int(spacing))
         if (y != 3) {
-            drawText(painter, 0, y, y);
+            drawText(painter, 0, y, QString::number(y));
         }
-        
 }
-void MyOpenGLWidget::drawText(QPainter& painter, int x, int y, int text) {
+void MyOpenGLWidget::drawText(QPainter& painter, int x, int y, QString text) {
     QPointF p = worldToScreen(x + 0.1, y + 0.2, this->width(), this->height());
-    painter.drawText(p, QString::number(text));
+    painter.drawText(p, text);
 }
 QPointF MyOpenGLWidget::worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const {
     float sx = (x - left) / (right - left) * widgetWidth;

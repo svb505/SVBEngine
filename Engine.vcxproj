@@ -99,6 +99,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="ImportExport.cpp" />
     <ClCompile Include="MyOpenGLWidget.cpp" />
     <ClCompile Include="ObjectsAction.cpp" />
@@ -115,6 +116,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="ImportExport.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="ObjectsAction.h" />

@@ -1,6 +1,7 @@
 #pragma once
 #include <QWheelEvent>
 #include <QMouseEvent>
+#include "HUD.h"
 
 class Camera {
 public:
@@ -13,4 +14,5 @@ public:
     float camY = 0.0f;
     void mouseWheel(QMouseEvent* event);
     void changeLastMouse(QMouseEvent* event);
+    friend class HUD;
 };

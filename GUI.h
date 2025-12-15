@@ -3,6 +3,7 @@
 #include <QLineEdit>
 #include <QMainWindow>
 
+class HUD;
 class MyOpenGLWidget;
 class GUI {
 public:
@@ -14,4 +15,5 @@ public:
 	void openRemoveWindow(MyOpenGLWidget* ogl);
 	void openChangeWindow(MyOpenGLWidget* ogl);
 	void addObjWindow(const std::string& type, MyOpenGLWidget* ogl);
+	void openHudWindow(MyOpenGLWidget* ogl,HUD* hud);
 };

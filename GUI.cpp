@@ -22,7 +22,7 @@
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"
-
+#include "HUD.h"
 
 void GUI::addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow) {
     QMenu menu;
@@ -255,6 +255,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QAction* flatAction = addMenu->addAction("Add flat");
     QAction* changeAction = objectsMenu->addAction("Change");
     QAction* removeAction = objectsMenu->addAction("Remove");
+    QAction* hudAction = menubar->addAction("HUD");
     QAction* sceneAction = menubar->addAction("Scene");
     QAction* scenariosAction = menubar->addAction("Scenarios");
     QAction* cleanAction = menubar->addAction("Clean scene");
@@ -279,6 +280,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(coneAction, &QAction::triggered, [=]() { addObjWindow("cone", ogl); });
     QObject::connect(cylinderAction, &QAction::triggered, [=]() { addObjWindow("cylinder", ogl); });
     QObject::connect(flatAction, &QAction::triggered, [=]() { addObjWindow("flat", ogl); });
+    QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,&ogl->HUD); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
@@ -711,4 +713,36 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         act.addObject(*typeObj, name->text().toStdString(), ogl, xPos->text().toFloat(),
             yPos->text().toFloat(), zPos->text().toFloat(), colorRGB->data(), *positions, dMode);
         });
+}
+void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
+    auto cbboxs = std::make_shared<std::map<int, QCheckBox*>>();
+
+    QWidget* child = new QWidget();
+    child->resize(200, 150);
+    child->setWindowTitle("HUD");
+    child->show();
+
+    QFormLayout* layout = new QFormLayout(child);
+
+    for (int i = 0; i < hud->count; i++) {
+        QCheckBox* cb = new QCheckBox();
+        cb->setChecked(hud->hudTextsVisible[i]);
+        (*cbboxs)[i] = cb;
+        layout->addRow(QString("Show %1").arg(hud->hudTexts[i]), cb);
+    }
+
+    QPushButton* apply = new QPushButton("Apply");
+    layout->addRow(apply);
+
+    QObject::connect(apply, &QPushButton::clicked, [ogl,hud,cbboxs]() {
+        for (auto check : *cbboxs) {
+            if (check.second->isChecked()) hud->hudTextsVisible[check.first] = true;
+            else hud->hudTextsVisible[check.first] = false;
+            ogl->update();
+        }
+    });
+
+
+
+
 }

@@ -93,7 +93,7 @@ void MyOpenGLWidget::paintGL() {
         if (data.obj)
             data.obj->render();
     }
-    HUD.drawHud(this,&cam);
+    HUD.drawHud(this,&cam,&gui);
     update();
 }
 void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {

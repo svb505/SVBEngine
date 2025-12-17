@@ -1,9 +1,11 @@
 #pragma once
 #include "GUI.h"
+#include "Logger.h"
 
 class MyOpenGLWidget;
 class Camera;
 class GUI;
+
 class HUD {
 	friend class GUI;
 private:
@@ -16,5 +18,12 @@ private:
 	std::vector<std::string> hudTexts = {"FPS","Objects count","Mode","Camera incline","Camera horizontal",
 		"Camera X offcet","Camera Y offcet","Camera distance from center"};
 public:
+	HUD(MyOpenGLWidget* ogl, Camera* camera, GUI* gui) {
+		LOG_INFO("HUD Created");
+		drawHud(ogl, camera, gui);
+	}
+	~HUD() {
+		LOG_INFO("HUD Destroyed");
+	}
 	void drawHud(MyOpenGLWidget* ogl,Camera* camera,GUI* gui);
 };

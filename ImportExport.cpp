@@ -10,6 +10,8 @@
 #include <QListWidget>
 #include "ImportExport.h"
 #include "Objects.h"
+#include "Logger.h"
+#include <format>
 
 std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenGLWidget* ogl)
 {
@@ -70,6 +72,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
 
         d.obj = obj;
         result[name] = d;
+        
     }
 
     return result;

@@ -25,6 +25,7 @@
 #include "HUD.h"
 
 void GUI::addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow) {
+    LOG_INFO("Contex menu showed");
     QMenu menu;
     QMenu* addMenu = menu.addMenu("Add");
     QAction* rectAction = addMenu->addAction("Add rectangle");
@@ -235,6 +236,7 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     child->show();
 }
 void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
+    LOG_INFO("Menubar added");
     QMenuBar* menubar = w->menuBar();
     QAction* importAction = menubar->addAction("Import");
     QAction* exportAction = menubar->addAction("Export");
@@ -280,7 +282,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(coneAction, &QAction::triggered, [=]() { addObjWindow("cone", ogl); });
     QObject::connect(cylinderAction, &QAction::triggered, [=]() { addObjWindow("cylinder", ogl); });
     QObject::connect(flatAction, &QAction::triggered, [=]() { addObjWindow("flat", ogl); });
-    QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,&ogl->HUD); });
+    QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,ogl->hud); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });

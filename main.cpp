@@ -5,13 +5,19 @@
 #include "MyOpenGLWidget.h"
 #include "Objects.h"
 #include "HUD.h"
+#include "Logger.h"
 
 int main(int argc, char* argv[]) {
+    Logger::Init();
+    LOG_INFO("Engine started");
+
     QApplication app(argc, argv);
     QMainWindow window;
-    GUI gui;
+    GUI* gui = new GUI();
+   
 
     auto* ogl = new MyOpenGLWidget(&window);
+    ogl->setMode("2D");
 
     window.setCentralWidget(ogl);
     window.showMaximized();
@@ -19,11 +25,7 @@ int main(int argc, char* argv[]) {
     window.setWindowIcon(QIcon(":/windowLogo.png"));
     window.show();
 
-    ogl->setMode("2D");
-
-
-    gui.addMenu(&window,ogl);
-    
+    gui->addMenu(&window, ogl);
 
     return app.exec();
 }

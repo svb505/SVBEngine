@@ -24,13 +24,16 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 public:
     GUI gui;
     Camera cam;
-    HUD HUD;
+    HUD* hud = nullptr;
+    void initHUD(); 
+
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
     std::string mode = "2D";
     std::string getType(const std::string& name);
     std::vector<float> getColors(const std::string& name);
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
+    ~MyOpenGLWidget();
     void addObj(Object* obj, const std::string& name,  const std::string& type,
         float x, float y, float z, float r, float g, float b);
     void clearScene();

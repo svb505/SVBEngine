@@ -7,7 +7,9 @@
 
 void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode) {
-    qDebug() << type;
+    LOG_INFO(std::format("Object '{}' added, settings: wireframeMode:{}, type: {},x: {}, y: {}, z: {}, R: {}, G: {}, B: {}",
+        name,dMode,type,x,y,z,colors[0],colors[1],colors[2]));
+
     if (type == "rectangle" || type == "flat") {
         if (ogl->mode == "2D" || type == "flat") {
             Box* obj = new Box();
@@ -158,6 +160,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
         obj->turnZ = positions["turnZ"];
         ogl->addObj(obj, name, "cylinder", x, y, z, colors[0], colors[1], colors[2]);
     }
+
 }
 void Action::movingParcer(MyOpenGLWidget* ogl, const std::string& name, const int& repeatTime, const QStringList& items,
     const std::map<std::string, std::string>& scenarios, const int& speed)

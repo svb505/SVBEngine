@@ -14,6 +14,8 @@
 #include "Camera.h"
 #include <QPainter>
 #include <QMenu>
+#include "Logger.h"
+
 
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
@@ -26,14 +28,17 @@ void perspective(float fov, float aspect, float zNear, float zFar) {
     glMultMatrixf(mat);
 }
 MyOpenGLWidget::MyOpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
+    LOG_INFO("OpenGLWidget created");
     animTimer = new QTimer(this);
     connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
     fpsTimer.start();
+    initHUD();
 }
 ProjectionParams MyOpenGLWidget::getProjectionParams() const {
     return { left, right, top, bottom, zNear, zFar };
 }
 void MyOpenGLWidget::initializeGL() {
+    LOG_INFO("OpenGL Initializated");
     initializeOpenGLFunctions();
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -93,8 +98,18 @@ void MyOpenGLWidget::paintGL() {
         if (data.obj)
             data.obj->render();
     }
-    HUD.drawHud(this,&cam,&gui);
+    if (hud)
+        hud->drawHud(this, &cam, &gui);
+  
     update();
+}
+MyOpenGLWidget::~MyOpenGLWidget() {
+    delete hud; 
+}
+
+void MyOpenGLWidget::initHUD() {
+    if (!hud)
+        hud = new HUD(this, &cam, &gui);
 }
 void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glPushMatrix();
@@ -168,18 +183,22 @@ void MyOpenGLWidget::mousePressEvent(QMouseEvent* event) {
 void MyOpenGLWidget::addObj(Object* obj, const std::string& name, const std::string& type,
     float x, float y, float z, float r, float g, float b)
 {
+    LOG_INFO(std::format("Object '{}' added",name));
     objects[name] = { obj, type, x, y, z, r, g, b };
     update();
 }
 void MyOpenGLWidget::removeObj(const std::string& name) {
+    LOG_INFO(std::format("Object with name '{}' has been removed", name));
     objects.erase(name);
     update();
 }
 void MyOpenGLWidget::clearScene() {
+    LOG_INFO("Scene cleared");
     objects.clear();
     update();
 }
 void MyOpenGLWidget::setMode(const std::string& m) {
+    LOG_INFO(std::format("Current mode: {}",m));
     mode = m;
     update();
 }
@@ -230,9 +249,10 @@ std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
 void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
     int turnY, int turnZ)
 {
+    LOG_INFO(std::format("Object with name '{}' has been changed", name));
     auto it = objects.find(name);
     if (it == objects.end()) {
-        qDebug() << "Object not found!";
+        LOG_ERROR(std::format("Object with name '{}' not found!", name));
         return;
     }
     it->second.obj->position = { x, y, z };

@@ -2,6 +2,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include "Camera.h"
+#include "Logger.h"
 
 void Camera::mouseWheel(QMouseEvent* event) {
     QPoint d = event->pos() - lastMouse;
@@ -23,6 +24,7 @@ void Camera::mouseWheel(QMouseEvent* event) {
         camX += -d.x() * panSpeed;
         camY += d.y() * panSpeed;
     }
+
 }
 void Camera::changeLastMouse(QMouseEvent* event) {
     lastMouse = event->pos();

@@ -23,11 +23,13 @@
 #include "GUI.h"
 #include "ObjectsAction.h"
 #include "HUD.h"
+#include <format>
 
 void GUI::addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow) {
-    LOG_INFO("Contex menu showed");
+    LOG_INFO("[GUI] Contex menu showed");
     QMenu menu;
     QMenu* addMenu = menu.addMenu("Add");
+    QAction* platformAction = addMenu->addAction("Add platform");
     QAction* rectAction = addMenu->addAction("Add rectangle");
     QAction* pointAction = addMenu->addAction("Add point");
     QAction* circleAction = addMenu->addAction("Add circle");
@@ -46,6 +48,7 @@ void GUI::addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parent
 
     QObject::connect(removeAction, &QAction::triggered, [=]() { openRemoveWindow(ogl); });
     QObject::connect(changeAction, &QAction::triggered, [=]() { openChangeWindow(ogl); });
+    QObject::connect(platformAction, &QAction::triggered, [=]() { addObjWindow("platform", ogl); });
     QObject::connect(rectAction, &QAction::triggered, [=]() { addObjWindow("rectangle", ogl); });
     QObject::connect(pointAction, &QAction::triggered, [=]() { addObjWindow("point", ogl); });
     QObject::connect(circleAction, &QAction::triggered, [=]() { addObjWindow("circle", ogl); });
@@ -236,7 +239,7 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
     child->show();
 }
 void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
-    LOG_INFO("Menubar added");
+    LOG_INFO("[GUI] Menubar added");
     QMenuBar* menubar = w->menuBar();
     QAction* importAction = menubar->addAction("Import");
     QAction* exportAction = menubar->addAction("Export");
@@ -245,6 +248,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QAction* threeD = modeMenu->addAction("Set 3D mode");
     QMenu* objectsMenu = menubar->addMenu("Objects");
     QMenu* addMenu = objectsMenu->addMenu("Add");
+    QAction* platformAction = addMenu->addAction("Add platform");
     QAction* rectAction = addMenu->addAction("Add rectangle");
     QAction* pointAction = addMenu->addAction("Add point");
     QAction* circleAction = addMenu->addAction("Add circle");
@@ -264,10 +268,12 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QAction* aboutAction = menubar->addAction("About");
 
 
+    platformAction->setVisible(ogl->mode == "3D");
     coneAction->setVisible(ogl->mode == "3D");
     cylinderAction->setVisible(ogl->mode == "3D");
     flatAction->setVisible(ogl->mode == "3D");
 
+    QObject::connect(platformAction, &QAction::triggered, [=]() { addObjWindow("platform", ogl); });
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(ogl); });
     QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(ogl); });
     QObject::connect(removeAction, &QAction::triggered, [=]() { openRemoveWindow(ogl); });
@@ -287,16 +293,18 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
-    QObject::connect(twoD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction]() {
+    QObject::connect(twoD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction, platformAction]() {
         coneAction->setVisible(false);
         cylinderAction->setVisible(false);
         flatAction->setVisible(false);
+        platformAction->setVisible(false);
         ogl->setMode("2D");
         });
-    QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction]() {
+    QObject::connect(threeD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction, platformAction]() {
         coneAction->setVisible(true);
         cylinderAction->setVisible(true);
         flatAction->setVisible(true);
+        platformAction->setVisible(true);
         ogl->setMode("3D");
         });
 
@@ -526,7 +534,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         }
         });
 
-    if (type == "rectangle" || type == "flat") {
+    if (type == "rectangle" || type == "flat" || type == "platform") {
         *typeObj = type;
         QLineEdit* width = new QLineEdit("Enter width");
         width->setText("20");
@@ -693,6 +701,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
         bool dMode = false;
         for (auto obj : objects) {
             if (obj.first == name->text().toStdString()) {
+                LOG_WARN(std::format("Objects with this name '{}' exists!", obj.first));
                 QMessageBox::warning(child, "warning", "Objects with this name exists!");
                 return;
             }

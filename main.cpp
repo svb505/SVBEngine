@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[]) {
     Logger::Init();
-    LOG_INFO("Engine started");
+    LOG_INFO("[ENGINE] Engine started");
 
     QApplication app(argc, argv);
     QMainWindow window;

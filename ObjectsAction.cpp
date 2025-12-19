@@ -7,10 +7,10 @@
 
 void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
     const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode) {
-    LOG_INFO(std::format("Object '{}' added, settings: wireframeMode:{}, type: {},x: {}, y: {}, z: {}, R: {}, G: {}, B: {}",
+    LOG_INFO(std::format("[SCENE] Object '{}' added, settings: wireframeMode:{}, type: {},x: {}, y: {}, z: {}, R: {}, G: {}, B: {}",
         name,dMode,type,x,y,z,colors[0],colors[1],colors[2]));
 
-    if (type == "rectangle" || type == "flat") {
+    if (type == "rectangle" || type == "flat" || type == "platform") {
         if (ogl->mode == "2D" || type == "flat") {
             Box* obj = new Box();
             obj->position = { x, y, z };
@@ -20,6 +20,21 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             obj->turnZ = positions["turnZ"];
             obj->setSize(positions["w"], positions["h"]);
             ogl->addObj(obj, name, type, x, y, z, colors[0], colors[1], colors[2]);
+        }
+        else if (type == "platform") {
+            Platform* obj = new Platform();
+            obj->position = { x, y, z };;
+            obj->scale = { 1, 1, 1 };
+            obj->rotation = 45.0f;
+            obj->color = { colors[0], colors[1], colors[2] };
+            obj->turnX = positions["turnX"];
+            obj->turnY = positions["turnY"];
+            obj->turnZ = positions["turnZ"];
+            obj->setSize(positions["w"], positions["h"]);
+            obj->mode = dMode;
+            ogl->addObj(obj, name, "platform", obj->position.x(), obj->position.y(), obj->position.z(),
+                obj->color.x(), obj->color.y(), obj->color.z());
+
         }
         else {
             Cube* cube = new Cube();
@@ -64,7 +79,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
             pyr->turnX = positions["turnX"];
             pyr->turnY = positions["turnY"];
             pyr->turnZ = positions["turnZ"];
-            ogl->addObj(pyr, name, "pyramide", pyr->position.x(), pyr->position.y(), pyr->position.z(),
+            ogl->addObj(pyr, name, "pyramid", pyr->position.x(), pyr->position.y(), pyr->position.z(),
                 pyr->color.x(), pyr->color.y(), pyr->color.z());
 
         }

@@ -9,10 +9,10 @@ class MyOpenGLWidget;
 class GUI {
 public:
 	GUI() {
-		LOG_INFO("GUI Added");
+		LOG_INFO("[GUI] GUI Added");
 	}
 	~GUI() {
-		LOG_INFO("GUI Destroyed");
+		LOG_INFO("[GUI] GUI Destroyed");
 	}
 	void addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow);
 	void aboutWindow();

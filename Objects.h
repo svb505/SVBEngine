@@ -592,3 +592,13 @@ public:
         glPopMatrix();
     }
 };
+class Platform : public Cube {
+public:
+    static constexpr float PLATFORM_HEIGHT = 10.0f;
+
+    void setSize(float w, float d) {
+        width = w;
+        height = PLATFORM_HEIGHT;
+        depth = d;
+    }
+};

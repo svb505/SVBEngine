@@ -60,7 +60,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
         else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
         else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->mode = size["mode"].toDouble(); c->turnX = turnX, c->turnY = turnY, c->turnZ = turnZ; obj = c; }
         else if (type == "sphere") { Sphere* s = new Sphere(); s->setSize(size["radius"].toDouble(), size["slices"].toInt(), size["stacks"].toInt()); s->mode = size["mode"].toDouble(); s->turnX = turnX, s->turnY = turnY, s->turnZ = turnZ; obj = s; }
-        else if (type == "pyramide") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
+        else if (type == "pyramid") { Pyramid* p = new Pyramid(); p->setSize(size["base"].toDouble(), size["height"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "prism") { Prism* p = new Prism(); p->setSize(size["sides"].toInt(), size["radius"].toDouble(), size["height"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
@@ -200,6 +200,7 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
     QFile file("scenes/" + fileName + ".json");
     if (file.open(QIODevice::WriteOnly))
         file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+        
 }
 void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
 {
@@ -220,6 +221,7 @@ void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, M
     QDir().mkpath(fi.dir().path());
 
     exportScene(fi.baseName(), objects, ogl);
+    LOG_INFO("[EXPORT] Scene exported");
 }
 std::map<std::string, Data> ImpExp::importSceneWithDialog(MyOpenGLWidget* ogl)
 {
@@ -230,8 +232,11 @@ std::map<std::string, Data> ImpExp::importSceneWithDialog(MyOpenGLWidget* ogl)
         "Scene Files (*.json)"
     );
 
-    if (fileName.isEmpty())
+    if (fileName.isEmpty()) {
+        LOG_WARN(std::format("File {} is empty!", fileName.toStdString()));
         return {};
+    }
+
 
     QFileInfo fi(fileName);
     return importScene(fi.baseName(), ogl);
@@ -258,6 +263,7 @@ void ImpExp::exportScenarios(QWidget* child, QListWidget* list1) {
         f.write(QJsonDocument(root).toJson());
         f.close();
     }
+    LOG_INFO("[EXPORT] Scenario exported");
 }
 void ImpExp::importScenarios(QWidget* child, QListWidget* list1) {
     QString fileName = QFileDialog::getOpenFileName(

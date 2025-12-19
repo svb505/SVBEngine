@@ -19,11 +19,11 @@ private:
 		"Camera X offcet","Camera Y offcet","Camera distance from center"};
 public:
 	HUD(MyOpenGLWidget* ogl, Camera* camera, GUI* gui) {
-		LOG_INFO("HUD Created");
+		LOG_INFO("[HUD] HUD Created");
 		drawHud(ogl, camera, gui);
 	}
 	~HUD() {
-		LOG_INFO("HUD Destroyed");
+		LOG_INFO("[HUD] HUD Destroyed");
 	}
 	void drawHud(MyOpenGLWidget* ogl,Camera* camera,GUI* gui);
 };

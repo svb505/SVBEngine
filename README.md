@@ -35,9 +35,9 @@ relevant to complex real-time games.
 - Data-driven scenarios for defining object behaviors such as movement, state transitions, and interactions
 
 ## Demo
-[2D](https://github.com/svb505/SVBEngine/images/Engine2D.png)
-[3D](https://github.com/svb505/SVBEngine/images/Engine3D.png)
-[SCENARIOS](https://github.com/svb505/SVBEngine/images/EngineScenarios.png)
-[OBJECTS](https://github.com/svb505/SVBEngine/images/EngineObjects.png)
+[2D](https://github.com/svb505/SVBEngine/blob/master/images/Engine2D.png)
+[3D](https://github.com/svb505/SVBEngine/blob/master/images/Engine3D.png)
+[SCENARIOS](https://github.com/svb505/SVBEngine/blob/master/images/EngineScenarios.png)
+[OBJECTS](https://github.com/svb505/SVBEngine/blob/master/images/EngineObjects.png)
 
 Thanks for reading!

@@ -177,14 +177,18 @@ QPointF MyOpenGLWidget::worldToScreen(float x, float y, int widgetWidth, int wid
     return QPointF(sx, sy);
 }
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event) {
-    cam.mouseWheel(event);
-    update();
+    if (!cam.cameraFix) {
+        cam.mouseWheel(event);
+        update();
+    }
 }
 void MyOpenGLWidget::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::MiddleButton) {
         gui.addContexMenu(event, this, this->window());
     }
-    cam.changeLastMouse(event);
+    if (!cam.cameraFix) {
+        cam.changeLastMouse(event);
+    }
     update();
 }
 void MyOpenGLWidget::addObj(Object* obj, const std::string& name, const std::string& type,

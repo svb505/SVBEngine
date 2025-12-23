@@ -12,6 +12,7 @@ public:
     float negativeCamDistance = -camDistance;
     float camX = 0.0f;       // Camera offcet
     float camY = 0.0f;
+    bool cameraFix = false;
     void mouseWheel(QMouseEvent* event);
     void changeLastMouse(QMouseEvent* event);
     friend class HUD;

@@ -260,6 +260,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QAction* changeAction = objectsMenu->addAction("Change");
     QAction* removeAction = objectsMenu->addAction("Remove");
     QAction* hudAction = menubar->addAction("HUD");
+    QAction* camAction = menubar->addAction("Camera");
     QAction* sceneAction = menubar->addAction("Scene");
     QAction* scenariosAction = menubar->addAction("Scenarios");
     QAction* cleanAction = menubar->addAction("Clean scene");
@@ -290,6 +291,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
+    QObject::connect(camAction, &QAction::triggered, [this, ogl]() {openCameraWindow(ogl->cam); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
     QObject::connect(twoD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction, platformAction]() {
         coneAction->setVisible(false);
@@ -308,6 +310,25 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
 
 
 };
+void GUI::openCameraWindow(Camera& cam) {
+    QWidget* child = new QWidget();
+    child->resize(200, 150);
+    child->setWindowTitle("Camera");
+    child->show();
+
+    QFormLayout* layout = new QFormLayout(child);
+
+    QCheckBox* cameraFix = new QCheckBox("Fix camera");
+    cameraFix->setChecked(cam.cameraFix);
+    layout->addRow(cameraFix);
+
+    QObject::connect(cameraFix, &QCheckBox::toggled, child,[this,child,&cam](bool checked) {
+        cam.cameraFix = checked;
+        if (checked) { QMessageBox::information(child, "Camera", "Camera fixed"); LOG_INFO("[CAMERA] Camera fixed"); }
+        else QMessageBox::information(child, "Camera", "Camera unfixed"); LOG_INFO("[CAMERA] Camera unfixed");
+    });
+
+}
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     auto params = ogl->getProjectionParams();
     auto colorRGB = std::make_shared<std::array<float,3>>();

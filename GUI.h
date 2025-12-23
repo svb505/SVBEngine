@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "Logger.h"
 
+class Camera;
 class HUD;
 class MyOpenGLWidget;
 class GUI {
@@ -21,6 +22,7 @@ public:
 	void openScenariosWindow(MyOpenGLWidget* ogl);
 	void openRemoveWindow(MyOpenGLWidget* ogl);
 	void openChangeWindow(MyOpenGLWidget* ogl);
+	void openCameraWindow(Camera& cam);
 	void addObjWindow(const std::string& type, MyOpenGLWidget* ogl);
 	void openHudWindow(MyOpenGLWidget* ogl,HUD* hud);
 };

@@ -207,8 +207,6 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
         updateFields();
     }
 
-
-
     QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
         QColor color = QColorDialog::getColor(Qt::white, child);
         if (!color.isValid()) return;
@@ -312,6 +310,8 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
 };
 void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     auto params = ogl->getProjectionParams();
+    auto colorRGB = std::make_shared<std::array<float,3>>();
+
     QWidget* child = new QWidget();
     child->resize(200, 150);
     child->setWindowTitle("Scene info");
@@ -331,6 +331,34 @@ void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
     layout->addRow(infoY);
     QLabel* infoZ = new QLabel(QString::fromStdString(znZF));
     layout->addRow(infoZ);
+
+    QPushButton* colorBtn = new QPushButton("Select new background color");
+    QLabel* colorPreview = new QLabel("Color not chosen");
+    colorPreview->setAlignment(Qt::AlignCenter);
+    layout->addRow(colorBtn);
+    layout->addRow(colorPreview);
+
+    QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
+        QColor color = QColorDialog::getColor(Qt::white, child);
+        if (!color.isValid()) return;
+
+        (*colorRGB)[0] = color.redF();
+        (*colorRGB)[1] = color.greenF();
+        (*colorRGB)[2] = color.blueF();
+
+        colorPreview->setText(
+            QString("R: %1  G: %2  B: %3")
+            .arg(color.red()).arg(color.green()).arg(color.blue())
+        );
+
+        colorPreview->setStyleSheet(
+            QString("background: rgb(%1,%2,%3); padding: 10px;")
+            .arg(color.red()).arg(color.green()).arg(color.blue())
+        );
+        ogl->setBackground(*colorRGB);
+        });
+
+    
 };
 void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     std::map<std::string, std::string> scenarios;

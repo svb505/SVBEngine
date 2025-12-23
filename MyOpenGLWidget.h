@@ -54,6 +54,7 @@ public:
     void drawGridText(QPainter& painter, float spacing, int count);
     void drawGridOpenGL(float spacing, int count);
     QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
+    void setBackground(std::array<float,3> color);
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -61,6 +62,7 @@ protected:
     void resizeGL(int w, int h) override;
     void paintGL() override;
 private:
+    float backgroundColor[4] = {0.1f, 0.1f, 0.0f, 1.0f};
     int fps = 0;
     std::map<std::string, Data> objects; // List of objects
     //Scene coordinates

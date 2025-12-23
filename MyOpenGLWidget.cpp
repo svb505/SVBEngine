@@ -43,7 +43,6 @@ void MyOpenGLWidget::initializeGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.1f, 0.1f, 0.0f, 1.0f);
     fpsFrames = 0;
 }
 void MyOpenGLWidget::resizeGL(int w, int h) {
@@ -79,6 +78,7 @@ void MyOpenGLWidget::paintGL() {
         fpsTimer.restart();
     }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
     glLoadIdentity();
 
     glTranslatef(cam.camX, cam.camY, cam.negativeCamDistance);
@@ -111,6 +111,12 @@ void MyOpenGLWidget::initHUD() {
     if (!hud)
         LOG_INFO("[HUD] HUD Initializated");
         hud = new HUD(this, &cam, &gui);
+}
+void MyOpenGLWidget::setBackground(std::array<float, 3> color) {
+    LOG_INFO("[SCENE] Background color changed");
+    for (int i = 0; i < 3; i++) {
+        backgroundColor[i] = color[i];
+    }
 }
 void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glPushMatrix();

@@ -25,4 +25,5 @@ public:
 	void openCameraWindow(Camera& cam);
 	void addObjWindow(const std::string& type, MyOpenGLWidget* ogl);
 	void openHudWindow(MyOpenGLWidget* ogl,HUD* hud);
+	void openTreeWindow(MyOpenGLWidget* ogl);
 };

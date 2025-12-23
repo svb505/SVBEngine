@@ -19,6 +19,7 @@
 #include <QGroupBox>
 #include <MyOpenGLWidget.h>
 #include <QCheckBox>
+#include <QTreeWidget>
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"
@@ -262,6 +263,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QAction* hudAction = menubar->addAction("HUD");
     QAction* camAction = menubar->addAction("Camera");
     QAction* sceneAction = menubar->addAction("Scene");
+    QAction* treeAction = menubar->addAction("Tree");
     QAction* scenariosAction = menubar->addAction("Scenarios");
     QAction* cleanAction = menubar->addAction("Clean scene");
     QAction* aboutAction = menubar->addAction("About");
@@ -293,6 +295,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
     QObject::connect(camAction, &QAction::triggered, [this, ogl]() {openCameraWindow(ogl->cam); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
+    QObject::connect(treeAction, &QAction::triggered, [&]() {openTreeWindow(ogl); });
     QObject::connect(twoD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction, platformAction]() {
         coneAction->setVisible(false);
         cylinderAction->setVisible(false);
@@ -805,4 +808,27 @@ void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
 
 
 
+}
+void GUI::openTreeWindow(MyOpenGLWidget* ogl) {
+    QWidget* child = new QWidget();
+    child->resize(200, 150);
+    child->setWindowTitle("Tree");
+   
+    QFormLayout* layout = new QFormLayout(child);
+
+    QTreeWidget* tree = new QTreeWidget(child);
+    tree->setColumnCount(1);
+    tree->setHeaderLabel("Objects");
+
+    layout->addWidget(tree);
+
+    QTreeWidgetItem* root = new QTreeWidgetItem(tree);
+    root->setText(0, "Scene");
+    
+    for (const auto& [name, data] : ogl->getObjects()) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(root);
+        item->setText(0, QString::fromStdString(name));
+    }
+    tree->expandAll();
+    child->show();
 }

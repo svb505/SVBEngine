@@ -21,7 +21,7 @@ public:
 	void aboutWindow();
 	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
 	void openSceneWindow(MyOpenGLWidget* ogl);
-	void openScenariosWindow(MyOpenGLWidget* ogl);
+	void openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr);
 	void openRemoveWindow(MyOpenGLWidget* ogl);
 	void openChangeWindow(MyOpenGLWidget* ogl);
 	void openCameraWindow(Camera& cam);

@@ -278,7 +278,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     flatAction->setVisible(ogl->mode == "3D");
 
     QObject::connect(platformAction, &QAction::triggered, [=]() { addObjWindow("platform", ogl); });
-    QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(ogl); });
+    QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(oglPtr); });
     QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(ogl); });
     QObject::connect(removeAction, &QAction::triggered, [=]() { openRemoveWindow(ogl); });
     QObject::connect(changeAction, &QAction::triggered, [=]() { openChangeWindow(ogl); });
@@ -387,7 +387,7 @@ void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
 
     
 };
-void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
+void GUI::openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr) {
     std::map<std::string, std::string> scenarios;
     scenarios["LEFT"] = "Moving to left on";
     scenarios["RIGHT"] = "Moving to right on";
@@ -409,7 +409,7 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     layout->addRow(lbl1);
 
     QComboBox* combo1 = new QComboBox();
-    for (auto name : ogl->getObjects()) {
+    for (auto name : oglPtr->getObjects()) {
         combo1->addItem(QString::fromStdString(name.first));
     }
     layout->addRow(combo1);
@@ -482,14 +482,14 @@ void GUI::openScenariosWindow(MyOpenGLWidget* ogl) {
     layout->addRow(start);
 
     QObject::connect(start, &QPushButton::clicked,
-        [this, ogl, combo1, combo3, list1, scenarios, pixels, speed]() {
+        [this, oglPtr, combo1, combo3, list1, scenarios, pixels, speed]() {
             QStringList texts;
             for (int i = 0; i < list1->count(); i++) {
                 texts << list1->item(i)->text();
             }
             Action act;
             act.movingParcer(
-                ogl,
+                oglPtr,
                 combo1->currentText().toStdString(),
                 combo3->currentText().toInt(),
                 texts,

@@ -43,7 +43,7 @@ public:
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
-    std::map <std::string, Data> getObjects();
+    std::map<std::string, Data> getObjects() const;
     void moveObj(const std::string& name, const float& x, const float& y, const float z);
     int getX(const std::string& name);
     int getY(const std::string& name);

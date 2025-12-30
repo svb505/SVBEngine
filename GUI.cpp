@@ -25,6 +25,7 @@
 #include "ObjectsAction.h"
 #include "HUD.h"
 #include <format>
+#include <QPointer>
 
 void GUI::addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow) {
     LOG_INFO("[GUI] Contex menu showed");
@@ -83,8 +84,8 @@ void GUI::aboutWindow() {
 
     QGroupBox* aboutSoft = new QGroupBox("About Engine");
     QFormLayout* aboutSoftL = new QFormLayout(aboutSoft);
-    QLabel* infoS = new QLabel("SVBEngine is a project for practices my programming skills "
-        "and projects for future CV. \nSVBEngine writed full in the C++ and he counted ~3.000 lines of code");
+    QLabel* infoS = new QLabel("SVBEngine is a project for practices my programming skills/work with graphics/undestanding how\n"
+        "work an game engine and project for future CV. \nSVBEngine writed full in the C++ and he counted ~3.000 lines of code");
 
 
     QGroupBox* links = new QGroupBox("Links");
@@ -239,6 +240,8 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
 }
 void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     LOG_INFO("[GUI] Menubar added");
+    oglPtr = ogl;
+
     QMenuBar* menubar = w->menuBar();
     QAction* importAction = menubar->addAction("Import");
     QAction* exportAction = menubar->addAction("Export");
@@ -295,7 +298,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
     QObject::connect(camAction, &QAction::triggered, [this, ogl]() {openCameraWindow(ogl->cam); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
-    QObject::connect(treeAction, &QAction::triggered, [&]() {openTreeWindow(ogl); });
+    QObject::connect(treeAction, &QAction::triggered, [&]() {openTreeWindow(oglPtr); });
     QObject::connect(twoD, &QAction::triggered, [this, ogl, coneAction, cylinderAction, flatAction, platformAction]() {
         coneAction->setVisible(false);
         cylinderAction->setVisible(false);
@@ -809,26 +812,34 @@ void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
 
 
 }
-void GUI::openTreeWindow(MyOpenGLWidget* ogl) {
-    QWidget* child = new QWidget();
-    child->resize(200, 150);
-    child->setWindowTitle("Tree");
-   
-    QFormLayout* layout = new QFormLayout(child);
+void GUI::openTreeWindow(QPointer<MyOpenGLWidget> oglPtr)
+{
+    if (!oglPtr) return;
 
-    QTreeWidget* tree = new QTreeWidget(child);
+    QWidget* child = new QWidget();
+    child->setAttribute(Qt::WA_DeleteOnClose);
+    child->resize(400, 350);
+    child->setWindowTitle("Tree");
+
+    auto* layout = new QVBoxLayout(child);
+
+    auto* tree = new QTreeWidget(child);
     tree->setColumnCount(1);
     tree->setHeaderLabel("Objects");
-
     layout->addWidget(tree);
 
-    QTreeWidgetItem* root = new QTreeWidgetItem(tree);
+    auto* root = new QTreeWidgetItem(tree);
     root->setText(0, "Scene");
-    
-    for (const auto& [name, data] : ogl->getObjects()) {
-        QTreeWidgetItem* item = new QTreeWidgetItem(root);
+
+    const auto objects = oglPtr->getObjects();
+
+    for (const auto& [name, data] : objects) {
+        auto* item = new QTreeWidgetItem(root);
         item->setText(0, QString::fromStdString(name));
     }
+
     tree->expandAll();
     child->show();
 }
+
+

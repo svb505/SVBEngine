@@ -3,12 +3,14 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include "Logger.h"
+#include <QPointer>
 
 class Camera;
 class HUD;
 class MyOpenGLWidget;
 class GUI {
 public:
+	QPointer<MyOpenGLWidget> oglPtr;
 	GUI() {
 		LOG_INFO("[GUI] GUI Added");
 	}
@@ -25,5 +27,5 @@ public:
 	void openCameraWindow(Camera& cam);
 	void addObjWindow(const std::string& type, MyOpenGLWidget* ogl);
 	void openHudWindow(MyOpenGLWidget* ogl,HUD* hud);
-	void openTreeWindow(MyOpenGLWidget* ogl);
+	void openTreeWindow(QPointer<MyOpenGLWidget> oglPtr);
 };

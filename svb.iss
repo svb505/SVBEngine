@@ -44,8 +44,8 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\steup\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\steup\files\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\setub_engine\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\setub_engine\files\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

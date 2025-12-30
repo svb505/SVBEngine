@@ -253,7 +253,11 @@ int MyOpenGLWidget::getTurnX(const std::string& name) { return objects[name].obj
 int MyOpenGLWidget::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
 int MyOpenGLWidget::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
 std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }
-std::map<std::string, Data> MyOpenGLWidget::getObjects() { return objects; }
+std::map<std::string, Data> MyOpenGLWidget::getObjects() const
+{
+    return objects; 
+}
+
 std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
     return { objects[name].r, objects[name].g, objects[name].b };
 }

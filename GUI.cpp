@@ -279,7 +279,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
 
     QObject::connect(platformAction, &QAction::triggered, [=]() { addObjWindow("platform", ogl); });
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(oglPtr); });
-    QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(ogl); });
+    QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(oglPtr); });
     QObject::connect(removeAction, &QAction::triggered, [=]() { openRemoveWindow(ogl); });
     QObject::connect(changeAction, &QAction::triggered, [=]() { openChangeWindow(ogl); });
     QObject::connect(rectAction, &QAction::triggered, [=]() { addObjWindow("rectangle", ogl); });
@@ -292,6 +292,7 @@ void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
     QObject::connect(coneAction, &QAction::triggered, [=]() { addObjWindow("cone", ogl); });
     QObject::connect(cylinderAction, &QAction::triggered, [=]() { addObjWindow("cylinder", ogl); });
     QObject::connect(flatAction, &QAction::triggered, [=]() { addObjWindow("flat", ogl); });
+
     QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,ogl->hud); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
@@ -335,8 +336,8 @@ void GUI::openCameraWindow(Camera& cam) {
     });
 
 }
-void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
-    auto params = ogl->getProjectionParams();
+void GUI::openSceneWindow(QPointer<MyOpenGLWidget> oglPtr) {
+    auto params = oglPtr->getProjectionParams();
     auto colorRGB = std::make_shared<std::array<float,3>>();
 
     QWidget* child = new QWidget();
@@ -382,7 +383,7 @@ void GUI::openSceneWindow(MyOpenGLWidget* ogl) {
             QString("background: rgb(%1,%2,%3); padding: 10px;")
             .arg(color.red()).arg(color.green()).arg(color.blue())
         );
-        ogl->setBackground(*colorRGB);
+        oglPtr->setBackground(*colorRGB);
         });
 
     

@@ -6,8 +6,10 @@
 #include "Objects.h"
 #include "HUD.h"
 #include "Logger.h"
+#include <GL/glut.h>
 
 int main(int argc, char* argv[]) {
+    glutInit(&argc, argv);
     Logger::Init();
     LOG_INFO("[ENGINE] Engine started");
 

@@ -55,6 +55,8 @@ public:
     void drawGridOpenGL(float spacing, int count);
     QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
     void setBackground(std::array<float,3> color);
+    void draw3DGridText(float spacing);
+    void drawText3D(float x, float y, float z, const QString& text, float R = 1.0f, float G = 1.0f, float B = 1.0f);
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;

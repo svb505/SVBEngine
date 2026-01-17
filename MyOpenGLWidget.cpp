@@ -15,8 +15,28 @@
 #include <QPainter>
 #include <QMenu>
 #include "Logger.h"
+#include <GL/glut.h>
 
 
+void MyOpenGLWidget::drawText3D(float x, float y, float z, const QString& text, float R, float G, float B)
+{
+    glColor3f(R, G, B);
+    glRasterPos3f(x, y, z);
+
+    for (QChar c : text)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c.toLatin1());
+}
+void MyOpenGLWidget::draw3DGridText(float spacing) {
+    for (int x = int(left); x < int(right); x += int(spacing))
+        drawText3D(x,1.0f,0.0f,QString::number(x));
+
+    for (int y = int(bottom); y < int(top); y += int(spacing))
+        if (y != 3) {
+            drawText3D(0.0f, y, 0.0f, QString::number(y));
+        }
+    for (int z = int(zNear); z < int(zFar); z += int(spacing))
+        drawText3D(0.0f, 1.0f, z, QString::number(z));
+}
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
     float mat[16] = {
@@ -91,7 +111,8 @@ void MyOpenGLWidget::paintGL() {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setFont(QFont("Consolas", 11));
     painter.setPen(Qt::white);
-    drawGridText(painter, 100.0f, 10);
+    if (mode == "2D") drawGridText(painter, 100.0f, 10);
+    else draw3DGridText(100.0f);
     painter.end();
 
     for (auto& [name, data] : objects) {
@@ -157,8 +178,6 @@ void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glPopMatrix();
 }
 void MyOpenGLWidget::drawGridText(QPainter& painter, float spacing, int count) {
-    if (mode != "2D") return;
-
     for (int x = int(left); x < int(right); x += int(spacing))
         drawText(painter, x, 0, QString::number(x));
 

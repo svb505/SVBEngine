@@ -20,7 +20,7 @@ public:
 	void addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow);
 	void aboutWindow();
 	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
-	void openSceneWindow(MyOpenGLWidget* ogl);
+	void openSceneWindow(QPointer<MyOpenGLWidget> oglPtr);
 	void openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr);
 	void openRemoveWindow(MyOpenGLWidget* ogl);
 	void openChangeWindow(MyOpenGLWidget* ogl);

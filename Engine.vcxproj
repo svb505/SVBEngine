@@ -109,6 +109,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MyOpenGLWidget.cpp" />
     <ClCompile Include="ObjectsAction.cpp" />
+    <ClCompile Include="text.cpp" />
     <QtRcc Include="Engine.qrc" />
     <QtRcc Include="resources.qrc" />
     <QtUic Include="Engine.ui" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Objects.h" />
     <ClInclude Include="ObjectsAction.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="text.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />

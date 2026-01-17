@@ -55,7 +55,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
         if (type == "rectangle") { Box* b = new Box(); b->setSize(size["width"].toDouble(), size["height"].toDouble());b->turnX = turnX, b->turnY = turnY, b->turnZ = turnZ; obj = b; }
         else if (type == "circle") { Circle* c = new Circle(); c->setRadius(size["radius"].toDouble()); c->turnX = turnX, c->turnY = turnY, c->turnZ = turnZ; obj = c; }
         else if (type == "triangle") { Triangle* t = new Triangle(); t->setSize(size["base"].toDouble(), size["height"].toDouble()); t->turnX = turnX, t->turnY = turnY, t->turnZ = turnZ; obj = t; }
-        else if (type == "polygon") { Polygon* p = new Polygon(); p->setSize(size["sides"].toInt(), size["radius"].toDouble()); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
+        else if (type == "polygon") { PolygonFigure* p = new PolygonFigure(); p->setSize(size["sides"].toInt(), size["radius"].toDouble()); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "star") { Star* s = new Star(); s->setSize(size["points"].toInt(), size["outer"].toDouble(), size["inner"].toDouble()); s->turnX = turnX, s->turnY = turnY, s->turnZ = turnZ; obj = s; }
         else if (type == "line") { Line* ln = new Line(); ln->setSize(size["width"].toInt(), size["x0"].toInt(), size["y0"].toInt(), size["lineW"].toDouble()); obj = ln; }
         else if (type == "cube") { Cube* c = new Cube(); c->setSize(size["width"].toDouble(), size["height"].toDouble(), size["depth"].toDouble()); c->mode = size["mode"].toDouble(); c->turnX = turnX, c->turnY = turnY, c->turnZ = turnZ; obj = c; }
@@ -128,7 +128,7 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
             size["height"] = t->getH();
         }
         else if (type == "polygon") {
-            Polygon* p = dynamic_cast<Polygon*>(obj);
+            PolygonFigure* p = dynamic_cast<PolygonFigure*>(obj);
             size["sides"] = p->getSides();
             size["radius"] = p->getRadius();
         }

@@ -122,7 +122,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
     }
     else if (type == "polygon") {
         if (ogl->mode == "2D") {
-            Polygon* obj = new Polygon();
+            PolygonFigure* obj = new PolygonFigure();
             obj->position = { x, y, z };
             obj->color = { colors[0], colors[1], colors[2] };
             obj->setSize(positions["count"], positions["radius"]);

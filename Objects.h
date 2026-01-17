@@ -137,7 +137,7 @@ public:
         glPopMatrix();
     }
 };
-class Polygon : public Object {
+class PolygonFigure : public Object {
 private:
     int sides = 0;
     float radius = 1.0f;  

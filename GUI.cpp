@@ -785,7 +785,7 @@ void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
     auto cbboxs = std::make_shared<std::map<int, QCheckBox*>>();
 
     QWidget* child = new QWidget();
-    child->resize(200, 150);
+    child->resize(200, 200);
     child->setWindowTitle("HUD");
     child->show();
 

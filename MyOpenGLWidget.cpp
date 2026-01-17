@@ -15,28 +15,7 @@
 #include <QPainter>
 #include <QMenu>
 #include "Logger.h"
-#include <GL/glut.h>
 
-
-void MyOpenGLWidget::drawText3D(float x, float y, float z, const QString& text, float R, float G, float B)
-{
-    glColor3f(R, G, B);
-    glRasterPos3f(x, y, z);
-
-    for (QChar c : text)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c.toLatin1());
-}
-void MyOpenGLWidget::draw3DGridText(float spacing) {
-    for (int x = int(left); x < int(right); x += int(spacing))
-        drawText3D(x,1.0f,0.0f,QString::number(x));
-
-    for (int y = int(bottom); y < int(top); y += int(spacing))
-        if (y != 3) {
-            drawText3D(0.0f, y, 0.0f, QString::number(y));
-        }
-    for (int z = int(zNear); z < int(zFar); z += int(spacing))
-        drawText3D(0.0f, 1.0f, z, QString::number(z));
-}
 void perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
     float mat[16] = {
@@ -53,6 +32,7 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
     connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
     fpsTimer.start();
     initHUD();
+    initSceneText();
 }
 ProjectionParams MyOpenGLWidget::getProjectionParams() const {
     return { left, right, top, bottom, zNear, zFar };
@@ -111,8 +91,8 @@ void MyOpenGLWidget::paintGL() {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setFont(QFont("Consolas", 11));
     painter.setPen(Qt::white);
-    if (mode == "2D") drawGridText(painter, 100.0f, 10);
-    else draw3DGridText(100.0f);
+    if (mode == "2D") text->drawGridText(painter, 100.0f, 10,this);
+    else text->draw3DGridText(100.0f,this);
     painter.end();
 
     for (auto& [name, data] : objects) {
@@ -132,6 +112,11 @@ void MyOpenGLWidget::initHUD() {
     if (!hud)
         LOG_INFO("[HUD] HUD Initializated");
         hud = new HUD(this, &cam, &gui);
+}
+void MyOpenGLWidget::initSceneText() {
+    if (!text)
+        LOG_INFO("[SceneText] SceneText Initializated");
+    text = new SceneText();
 }
 void MyOpenGLWidget::setBackground(std::array<float, 3> color) {
     LOG_INFO("[SCENE] Background color changed");
@@ -177,24 +162,7 @@ void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glEnd();
     glPopMatrix();
 }
-void MyOpenGLWidget::drawGridText(QPainter& painter, float spacing, int count) {
-    for (int x = int(left); x < int(right); x += int(spacing))
-        drawText(painter, x, 0, QString::number(x));
 
-    for (int y = int(bottom); y < int(top); y += int(spacing))
-        if (y != 3) {
-            drawText(painter, 0, y, QString::number(y));
-        }
-}
-void MyOpenGLWidget::drawText(QPainter& painter, int x, int y, QString text) {
-    QPointF p = worldToScreen(x + 0.1, y + 0.2, this->width(), this->height());
-    painter.drawText(p, text);
-}
-QPointF MyOpenGLWidget::worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const {
-    float sx = (x - left) / (right - left) * widgetWidth;
-    float sy = widgetHeight - (y - bottom) / (top - bottom) * widgetHeight;
-    return QPointF(sx, sy);
-}
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!cam.cameraFix) {
         cam.mouseWheel(event);

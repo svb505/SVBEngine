@@ -7,7 +7,7 @@
 #include "Camera.h"
 #include "GUI.h"
 #include "HUD.h"
-
+#include "text.h"
 
 struct Data {
     Object* obj;
@@ -24,6 +24,7 @@ class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 public:
     GUI gui;
     Camera cam;
+    SceneText* text = nullptr;
     HUD* hud = nullptr;
     void initHUD(); 
 
@@ -37,7 +38,6 @@ public:
     void addObj(Object* obj, const std::string& name,  const std::string& type,
         float x, float y, float z, float r, float g, float b);
     void clearScene();
-    void drawText(QPainter& painter, int x, int y, QString text);
     void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
         int turnY, int turnZ);
     void removeObj(const std::string& name);
@@ -51,12 +51,9 @@ public:
     int getTurnX(const std::string& name);
     int getTurnY(const std::string& name);
     int getTurnZ(const std::string& name);
-    void drawGridText(QPainter& painter, float spacing, int count);
     void drawGridOpenGL(float spacing, int count);
-    QPointF worldToScreen(float x, float y, int widgetWidth, int widgetHeight) const;
     void setBackground(std::array<float,3> color);
-    void draw3DGridText(float spacing);
-    void drawText3D(float x, float y, float z, const QString& text, float R = 1.0f, float G = 1.0f, float B = 1.0f);
+    void initSceneText();
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -85,4 +82,5 @@ private:
 private slots:
     void animateMove();
 friend class HUD;
+friend class SceneText;
 };

@@ -17,7 +17,6 @@ int main(int argc, char* argv[]) {
     QMainWindow window;
     GUI* gui = new GUI();
    
-
     auto* ogl = new MyOpenGLWidget(&window);
     ogl->setMode("2D");
 

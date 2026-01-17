@@ -25,7 +25,7 @@ void HUD::drawHud(MyOpenGLWidget* ogl, Camera* camera, GUI* gui) {
 
     while (idx < args.size()) {
         if (hudTextsVisible[idx]) {
-            ogl->drawText(painter, x, y, args[idx]);
+            ogl->text->drawText(painter, x, y, args[idx],ogl);
             y -= step;
         } 
         idx++;

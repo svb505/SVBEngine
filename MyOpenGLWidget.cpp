@@ -34,9 +34,12 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
     initHUD();
     initSceneText();
 }
-ProjectionParams MyOpenGLWidget::getProjectionParams() const {
-    return { left, right, top, bottom, zNear, zFar };
+MyOpenGLWidget::~MyOpenGLWidget() {
+    LOG_INFO("[RENDER] OpenGL destroyed");
+    delete hud;
+    delete text;
 }
+ProjectionParams MyOpenGLWidget::getProjectionParams() const { return { left, right, top, bottom, zNear, zFar };}
 void MyOpenGLWidget::initializeGL() {
     LOG_INFO("[RENDER] OpenGL Initializated");
     initializeOpenGLFunctions();
@@ -104,10 +107,6 @@ void MyOpenGLWidget::paintGL() {
   
     update();
 }
-MyOpenGLWidget::~MyOpenGLWidget() {
-    LOG_INFO("[RENDER] OpenGL destroyed");
-    delete hud;
-}
 void MyOpenGLWidget::initHUD() {
     if (!hud)
         LOG_INFO("[HUD] HUD Initializated");
@@ -162,7 +161,6 @@ void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glEnd();
     glPopMatrix();
 }
-
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!cam.cameraFix) {
         cam.mouseWheel(event);
@@ -198,6 +196,28 @@ void MyOpenGLWidget::clearScene() {
 void MyOpenGLWidget::setMode(const std::string& m) {
     LOG_INFO(std::format("[SCENE] Current mode: {}",m));
     mode = m;
+    update();
+}
+void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
+    int turnY, int turnZ)
+{
+    LOG_INFO(std::format("[SCENE] Object with name '{}' has been changed", name));
+    auto it = objects.find(name);
+    if (it == objects.end()) {
+        LOG_ERROR(std::format("Object with name '{}' not found!", name));
+        return;
+    }
+    it->second.obj->position = { x, y, z };
+    it->second.obj->color = { colors[0], colors[1], colors[2] };
+    it->second.obj->turnX = turnX;
+    it->second.obj->turnY = turnY;
+    it->second.obj->turnZ = turnZ;
+    it->second.x = x;
+    it->second.y = y;
+    it->second.z = z;
+    it->second.r = colors[0];
+    it->second.g = colors[1];
+    it->second.b = colors[2];
     update();
 }
 void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const float& y, const float z) {
@@ -240,33 +260,5 @@ int MyOpenGLWidget::getTurnX(const std::string& name) { return objects[name].obj
 int MyOpenGLWidget::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
 int MyOpenGLWidget::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
 std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }
-std::map<std::string, Data> MyOpenGLWidget::getObjects() const
-{
-    return objects; 
-}
-
-std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {
-    return { objects[name].r, objects[name].g, objects[name].b };
-}
-void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
-    int turnY, int turnZ)
-{
-    LOG_INFO(std::format("[SCENE] Object with name '{}' has been changed", name));
-    auto it = objects.find(name);
-    if (it == objects.end()) {
-        LOG_ERROR(std::format("Object with name '{}' not found!", name));
-        return;
-    }
-    it->second.obj->position = { x, y, z };
-    it->second.obj->color = { colors[0], colors[1], colors[2] };
-    it->second.obj->turnX = turnX;
-    it->second.obj->turnY = turnY;
-    it->second.obj->turnZ = turnZ;
-    it->second.x = x;
-    it->second.y = y;
-    it->second.z = z;
-    it->second.r = colors[0];
-    it->second.g = colors[1];
-    it->second.b = colors[2];
-    update();
-}
+std::map<std::string, Data> MyOpenGLWidget::getObjects() const {return objects; }
+std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {return { objects[name].r, objects[name].g, objects[name].b };}

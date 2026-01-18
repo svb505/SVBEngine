@@ -26,20 +26,19 @@ public:
     Camera cam;
     SceneText* text = nullptr;
     HUD* hud = nullptr;
-    void initHUD(); 
+    std::string mode = "2D";
 
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
-    std::string mode = "2D";
     std::string getType(const std::string& name);
     std::vector<float> getColors(const std::string& name);
+
     explicit MyOpenGLWidget(QWidget* parent = nullptr);
     ~MyOpenGLWidget();
-    void addObj(Object* obj, const std::string& name,  const std::string& type,
-        float x, float y, float z, float r, float g, float b);
+
+    void addObj(Object* obj, const std::string& name,  const std::string& type,float x, float y, float z, float r, float g, float b);
     void clearScene();
-    void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
-        int turnY, int turnZ);
+    void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,int turnY, int turnZ);
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
@@ -53,6 +52,7 @@ public:
     int getTurnZ(const std::string& name);
     void drawGridOpenGL(float spacing, int count);
     void setBackground(std::array<float,3> color);
+    void initHUD();
     void initSceneText();
 protected:
     void mousePressEvent(QMouseEvent* event) override;

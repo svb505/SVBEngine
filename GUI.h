@@ -7,7 +7,7 @@
 
 class Camera;
 class HUD;
-class MyOpenGLWidget;
+class OpenGLW;
 struct AddActionDesc {
 	QString title;
 	QString type;
@@ -30,24 +30,24 @@ private:
 	};
 	QVector<QAction*> only3DActions;
 public:
-	QPointer<MyOpenGLWidget> oglPtr;
+	QPointer<OpenGLW> oglPtr;
 	GUI() {
 		LOG_INFO("[GUI] GUI Added");
 	}
 	~GUI() {
 		LOG_INFO("[GUI] GUI Destroyed");
 	}
-	void updateModeUI(MyOpenGLWidget* ogl);
-	void addContexMenu(QMouseEvent* event, MyOpenGLWidget* ogl, QWidget* parentWindow);
+	void updateModeUI(OpenGLW* ogl);
+	void addContexMenu(QMouseEvent* event, OpenGLW* ogl, QWidget* parentWindow);
 	void aboutWindow();
-	void fillObjectsMenu(QMenu* parentMenu, MyOpenGLWidget* ogl, bool withExit, QWidget* parentWindow);
-	void addMenu(QMainWindow* w, MyOpenGLWidget* ogl);
-	void openSceneWindow(QPointer<MyOpenGLWidget> oglPtr);
-	void openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr);
-	void openRemoveWindow(MyOpenGLWidget* ogl);
-	void openChangeWindow(MyOpenGLWidget* ogl);
+	void fillObjectsMenu(QMenu* parentMenu, OpenGLW* ogl, bool withExit, QWidget* parentWindow);
+	void addMenu(QMainWindow* w, OpenGLW* ogl);
+	void openSceneWindow(QPointer<OpenGLW> oglPtr);
+	void openScenariosWindow(QPointer<OpenGLW> oglPtr);
+	void openRemoveWindow(OpenGLW* ogl);
+	void openChangeWindow(OpenGLW* ogl);
 	void openCameraWindow(Camera& cam);
-	void addObjWindow(const std::string& type, MyOpenGLWidget* ogl);
-	void openHudWindow(MyOpenGLWidget* ogl,HUD* hud);
-	void openTreeWindow(QPointer<MyOpenGLWidget> oglPtr);
+	void addObjWindow(const std::string& type, OpenGLW* ogl);
+	void openHudWindow(OpenGLW* ogl,HUD* hud);
+	void openTreeWindow(QPointer<OpenGLW> oglPtr);
 };

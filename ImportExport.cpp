@@ -13,7 +13,7 @@
 #include "Logger.h"
 #include <format>
 
-std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenGLWidget* ogl)
+std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW* ogl)
 {
     std::map<std::string, Data> result;
 
@@ -77,7 +77,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, MyOpenG
 
     return result;
 }
-void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
+void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Data>& objects, OpenGLW* ogl)
 {
     QJsonArray objectArray;
 
@@ -202,7 +202,7 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
         file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
         
 }
-void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl)
+void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, OpenGLW* ogl)
 {
     QString fileName = QFileDialog::getSaveFileName(
         nullptr,
@@ -223,7 +223,7 @@ void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, M
     exportScene(fi.baseName(), objects, ogl);
     LOG_INFO("[EXPORT] Scene exported");
 }
-std::map<std::string, Data> ImpExp::importSceneWithDialog(MyOpenGLWidget* ogl)
+std::map<std::string, Data> ImpExp::importSceneWithDialog(OpenGLW* ogl)
 {
     QString fileName = QFileDialog::getOpenFileName(
         nullptr,

@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -107,7 +107,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="ImportExport.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="MyOpenGLWidget.cpp" />
+    <ClCompile Include="OpenGLW.cpp" />
     <ClCompile Include="ObjectsAction.cpp" />
     <ClCompile Include="text.cpp" />
     <QtRcc Include="Engine.qrc" />
@@ -118,7 +118,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MyOpenGLWidget.h" />
+    <QtMoc Include="OpenGLW.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

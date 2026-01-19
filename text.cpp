@@ -1,13 +1,13 @@
 #include "text.h"
-#include "MyOpenGLWidget.h"
+#include "OpenGLW.h"
 
 
-QPointF SceneText::worldToScreen(float x, float y, int widgetWidth, int widgetHeight, MyOpenGLWidget* ogl) const {
+QPointF SceneText::worldToScreen(float x, float y, int widgetWidth, int widgetHeight, OpenGLW* ogl) const {
     float sx = (x - ogl->left) / (ogl->right - ogl->left) * widgetWidth;
     float sy = widgetHeight - (y - ogl->bottom) / (ogl->top - ogl->bottom) * widgetHeight;
     return QPointF(sx, sy);
 }
-void SceneText::drawGridText(QPainter& painter, float spacing, int count, MyOpenGLWidget* ogl) {
+void SceneText::drawGridText(QPainter& painter, float spacing, int count, OpenGLW* ogl) {
     for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing))
         drawText(painter, x, 0, QString::number(x),ogl);
 
@@ -16,7 +16,7 @@ void SceneText::drawGridText(QPainter& painter, float spacing, int count, MyOpen
             drawText(painter, 0, y, QString::number(y),ogl);
         }
 }
-void SceneText::drawText(QPainter& painter, int x, int y, QString text, MyOpenGLWidget* ogl) {
+void SceneText::drawText(QPainter& painter, int x, int y, QString text, OpenGLW* ogl) {
     QPointF p = worldToScreen(x + 0.1, y + 0.2, ogl->width(), ogl->height(),ogl);
     painter.drawText(p, text);
 }
@@ -28,7 +28,7 @@ void SceneText::drawText3D(float x, float y, float z, const QString& text, float
     for (QChar c : text)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c.toLatin1());
 }
-void SceneText::draw3DGridText(float spacing, MyOpenGLWidget* ogl) {
+void SceneText::draw3DGridText(float spacing, OpenGLW* ogl) {
     for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing))
         drawText3D(x, 1.0f, 0.0f, QString::number(x));
 

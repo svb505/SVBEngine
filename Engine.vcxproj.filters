@@ -55,7 +55,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyOpenGLWidget.cpp">
+    <ClCompile Include="OpenGLW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HUD.cpp">
@@ -114,7 +114,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MyOpenGLWidget.h">
+    <QtMoc Include="OpenGLW.h">
       <Filter>Source Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -1,8 +1,8 @@
 #include "HUD.h"
-#include "MyOpenGLWidget.h"
+#include "OpenGLW.h"
 #include <QPainter>
 
-void HUD::drawHud(MyOpenGLWidget* ogl, Camera* camera, GUI* gui) {
+void HUD::drawHud(OpenGLW* ogl, Camera* camera, GUI* gui) {
     std::vector<QString> args = { 
                                   QString("FPS: %1").arg(ogl->fps),
                                   QString("Objects count: %1").arg(ogl->objects.size()),

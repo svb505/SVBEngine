@@ -18,7 +18,7 @@ struct Data {
 struct ProjectionParams {
     float left, right, top, bottom, zNear, zFar;
 };
-class MyOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
+class OpenGLW : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT;
 
 public:
@@ -33,8 +33,8 @@ public:
     std::string getType(const std::string& name);
     std::vector<float> getColors(const std::string& name);
 
-    explicit MyOpenGLWidget(QWidget* parent = nullptr);
-    ~MyOpenGLWidget();
+    explicit OpenGLW(QWidget* parent = nullptr);
+    ~OpenGLW();
 
     void addObj(Object* obj, const std::string& name,  const std::string& type,float x, float y, float z, float r, float g, float b);
     void clearScene();

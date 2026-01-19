@@ -1,15 +1,15 @@
 #pragma once
 #include <iostream>
-#include "MyOpenGLWidget.h"
+#include "OpenGLW.h"
 
-class MyOpenGLWidget;
+class OpenGLW;
 
 class ImpExp {
 public:
-	std::map<std::string, Data> importScene(const QString& fileName, MyOpenGLWidget* ogl);
-	void exportScene(const QString& fileName, const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl);
-	void exportSceneWithDialog(const std::map<std::string, Data>& objects, MyOpenGLWidget* ogl);
-	std::map<std::string, Data> importSceneWithDialog(MyOpenGLWidget* ogl);
+	std::map<std::string, Data> importScene(const QString& fileName, OpenGLW* ogl);
+	void exportScene(const QString& fileName, const std::map<std::string, Data>& objects, OpenGLW* ogl);
+	void exportSceneWithDialog(const std::map<std::string, Data>& objects, OpenGLW* ogl);
+	std::map<std::string, Data> importSceneWithDialog(OpenGLW* ogl);
 	void exportScenarios(QWidget* child, QListWidget* list1);
 	void importScenarios(QWidget* child, QListWidget* list1);
 };

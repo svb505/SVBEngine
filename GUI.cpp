@@ -17,7 +17,7 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QGroupBox>
-#include <MyOpenGLWidget.h>
+#include <OpenGLW.h>
 #include <QCheckBox>
 #include <QTreeWidget>
 #include "ImportExport.h"
@@ -27,7 +27,7 @@
 #include <format>
 #include <QPointer>
 
-void GUI::updateModeUI(MyOpenGLWidget* ogl) {
+void GUI::updateModeUI(OpenGLW* ogl) {
     bool is3D = (ogl->mode == "3D");
     for (QAction* act : only3DActions)
         act->setVisible(is3D);
@@ -76,7 +76,7 @@ void GUI::aboutWindow() {
     layout->addWidget(links);
 
 }
-void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
+void GUI::openChangeWindow(OpenGLW* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
     int xTurn = 0;
     int yTurn = 0;
@@ -200,7 +200,7 @@ void GUI::openChangeWindow(MyOpenGLWidget* ogl) {
 
     child->show();
 }
-void GUI::fillObjectsMenu(QMenu* parentMenu,MyOpenGLWidget* ogl,bool withExit,QWidget* parentWindow) {
+void GUI::fillObjectsMenu(QMenu* parentMenu,OpenGLW* ogl,bool withExit,QWidget* parentWindow) {
     QMenu* addMenu = parentMenu->addMenu("Add");
 
     for (const auto& desc : addActions) {
@@ -230,12 +230,12 @@ void GUI::fillObjectsMenu(QMenu* parentMenu,MyOpenGLWidget* ogl,bool withExit,QW
         });
     }
 }
-void GUI::addContexMenu(QMouseEvent* event,MyOpenGLWidget* ogl,QWidget* parentWindow) {
+void GUI::addContexMenu(QMouseEvent* event,OpenGLW* ogl,QWidget* parentWindow) {
     QMenu menu;
     fillObjectsMenu(&menu, ogl, true, parentWindow);
     menu.exec(event->globalPosition().toPoint());
 }
-void GUI::addMenu(QMainWindow* w, MyOpenGLWidget* ogl) {
+void GUI::addMenu(QMainWindow* w, OpenGLW* ogl) {
     LOG_INFO("[GUI] Menubar added");
     oglPtr = ogl;
 
@@ -288,7 +288,7 @@ void GUI::openCameraWindow(Camera& cam) {
     });
 
 }
-void GUI::openSceneWindow(QPointer<MyOpenGLWidget> oglPtr) {
+void GUI::openSceneWindow(QPointer<OpenGLW> oglPtr) {
     auto params = oglPtr->getProjectionParams();
     auto colorRGB = std::make_shared<std::array<float,3>>();
 
@@ -340,7 +340,7 @@ void GUI::openSceneWindow(QPointer<MyOpenGLWidget> oglPtr) {
 
     
 };
-void GUI::openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr) {
+void GUI::openScenariosWindow(QPointer<OpenGLW> oglPtr) {
     std::map<std::string, std::string> scenarios;
     scenarios["LEFT"] = "Moving to left on";
     scenarios["RIGHT"] = "Moving to right on";
@@ -451,7 +451,7 @@ void GUI::openScenariosWindow(QPointer<MyOpenGLWidget> oglPtr) {
             );
         });
 }
-void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
+void GUI::openRemoveWindow(OpenGLW* ogl) {
     QWidget* child = new QWidget();
     child->setWindowTitle("Removing object");
     child->resize(250, 150);
@@ -480,7 +480,7 @@ void GUI::openRemoveWindow(MyOpenGLWidget* ogl) {
         }
         });
 }
-void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
+void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
     auto colorRGB = std::make_shared<std::array<float, 3>>();
     auto positions = std::make_shared<std::map<std::string, float>>();
     auto fields = std::make_shared<std::map<std::string, QLineEdit*>>();
@@ -733,7 +733,7 @@ void GUI::addObjWindow(const std::string& type, MyOpenGLWidget* ogl) {
             yPos->text().toFloat(), zPos->text().toFloat(), colorRGB->data(), *positions, dMode);
         });
 }
-void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
+void GUI::openHudWindow(OpenGLW* ogl,HUD* hud) {
     auto cbboxs = std::make_shared<std::map<int, QCheckBox*>>();
 
     QWidget* child = new QWidget();
@@ -761,7 +761,7 @@ void GUI::openHudWindow(MyOpenGLWidget* ogl,HUD* hud) {
         }
         });
 }
-void GUI::openTreeWindow(QPointer<MyOpenGLWidget> oglPtr)
+void GUI::openTreeWindow(QPointer<OpenGLW> oglPtr)
 {
     if (!oglPtr) return;
 
@@ -790,5 +790,3 @@ void GUI::openTreeWindow(QPointer<MyOpenGLWidget> oglPtr)
     tree->expandAll();
     child->show();
 }
-
-

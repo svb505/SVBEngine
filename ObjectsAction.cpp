@@ -1,11 +1,11 @@
 #include <iostream>
 #include <QTimer>
 #include "ObjectsAction.h"
-#include "MyOpenGLWidget.h"
+#include "OpenGLW.h"
 #include "Objects.h"
 #include <qDebug>
 
-void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidget* ogl, const float& x,
+void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl, const float& x,
     const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode) {
     LOG_INFO(std::format("[SCENE] Object '{}' added, settings: wireframeMode:{}, type: {},x: {}, y: {}, z: {}, R: {}, G: {}, B: {}",
         name,dMode,type,x,y,z,colors[0],colors[1],colors[2]));
@@ -177,7 +177,7 @@ void Action::addObject(std::string& type, const  std::string& name, MyOpenGLWidg
     }
 
 }
-void Action::movingParcer(MyOpenGLWidget* ogl, const std::string& name, const int& repeatTime, const QStringList& items,
+void Action::movingParcer(OpenGLW* ogl, const std::string& name, const int& repeatTime, const QStringList& items,
     const std::map<std::string, std::string>& scenarios, const int& speed)
 {
     auto queue = std::make_shared<QVector<Scenario>>();
@@ -215,7 +215,7 @@ void Action::movingParcer(MyOpenGLWidget* ogl, const std::string& name, const in
 
     (*runNextPtr)(0);
 }
-void Action::startMoveObj(MyOpenGLWidget* ogl, const std::string& name, const int& speed, const std::string& vect, const int time, const int to, std::function<void()> onFinished)
+void Action::startMoveObj(OpenGLW* ogl, const std::string& name, const int& speed, const std::string& vect, const int time, const int to, std::function<void()> onFinished)
 {
     int x = ogl->getX(name);
     int y = ogl->getY(name);

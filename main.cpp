@@ -2,7 +2,7 @@
 #include <QMainWindow>
 #include <iostream>
 #include "GUI.h"
-#include "MyOpenGLWidget.h"
+#include "OpenGLW.h"
 #include "Objects.h"
 #include "HUD.h"
 #include "Logger.h"
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     QMainWindow window;
     GUI* gui = new GUI();
    
-    auto* ogl = new MyOpenGLWidget(&window);
+    auto* ogl = new OpenGLW(&window);
     ogl->setMode("2D");
 
     window.setCentralWidget(ogl);

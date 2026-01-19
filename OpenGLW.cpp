@@ -1,4 +1,4 @@
-﻿#include "MyOpenGLWidget.h"
+﻿#include "OpenGLW.h"
 #include <QTimer>
 #include <iostream>
 #include <map>
@@ -26,21 +26,21 @@ void perspective(float fov, float aspect, float zNear, float zFar) {
     };
     glMultMatrixf(mat);
 }
-MyOpenGLWidget::MyOpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
+OpenGLW::OpenGLW(QWidget* parent) : QOpenGLWidget(parent) {
     LOG_INFO("[RENDER] OpenGLWidget created");
     animTimer = new QTimer(this);
-    connect(animTimer, &QTimer::timeout, this, &MyOpenGLWidget::animateMove);
+    connect(animTimer, &QTimer::timeout, this, &OpenGLW::animateMove);
     fpsTimer.start();
     initHUD();
     initSceneText();
 }
-MyOpenGLWidget::~MyOpenGLWidget() {
+OpenGLW::~OpenGLW() {
     LOG_INFO("[RENDER] OpenGL destroyed");
     delete hud;
     delete text;
 }
-ProjectionParams MyOpenGLWidget::getProjectionParams() const { return { left, right, top, bottom, zNear, zFar };}
-void MyOpenGLWidget::initializeGL() {
+ProjectionParams OpenGLW::getProjectionParams() const { return { left, right, top, bottom, zNear, zFar };}
+void OpenGLW::initializeGL() {
     LOG_INFO("[RENDER] OpenGL Initializated");
     initializeOpenGLFunctions();
     glEnable(GL_BLEND);
@@ -48,7 +48,7 @@ void MyOpenGLWidget::initializeGL() {
     glEnable(GL_DEPTH_TEST);
     fpsFrames = 0;
 }
-void MyOpenGLWidget::resizeGL(int w, int h) {
+void OpenGLW::resizeGL(int w, int h) {
     float aspect = float(w) / float(h);
     glViewport(0, 0, w, h);
 
@@ -73,7 +73,7 @@ void MyOpenGLWidget::resizeGL(int w, int h) {
     glLoadIdentity();
     glTranslatef(0, 0, -400);
 }
-void MyOpenGLWidget::paintGL() {
+void OpenGLW::paintGL() {
     fpsFrames++;
     if (fpsTimer.elapsed() >= 1000) {
         fps = fpsFrames;
@@ -107,23 +107,23 @@ void MyOpenGLWidget::paintGL() {
   
     update();
 }
-void MyOpenGLWidget::initHUD() {
+void OpenGLW::initHUD() {
     if (!hud)
         LOG_INFO("[HUD] HUD Initializated");
         hud = new HUD(this, &cam, &gui);
 }
-void MyOpenGLWidget::initSceneText() {
+void OpenGLW::initSceneText() {
     if (!text)
         LOG_INFO("[SceneText] SceneText Initializated");
     text = new SceneText();
 }
-void MyOpenGLWidget::setBackground(std::array<float, 3> color) {
+void OpenGLW::setBackground(std::array<float, 3> color) {
     LOG_INFO("[SCENE] Background color changed");
     for (int i = 0; i < 3; i++) {
         backgroundColor[i] = color[i];
     }
 }
-void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
+void OpenGLW::drawGridOpenGL(float spacing, int count) {
     glPushMatrix();
     glLineWidth(1.0f);
     glBegin(GL_LINES);
@@ -161,13 +161,13 @@ void MyOpenGLWidget::drawGridOpenGL(float spacing, int count) {
     glEnd();
     glPopMatrix();
 }
-void MyOpenGLWidget::mouseMoveEvent(QMouseEvent* event) {
+void OpenGLW::mouseMoveEvent(QMouseEvent* event) {
     if (!cam.cameraFix) {
         cam.mouseWheel(event);
         update();
     }
 }
-void MyOpenGLWidget::mousePressEvent(QMouseEvent* event) {
+void OpenGLW::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::MiddleButton) {
         gui.addContexMenu(event, this, this->window());
     }
@@ -176,29 +176,29 @@ void MyOpenGLWidget::mousePressEvent(QMouseEvent* event) {
     }
     update();
 }
-void MyOpenGLWidget::addObj(Object* obj, const std::string& name, const std::string& type,
+void OpenGLW::addObj(Object* obj, const std::string& name, const std::string& type,
     float x, float y, float z, float r, float g, float b)
 {
     LOG_INFO(std::format("[SCENE] Object '{}' added",name));
     objects[name] = { obj, type, x, y, z, r, g, b };
     update();
 }
-void MyOpenGLWidget::removeObj(const std::string& name) {
+void OpenGLW::removeObj(const std::string& name) {
     LOG_INFO(std::format("[SCENE] Object with name '{}' has been removed", name));
     objects.erase(name);
     update();
 }
-void MyOpenGLWidget::clearScene() {
+void OpenGLW::clearScene() {
     LOG_INFO("[SCENE] Scene cleared");
     objects.clear();
     update();
 }
-void MyOpenGLWidget::setMode(const std::string& m) {
+void OpenGLW::setMode(const std::string& m) {
     LOG_INFO(std::format("[SCENE] Current mode: {}",m));
     mode = m;
     update();
 }
-void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
+void OpenGLW::changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,
     int turnY, int turnZ)
 {
     LOG_INFO(std::format("[SCENE] Object with name '{}' has been changed", name));
@@ -220,7 +220,7 @@ void MyOpenGLWidget::changeObj(const std::string& name, float x, float y, float 
     it->second.b = colors[2];
     update();
 }
-void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const float& y, const float z) {
+void OpenGLW::moveObj(const std::string& name, const float& x, const float& y, const float z) {
     auto it = objects.find(name);
     if (it == objects.end()) {
         LOG_INFO(std::format("[SCENE] Object not found: {}",name));
@@ -237,13 +237,13 @@ void MyOpenGLWidget::moveObj(const std::string& name, const float& x, const floa
     it->second.z = z;
     update();
 }
-void MyOpenGLWidget::startMove(const std::string& name, int targetX, int speed) {
+void OpenGLW::startMove(const std::string& name, int targetX, int speed) {
     animName = name;
     animTargetX = targetX;
     animSpeed = speed;
     animTimer->start(16);
 }
-void MyOpenGLWidget::animateMove() {
+void OpenGLW::animateMove() {
     auto& data = objects[animName];
     if (data.x < animTargetX)
         data.x += animSpeed;
@@ -253,12 +253,12 @@ void MyOpenGLWidget::animateMove() {
     }
     update();
 }
-int MyOpenGLWidget::getX(const std::string& name) { return objects[name].x; }
-int MyOpenGLWidget::getY(const std::string& name) { return objects[name].y; }
-int MyOpenGLWidget::getZ(const std::string& name) { return objects[name].z; }
-int MyOpenGLWidget::getTurnX(const std::string& name) { return objects[name].obj->turnX; }
-int MyOpenGLWidget::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
-int MyOpenGLWidget::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
-std::string MyOpenGLWidget::getType(const std::string& name) { return objects[name].type; }
-std::map<std::string, Data> MyOpenGLWidget::getObjects() const {return objects; }
-std::vector<float> MyOpenGLWidget::getColors(const std::string& name) {return { objects[name].r, objects[name].g, objects[name].b };}
+int OpenGLW::getX(const std::string& name) { return objects[name].x; }
+int OpenGLW::getY(const std::string& name) { return objects[name].y; }
+int OpenGLW::getZ(const std::string& name) { return objects[name].z; }
+int OpenGLW::getTurnX(const std::string& name) { return objects[name].obj->turnX; }
+int OpenGLW::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
+int OpenGLW::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
+std::string OpenGLW::getType(const std::string& name) { return objects[name].type; }
+std::map<std::string, Data> OpenGLW::getObjects() const {return objects; }
+std::vector<float> OpenGLW::getColors(const std::string& name) {return { objects[name].r, objects[name].g, objects[name].b };}

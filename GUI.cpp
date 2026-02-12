@@ -9,7 +9,6 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QListWidget>
-#include <QPointer>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -20,13 +19,15 @@
 #include <OpenGLW.h>
 #include <QCheckBox>
 #include <QTreeWidget>
+#include <format>
+#include <QPointer>
+#include <fstream>
 #include "ImportExport.h"
 #include "GUI.h"
 #include "ObjectsAction.h"
 #include "HUD.h"
-#include <format>
-#include <QPointer>
 #include "sounds.h"
+#include "Profiler.h"
 
 void GUI::updateModeUI(OpenGLW* ogl) {
     bool is3D = (ogl->mode == "3D");
@@ -254,12 +255,14 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
     QAction* soundAction = menubar->addAction("Sound");
     QAction* treeAction = menubar->addAction("Tree");
     QAction* scenariosAction = menubar->addAction("Scenarios");
+    QAction* profilerAction = menubar->addAction("Profiler");
     QAction* aboutAction = menubar->addAction("About");
 
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(oglPtr); });
     QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(oglPtr); });
     QObject::connect(soundAction, &QAction::triggered, [&]() {soundWindow(sound); });
 
+    QObject::connect(profilerAction, &QAction::triggered, [=]() { profilerWindow(); });
     QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,ogl->hud); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
@@ -893,4 +896,60 @@ void GUI::soundWindow(Sound& sound) {
         }
         });
 
+}
+void GUI::profilerWindow() {
+    if (!oglPtr) return;
+
+    QWidget* child = new QWidget();
+    child->resize(100, 100);
+    child->setWindowTitle("Profiler");
+    child->show();
+
+    auto* layout = new QVBoxLayout(child);
+    auto getMemory = Profiler::getMemoryUsage();
+
+    std::vector<std::string> memory = getMemory;
+
+    QString text = QString::fromStdString(memory[0] + "\n" + memory[1]);
+
+    QLabel* info = new QLabel(text);
+    layout->addWidget(info);
+
+    QPushButton* exportReport = new QPushButton("Export memory usage");
+    layout->addWidget(exportReport);
+
+    QTimer* timer = new QTimer(child);
+
+    QObject::connect(timer, &QTimer::timeout, [info]() {
+        auto memory = Profiler::getMemoryUsage();
+
+        QString text = QString::fromStdString(memory[0] + "\n" + memory[1]);
+
+        LOG_INFO(std::format("[MEMORY]: Memory usage: {}", text.toStdString()));
+
+        info->setText(text);
+    });
+    
+    QObject::connect(exportReport, &QPushButton::pressed, [child]() {
+        QString path = QFileDialog::getSaveFileName(child, "Save memory usage", QDir::homePath(), "Text files (*.txt)");
+        if (!path.isEmpty()) {
+            auto memory = Profiler::getMemoryUsage();
+
+            std::ofstream file(path.toStdString());
+            std::time_t t = std::time(nullptr);
+
+            std::tm tm{};
+            localtime_s(&tm, &t);
+
+            char timeBuf[32];
+            std::strftime(timeBuf, sizeof(timeBuf), "%H:%M:%S", &tm);
+
+            file << std::format("[{}] RAM: {} | CPU: {}", timeBuf, memory[0], memory[1]);
+            file.close();
+
+            QMessageBox::information(child, "Success", "Memory usage exported sucessfully");
+        }
+        });
+
+    timer->start(1000);
 }

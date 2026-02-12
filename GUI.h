@@ -52,4 +52,5 @@ public:
 	void addObjWindow(const std::string& type, OpenGLW* ogl);
 	void openHudWindow(OpenGLW* ogl,HUD* hud);
 	void openTreeWindow(QPointer<OpenGLW> oglPtr);
+	void profilerWindow();
 };

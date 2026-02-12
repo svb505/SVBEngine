@@ -78,6 +78,7 @@ void OpenGLW::paintGL() {
         fpsFrames = 0;
         fpsTimer.restart();
     }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
     glLoadIdentity();

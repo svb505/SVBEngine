@@ -83,4 +83,5 @@ private slots:
     void animateMove();
 friend class HUD;
 friend class SceneText;
+friend class GUI;
 };

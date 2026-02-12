@@ -65,9 +65,7 @@ void OpenGLW::resizeGL(int w, int h) {
         zFar = 1000.0f;
         glOrtho(left, right, bottom, top, zNear, zFar);
     }
-    else {
-        perspective(60.0f, aspect, 0.1f, 1000.0f);
-    }
+    else perspective(60.0f, aspect, 0.1f, 1000.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -94,16 +92,16 @@ void OpenGLW::paintGL() {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setFont(QFont("Consolas", 11));
     painter.setPen(Qt::white);
+
     if (mode == "2D") text->drawGridText(painter, 100.0f, 10,this);
     else text->draw3DGridText(100.0f,this);
+
     painter.end();
 
     for (auto& [name, data] : objects) {
-        if (data.obj)
-            data.obj->render();
+        if (data.obj) data.obj->render();
     }
-    if (hud)
-        hud->drawHud(this, &cam, &gui);
+    if (hud) hud->drawHud(this, &cam, &gui);
   
     update();
 }
@@ -113,15 +111,12 @@ void OpenGLW::initHUD() {
         hud = new HUD(this, &cam, &gui);
 }
 void OpenGLW::initSceneText() {
-    if (!text)
-        LOG_INFO("[SceneText] SceneText Initializated");
+    if (!text) LOG_INFO("[SceneText] SceneText Initializated");
     text = new SceneText();
 }
 void OpenGLW::setBackground(std::array<float, 3> color) {
     LOG_INFO("[SCENE] Background color changed");
-    for (int i = 0; i < 3; i++) {
-        backgroundColor[i] = color[i];
-    }
+    for (int i = 0; i < 3; i++) backgroundColor[i] = color[i];
 }
 void OpenGLW::drawGridOpenGL(float spacing, int count) {
     glPushMatrix();
@@ -130,10 +125,8 @@ void OpenGLW::drawGridOpenGL(float spacing, int count) {
 
     if (mode == "2D") {
         for (int i = -count; i <= count; ++i) {
-            if (i == 0)
-                glColor3f(1.0f, 0.0f, 0.0f);
-            else
-                glColor3f(0.5f, 0.5f, 0.5f);
+            if (i == 0) glColor3f(1.0f, 0.0f, 0.0f);
+            else glColor3f(0.5f, 0.5f, 0.5f);
 
             float pos = i * spacing;
             glVertex3f(pos, -count * spacing, 0);
@@ -168,17 +161,13 @@ void OpenGLW::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 void OpenGLW::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::MiddleButton) {
-        gui.addContexMenu(event, this, this->window());
-    }
-    if (!cam.cameraFix) {
-        cam.changeLastMouse(event);
-    }
+    if (event->button() == Qt::MiddleButton) gui.addContexMenu(event, this, this->window());
+    if (!cam.cameraFix) cam.changeLastMouse(event);
+
     update();
 }
 void OpenGLW::addObj(Object* obj, const std::string& name, const std::string& type,
-    float x, float y, float z, float r, float g, float b)
-{
+    float x, float y, float z, float r, float g, float b){
     LOG_INFO(std::format("[SCENE] Object '{}' added",name));
     objects[name] = { obj, type, x, y, z, r, g, b };
     update();
@@ -245,8 +234,7 @@ void OpenGLW::startMove(const std::string& name, int targetX, int speed) {
 }
 void OpenGLW::animateMove() {
     auto& data = objects[animName];
-    if (data.x < animTargetX)
-        data.x += animSpeed;
+    if (data.x < animTargetX) data.x += animSpeed;
     else {
         animTimer->stop();
         return;

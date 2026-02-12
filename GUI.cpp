@@ -30,8 +30,7 @@
 
 void GUI::updateModeUI(OpenGLW* ogl) {
     bool is3D = (ogl->mode == "3D");
-    for (QAction* act : only3DActions)
-        act->setVisible(is3D);
+    for (QAction* act : only3DActions) act->setVisible(is3D);
 }
 void GUI::aboutWindow() {
     QWidget* Win = new QWidget();
@@ -244,7 +243,6 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
 
     QAction* importAction = menubar->addAction("Import");
     QAction* exportAction = menubar->addAction("Export");
-    QAction* soundAction = menubar->addAction("Sound");
     QMenu* modeMenu = menubar->addMenu("Mode");
     QAction* twoD = modeMenu->addAction("Set 2D mode");
     QAction* threeD = modeMenu->addAction("Set 3D mode");
@@ -253,9 +251,9 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
     QAction* hudAction = menubar->addAction("HUD");
     QAction* camAction = menubar->addAction("Camera");
     QAction* sceneAction = menubar->addAction("Scene");
+    QAction* soundAction = menubar->addAction("Sound");
     QAction* treeAction = menubar->addAction("Tree");
     QAction* scenariosAction = menubar->addAction("Scenarios");
-    QAction* cleanAction = menubar->addAction("Clean scene");
     QAction* aboutAction = menubar->addAction("About");
 
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(oglPtr); });
@@ -265,7 +263,6 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
     QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,ogl->hud); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
     QObject::connect(exportAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.exportSceneWithDialog(ogl->getObjects(), ogl); });
-    QObject::connect(cleanAction, &QAction::triggered, [this, ogl]() {ogl->clearScene(); });
     QObject::connect(camAction, &QAction::triggered, [this, ogl]() {openCameraWindow(ogl->cam); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
     QObject::connect(treeAction, &QAction::triggered, [&]() {openTreeWindow(oglPtr); });
@@ -315,12 +312,16 @@ void GUI::openSceneWindow(QPointer<OpenGLW> oglPtr) {
     QLabel* infoZ = new QLabel(QString::fromStdString(znZF));
     layout->addRow(infoZ);
 
+    QPushButton* cleanBtn = new QPushButton("Clean scene");
+    layout->addRow(cleanBtn);
+
     QPushButton* colorBtn = new QPushButton("Select new background color");
     QLabel* colorPreview = new QLabel("Color not chosen");
     colorPreview->setAlignment(Qt::AlignCenter);
     layout->addRow(colorBtn);
     layout->addRow(colorPreview);
 
+    QObject::connect(cleanBtn, &QPushButton::pressed, [oglPtr]() {oglPtr->clearScene(); });
     QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
         QColor color = QColorDialog::getColor(Qt::white, child);
         if (!color.isValid()) return;
@@ -340,8 +341,6 @@ void GUI::openSceneWindow(QPointer<OpenGLW> oglPtr) {
         );
         oglPtr->setBackground(*colorRGB);
         });
-
-    
 };
 void GUI::openScenariosWindow(QPointer<OpenGLW> oglPtr) {
     std::map<std::string, std::string> scenarios;
@@ -379,9 +378,7 @@ void GUI::openScenariosWindow(QPointer<OpenGLW> oglPtr) {
     layout->addRow(lbl2);
 
     QComboBox* combo2 = new QComboBox();
-    for (auto name : scenarios) {
-        combo2->addItem(QString::fromStdString(name.second));
-    }
+    for (auto name : scenarios) combo2->addItem(QString::fromStdString(name.second));
     layout->addRow(combo2);
 
     QLabel* lbl3 = new QLabel("Added scenarios");
@@ -465,22 +462,16 @@ void GUI::openRemoveWindow(OpenGLW* ogl) {
     layout->addRow(lbl);
 
     QComboBox* combo = new QComboBox();
-    for (auto name : ogl->getObjects()) {
-        combo->addItem(QString::fromStdString(name.first));
-    }
-    layout->addRow(combo);
+    for (auto name : ogl->getObjects()) combo->addItem(QString::fromStdString(name.first)); 
 
+    layout->addRow(combo);
 
     QPushButton* btn = new QPushButton("Remove object");
     layout->addRow(btn);
 
     QObject::connect(btn, &QPushButton::clicked, [combo, ogl]() {
-        if (combo->currentIndex() >= 0) {
-            ogl->removeObj(combo->currentText().toStdString());
-        }
-        else {
-            QMessageBox::warning(nullptr, "Empty choice", "Choice the object from combobox!");
-        }
+        if (combo->currentIndex() >= 0) ogl->removeObj(combo->currentText().toStdString());
+        else QMessageBox::warning(nullptr, "Empty choice", "Choice the object from combobox!");
         });
 }
 void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
@@ -533,14 +524,10 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
             (*colorRGB)[1] = color.greenF();
             (*colorRGB)[2] = color.blueF();
 
-            QString rgbText = QString("R: %1  G: %2  B: %3")
-                .arg(color.red())
-                .arg(color.green())
-                .arg(color.blue());
+            QString rgbText = QString("R: %1  G: %2  B: %3").arg(color.red()).arg(color.green()).arg(color.blue());
 
             colorPreview->setText(rgbText);
-            colorPreview->setStyleSheet(QString(
-                "background: rgb(%1,%2,%3); padding: 10px;")
+            colorPreview->setStyleSheet(QString("background: rgb(%1,%2,%3); padding: 10px;")
                 .arg(color.red()).arg(color.green()).arg(color.blue()));
         }
         });
@@ -817,7 +804,19 @@ void GUI::soundWindow(Sound& sound) {
     QPushButton* selectMus = new QPushButton("Select music to ...");
     layout->addWidget(selectMus);
 
-    QObject::connect(selectMus, &QPushButton::pressed, [child, channels, &sound]() {
+    QPushButton* play = new QPushButton("Play");
+    layout->addWidget(play);
+
+    QPushButton* stop = new QPushButton("Stop");
+    layout->addWidget(stop);
+
+    QPushButton* exportBtn = new QPushButton("Export Channels to JSON");
+    layout->addWidget(exportBtn);
+
+    QPushButton* importBtn = new QPushButton("Import Channels from JSON");
+    layout->addWidget(importBtn);
+
+    QObject::connect(selectMus, &QPushButton::pressed, [child, channels, &sound, lblC1, lblC2, lblC3]() {
         QString filePath = QFileDialog::getOpenFileName(child, "Select WAV file", QDir::homePath(),
             "WAV files (*.wav)"
             );
@@ -830,6 +829,10 @@ void GUI::soundWindow(Sound& sound) {
 
         sound.channelPaths[index] = filePath.toStdString();
 
+        if (index == 0) lblC1->setText(QString::fromStdString(std::format("Channel 1: {}", filePath.toStdString())));
+        if (index == 1) lblC2->setText(QString::fromStdString(std::format("Channel 2: {}", filePath.toStdString())));
+        if (index == 2) lblC3->setText(QString::fromStdString(std::format("Channel 3: {}", filePath.toStdString())));
+
         ALuint newBuffer = sound.LoadWav(sound.channelPaths[index].c_str());
         if (newBuffer == 0) return;
 
@@ -841,13 +844,6 @@ void GUI::soundWindow(Sound& sound) {
         alSourcei(*sources[index], AL_BUFFER, *buffers[index]);
 
         });
-
-    QPushButton* play = new QPushButton("Play");
-    layout->addWidget(play);
-
-    QPushButton* stop = new QPushButton("Stop");
-    layout->addWidget(stop);
-
     QObject::connect(play, &QPushButton::pressed, [channels, &sound]() {
         ALuint source;
 
@@ -868,32 +864,22 @@ void GUI::soundWindow(Sound& sound) {
         alSourceStop(source);
 
         });
-
-    QPushButton* exportBtn = new QPushButton("Export Channels to JSON");
-    layout->addWidget(exportBtn);
-
     QObject::connect(exportBtn, &QPushButton::pressed, [&sound, child]() {
         ImpExp exportSound;
-        QString path = QFileDialog::getSaveFileName(child,
-            "Save Channels JSON", QDir::homePath(), "JSON files (*.json)");
+        QString path = QFileDialog::getSaveFileName(child, "Save Channels JSON", QDir::homePath(), "JSON files (*.json)");
         if (!path.isEmpty()) {
             if (exportSound.exportToJson(sound, path)) {
                 QMessageBox::information(child, "Succes", "Export successful!");
                 LOG_INFO("[SOUND] Export sound succesfull");
-            }   
+            }
             else {
                 QMessageBox::critical(child, "Failed", "Export failed!");
                 LOG_ERROR("[SOUND] Export sound failed");
-            }      
+            }
         }
         });
-
-    QPushButton* importBtn = new QPushButton("Import Channels from JSON");
-    layout->addWidget(importBtn);
-
     QObject::connect(importBtn, &QPushButton::pressed, [&sound, child]() {
-        QString path = QFileDialog::getOpenFileName(child,
-            "Open Channels JSON", QDir::homePath(), "JSON files (*.json)");
+        QString path = QFileDialog::getOpenFileName(child, "Open Channels JSON", QDir::homePath(), "JSON files (*.json)");
         ImpExp importSound;
         if (!path.isEmpty()) {
             if (importSound.importFromJson(sound, path)) {

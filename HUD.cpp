@@ -18,7 +18,6 @@ void HUD::drawHud(OpenGLW* ogl, Camera* camera, GUI* gui) {
     painter.setFont(QFont("Consolas", 11));
     painter.setPen(Qt::white);
 
-
     int idx = 0; 
     int x = startX;
     int y = startY;

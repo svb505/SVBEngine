@@ -8,11 +8,10 @@
 
 class Sound {
 public:
-
     std::vector<std::string> channelPaths = {
-    "sounds/sound1.wav",
-    "sounds/sound2.wav",
-    "sounds/sound3.wav"
+        "sounds/sound1.wav",
+        "sounds/sound2.wav",
+        "sounds/sound3.wav"
     };
 
     ALCdevice* audioDevice = nullptr;
@@ -41,8 +40,7 @@ public:
         ALuint buffer;
         alGenBuffers(1, &buffer);
 
-        ALenum format =
-            (info.channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+        ALenum format = (info.channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
 
         alBufferData(buffer,format,samples.data(),(ALsizei)(samples.size() * sizeof(short)),info.samplerate);
 
@@ -58,10 +56,10 @@ public:
     }
     void setupBuffers() {
         audioDevice = alcOpenDevice(nullptr);
-        if (!audioDevice) { std::cerr << "Cannot open device\n"; return; }
+        if (!audioDevice) { LOG_ERROR("Cannot create device"); return; }
 
         audioContext = alcCreateContext(audioDevice, nullptr);
-        if (!audioContext) { std::cerr << "Cannot create context\n"; return; }
+        if (!audioContext) { LOG_ERROR("Cannot create contex"); return; }
 
         alcMakeContextCurrent(audioContext);
 

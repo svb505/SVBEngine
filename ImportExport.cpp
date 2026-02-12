@@ -14,19 +14,17 @@
 #include <format>
 #include "sounds.h"
 
-std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW* ogl)
-{
+std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW* ogl){
     std::map<std::string, Data> result;
 
     QFile file("scenes/" + fileName + ".json");
-    if (!file.open(QIODevice::ReadOnly))
-        return result;
+
+    if (!file.open(QIODevice::ReadOnly)) return result;
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    if (doc["mode"].isString())
-        ogl->setMode(doc["mode"].toString().toStdString());
-    else
-        ogl->setMode("2D");
+    if (doc["mode"].isString()) ogl->setMode(doc["mode"].toString().toStdString());
+    else ogl->setMode("2D");
+
     QJsonArray arr = doc["objects"].toArray();
 
     for (const auto& v : arr)
@@ -199,24 +197,15 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
     QDir().mkpath("scenes");
 
     QFile file("scenes/" + fileName + ".json");
-    if (file.open(QIODevice::WriteOnly))
-        file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    if (file.open(QIODevice::WriteOnly)) file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
         
 }
-void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, OpenGLW* ogl)
-{
-    QString fileName = QFileDialog::getSaveFileName(
-        nullptr,
-        "Save scene",
-        "scenes/scene.json",
-        "Scene Files (*.json)"
-    );
+void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, OpenGLW* ogl){
+    QString fileName = QFileDialog::getSaveFileName(nullptr,"Save scene","scenes/scene.json","Scene Files (*.json)");
 
-    if (fileName.isEmpty())
-        return;
+    if (fileName.isEmpty()) return;
 
-    if (!fileName.endsWith(".json"))
-        fileName += ".json";
+    if (!fileName.endsWith(".json")) fileName += ".json";
 
     QFileInfo fi(fileName);
     QDir().mkpath(fi.dir().path());
@@ -224,37 +213,24 @@ void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, O
     exportScene(fi.baseName(), objects, ogl);
     LOG_INFO("[EXPORT] Scene exported");
 }
-std::map<std::string, Data> ImpExp::importSceneWithDialog(OpenGLW* ogl)
-{
-    QString fileName = QFileDialog::getOpenFileName(
-        nullptr,
-        "Open scene",
-        "scenes/",
-        "Scene Files (*.json)"
-    );
+std::map<std::string, Data> ImpExp::importSceneWithDialog(OpenGLW* ogl){
+    QString fileName = QFileDialog::getOpenFileName(nullptr,"Open scene","scenes/","Scene Files (*.json)");
 
     if (fileName.isEmpty()) {
         LOG_WARN(std::format("File {} is empty!", fileName.toStdString()));
         return {};
     }
 
-
     QFileInfo fi(fileName);
     return importScene(fi.baseName(), ogl);
 }
 void ImpExp::exportScenarios(QWidget* child, QListWidget* list1) {
-    QString fileName = QFileDialog::getSaveFileName(
-        child,
-        "Export scenarios",
-        "scenarios/",
-        "JSON (*.json)"
-    );
+    QString fileName = QFileDialog::getSaveFileName(child,"Export scenarios","scenarios/","JSON (*.json)");
+    
     if (fileName.isEmpty()) return;
 
     QJsonArray arr;
-    for (int i = 0; i < list1->count(); i++) {
-        arr.append(list1->item(i)->text());
-    }
+    for (int i = 0; i < list1->count(); i++) arr.append(list1->item(i)->text());
 
     QJsonObject root;
     root["scenarios"] = arr;
@@ -267,12 +243,8 @@ void ImpExp::exportScenarios(QWidget* child, QListWidget* list1) {
     LOG_INFO("[EXPORT] Scenario exported");
 }
 void ImpExp::importScenarios(QWidget* child, QListWidget* list1) {
-    QString fileName = QFileDialog::getOpenFileName(
-        child,
-        "Import scenarios",
-        "scenarios/",
-        "JSON (*.json)"
-    );
+    QString fileName = QFileDialog::getOpenFileName(child,"Import scenarios","scenarios/","JSON (*.json)");
+    
     if (fileName.isEmpty()) return;
 
     QFile f(fileName);
@@ -285,16 +257,13 @@ void ImpExp::importScenarios(QWidget* child, QListWidget* list1) {
     QJsonArray arr = doc.object()["scenarios"].toArray();
 
     list1->clear();
-    for (auto v : arr) {
-        if (v.isString())
-            list1->addItem(v.toString());
-    }
+    for (auto v : arr) if (v.isString()) list1->addItem(v.toString());
 }
 bool ImpExp::exportToJson(Sound& sound,const QString& filename) {
     QJsonObject root;
     QJsonArray arr;
-    for (const auto& path : sound.channelPaths)
-        arr.append(QString::fromStdString(path));
+
+    for (const auto& path : sound.channelPaths) arr.append(QString::fromStdString(path));
     root["channels"] = arr;
 
     QJsonDocument doc(root);
@@ -322,9 +291,7 @@ bool ImpExp::importFromJson(Sound& sound, const QString& filename) {
     QJsonArray arr = root["channels"].toArray();
     if (arr.size() != 3) return false;
 
-    for (int i = 0; i < 3; ++i) {
-        sound.channelPaths[i] = arr[i].toString().toStdString();
-    }
+    for (int i = 0; i < 3; ++i) sound.channelPaths[i] = arr[i].toString().toStdString();
 
     sound.setMusToBuffer(sound.channel1Buffer, sound.channelPaths[0]);
     sound.setMusToBuffer(sound.channel2Buffer, sound.channelPaths[1]);

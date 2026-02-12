@@ -8,13 +8,10 @@ QPointF SceneText::worldToScreen(float x, float y, int widgetWidth, int widgetHe
     return QPointF(sx, sy);
 }
 void SceneText::drawGridText(QPainter& painter, float spacing, int count, OpenGLW* ogl) {
-    for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing))
-        drawText(painter, x, 0, QString::number(x),ogl);
+    for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing)) drawText(painter, x, 0, QString::number(x),ogl);
 
     for (int y = int(ogl->bottom); y < int(ogl->top); y += int(spacing))
-        if (y != 3) {
-            drawText(painter, 0, y, QString::number(y),ogl);
-        }
+        if (y != 3) drawText(painter, 0, y, QString::number(y),ogl);
 }
 void SceneText::drawText(QPainter& painter, int x, int y, QString text, OpenGLW* ogl) {
     QPointF p = worldToScreen(x + 0.1, y + 0.2, ogl->width(), ogl->height(),ogl);
@@ -25,17 +22,13 @@ void SceneText::drawText3D(float x, float y, float z, const QString& text, float
     glColor3f(R, G, B);
     glRasterPos3f(x, y, z);
 
-    for (QChar c : text)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c.toLatin1());
+    for (QChar c : text) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c.toLatin1());
 }
 void SceneText::draw3DGridText(float spacing, OpenGLW* ogl) {
-    for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing))
+    for (int x = int(ogl->left); x < int(ogl->right); x += int(spacing)) 
         drawText3D(x, 1.0f, 0.0f, QString::number(x));
-
     for (int y = int(ogl->bottom); y < int(ogl->top); y += int(spacing))
-        if (y != 3) {
-            drawText3D(0.0f, y, 0.0f, QString::number(y));
-        }
-    for (int z = int(ogl->zNear); z < int(ogl->zFar); z += int(spacing))
+        if (y != 3) drawText3D(0.0f, y, 0.0f, QString::number(y));
+    for (int z = int(ogl->zNear); z < int(ogl->zFar); z += int(spacing)) 
         drawText3D(0.0f, 1.0f, z, QString::number(z));
 }

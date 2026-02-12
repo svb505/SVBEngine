@@ -178,8 +178,7 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
 
 }
 void Action::movingParcer(OpenGLW* ogl, const std::string& name, const int& repeatTime, const QStringList& items,
-    const std::map<std::string, std::string>& scenarios, const int& speed)
-{
+    const std::map<std::string, std::string>& scenarios, const int& speed){
     auto queue = std::make_shared<QVector<Scenario>>();
 
     for (const QString& i : items) {
@@ -202,15 +201,8 @@ void Action::movingParcer(OpenGLW* ogl, const std::string& name, const int& repe
     *runNextPtr = [=](int index) {
         if (index >= queue->size()) return;
 
-        startMoveObj(
-            ogl,
-            name,
-            speed,
-            (*queue)[index].vect,
-            (*queue)[index].num,
-            repeatTime,
-            [=]() { (*runNextPtr)(index + 1); }
-        );
+        startMoveObj(ogl,name,speed,(*queue)[index].vect,(*queue)[index].num,repeatTime,[=]() 
+            { (*runNextPtr)(index + 1); });
         };
 
     (*runNextPtr)(0);
@@ -238,34 +230,14 @@ void Action::startMoveObj(OpenGLW* ogl, const std::string& name, const int& spee
 
         int currentStep = std::min(step, to - moved);
 
-        if (vect == "LEFT") {
-            x -= currentStep;
-        }
-        else if (vect == "RIGHT") {
-            x += currentStep;
-        }
-        else if (vect == "TOP") {
-            y += currentStep;
-        }
-        else if (vect == "BOTTOM") {
-            y -= currentStep;
-        }
-        else if (vect == "DLEFTTOP") {
-            x -= currentStep;
-            y += currentStep;
-        }
-        else if (vect == "DLEFTBOTTOM") {
-            x -= currentStep;
-            y -= currentStep;
-        }
-        else if (vect == "DRIGHTTOP") {
-            x += currentStep;
-            y += currentStep;
-        }
-        else if (vect == "DRIGHTBOTTOM") {
-            x += currentStep;
-            y -= currentStep;
-        }
+        if (vect == "LEFT") x -= currentStep;
+        else if (vect == "RIGHT") x += currentStep;
+        else if (vect == "TOP") y += currentStep;
+        else if (vect == "BOTTOM") y -= currentStep;
+        else if (vect == "DLEFTTOP") { x -= currentStep;y += currentStep; }
+        else if (vect == "DLEFTBOTTOM") { x -= currentStep; y -= currentStep; }
+        else if (vect == "DRIGHTTOP") { x += currentStep;y += currentStep; }
+        else if (vect == "DRIGHTBOTTOM") { x += currentStep; y -= currentStep;}
 
         moved += currentStep;
         ogl->moveObj(name, x, y, z);
@@ -274,6 +246,7 @@ void Action::startMoveObj(OpenGLW* ogl, const std::string& name, const int& spee
             moved = 0;
             repeatCount++;
         }
+
         });
 
     timer->start();

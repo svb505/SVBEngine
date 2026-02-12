@@ -96,6 +96,9 @@
     <ClInclude Include="text.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="sounds.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc">

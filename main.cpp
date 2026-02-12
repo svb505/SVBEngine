@@ -7,6 +7,9 @@
 #include "HUD.h"
 #include "Logger.h"
 #include <GL/glut.h>
+#include <AL/al.h>
+#include <AL/alc.h>
+#include "sounds.h"
 
 int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
@@ -16,7 +19,12 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QMainWindow window;
     GUI* gui = new GUI();
-   
+    Sound sound;
+
+    sound.setupBuffers();
+    sound.createSources();
+
+
     auto* ogl = new OpenGLW(&window);
     ogl->setMode("2D");
 

@@ -12,5 +12,7 @@ public:
 	std::map<std::string, Data> importSceneWithDialog(OpenGLW* ogl);
 	void exportScenarios(QWidget* child, QListWidget* list1);
 	void importScenarios(QWidget* child, QListWidget* list1);
+	bool exportToJson(Sound& sound, const QString& filename);
+	bool importFromJson(Sound& sound, const QString& filename);
 };
 	

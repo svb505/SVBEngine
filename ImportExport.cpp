@@ -12,6 +12,7 @@
 #include "Objects.h"
 #include "Logger.h"
 #include <format>
+#include "sounds.h"
 
 std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW* ogl)
 {
@@ -288,4 +289,54 @@ void ImpExp::importScenarios(QWidget* child, QListWidget* list1) {
         if (v.isString())
             list1->addItem(v.toString());
     }
+}
+bool ImpExp::exportToJson(Sound& sound,const QString& filename) {
+    QJsonObject root;
+    QJsonArray arr;
+    for (const auto& path : sound.channelPaths)
+        arr.append(QString::fromStdString(path));
+    root["channels"] = arr;
+
+    QJsonDocument doc(root);
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) return false;
+
+    file.write(doc.toJson(QJsonDocument::Indented));
+    file.close();
+    return true;
+}
+bool ImpExp::importFromJson(Sound& sound, const QString& filename) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) return false;
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError || !doc.isObject()) return false;
+
+    QJsonObject root = doc.object();
+    if (!root.contains("channels") || !root["channels"].isArray()) return false;
+
+    QJsonArray arr = root["channels"].toArray();
+    if (arr.size() != 3) return false;
+
+    for (int i = 0; i < 3; ++i) {
+        sound.channelPaths[i] = arr[i].toString().toStdString();
+    }
+
+    sound.setMusToBuffer(sound.channel1Buffer, sound.channelPaths[0]);
+    sound.setMusToBuffer(sound.channel2Buffer, sound.channelPaths[1]);
+    sound.setMusToBuffer(sound.channel3Buffer, sound.channelPaths[2]);
+
+    alSourceStop(sound.channel1Source);
+    alSourceStop(sound.channel2Source);
+    alSourceStop(sound.channel3Source);
+
+    alSourcei(sound.channel1Source, AL_BUFFER, sound.channel1Buffer);
+    alSourcei(sound.channel2Source, AL_BUFFER, sound.channel2Buffer);
+    alSourcei(sound.channel3Source, AL_BUFFER, sound.channel3Buffer);
+
+    return true;
 }

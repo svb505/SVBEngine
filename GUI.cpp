@@ -801,7 +801,7 @@ void GUI::soundWindow(Sound& sound) {
 
     auto* layout = new QVBoxLayout(child);
 
-    QLabel* lblC1 = new QLabel(QString::fromStdString(std::format("Channel 1: {}",sound.channelPaths[0])));
+    QLabel* lblC1 = new QLabel(QString::fromStdString(std::format("Channel 1: {}", sound.channelPaths[0])));
     layout->addWidget(lblC1);
     QLabel* lblC2 = new QLabel(QString::fromStdString(std::format("Channel 2: {}", sound.channelPaths[1])));
     layout->addWidget(lblC2);
@@ -817,10 +817,10 @@ void GUI::soundWindow(Sound& sound) {
     QPushButton* selectMus = new QPushButton("Select music to ...");
     layout->addWidget(selectMus);
 
-    QObject::connect(selectMus, &QPushButton::pressed, [child,channels,&sound]() {
-        QString filePath = QFileDialog::getOpenFileName(child,"Select WAV file",QDir::homePath(),          
-            "WAV files (*.wav)"        
-        );
+    QObject::connect(selectMus, &QPushButton::pressed, [child, channels, &sound]() {
+        QString filePath = QFileDialog::getOpenFileName(child, "Select WAV file", QDir::homePath(),
+            "WAV files (*.wav)"
+            );
 
         if (filePath.isEmpty()) return;
 
@@ -848,7 +848,7 @@ void GUI::soundWindow(Sound& sound) {
     QPushButton* stop = new QPushButton("Stop");
     layout->addWidget(stop);
 
-    QObject::connect(play, &QPushButton::pressed, [channels,&sound]() {
+    QObject::connect(play, &QPushButton::pressed, [channels, &sound]() {
         ALuint source;
 
         if (channels->currentText() == "Channel 1") source = sound.channel1Source;
@@ -856,8 +856,8 @@ void GUI::soundWindow(Sound& sound) {
         if (channels->currentText() == "Channel 3") source = sound.channel3Source;
 
         alSourcePlay(source);
-        
-    });
+
+        });
     QObject::connect(stop, &QPushButton::pressed, [channels, &sound]() {
         ALuint source;
 
@@ -867,6 +867,36 @@ void GUI::soundWindow(Sound& sound) {
 
         alSourceStop(source);
 
+        });
+
+    QPushButton* exportBtn = new QPushButton("Export Channels to JSON");
+    layout->addWidget(exportBtn);
+
+    QObject::connect(exportBtn, &QPushButton::pressed, [&sound, child]() {
+        ImpExp exportSound;
+        QString path = QFileDialog::getSaveFileName(child,
+            "Save Channels JSON", QDir::homePath(), "JSON files (*.json)");
+        if (!path.isEmpty()) {
+            if (exportSound.exportToJson(sound, path))
+                QMessageBox::information(child, "Succes", "Export successful!");
+            else
+                QMessageBox::critical(child, "Failed", "Export failed!");
+        }
+        });
+
+    QPushButton* importBtn = new QPushButton("Import Channels from JSON");
+    layout->addWidget(importBtn);
+
+    QObject::connect(importBtn, &QPushButton::pressed, [&sound, child]() {
+        QString path = QFileDialog::getOpenFileName(child,
+            "Open Channels JSON", QDir::homePath(), "JSON files (*.json)");
+        ImpExp importSound;
+        if (!path.isEmpty()) {
+            if (importSound.importFromJson(sound, path))
+                QMessageBox::information(child, "Succes", "Export successful!");
+            else
+                QMessageBox::critical(child, "Failed", "Export failed!");
+        }
         });
 
 }

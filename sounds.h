@@ -4,6 +4,7 @@
 #include <sndfile.h>
 #include <iostream>
 #include <vector>
+#include "Logger.h"
 
 class Sound {
 public:
@@ -29,7 +30,7 @@ public:
         SF_INFO info{};
         SNDFILE* file = sf_open(filename, SFM_READ, &info);
         if (!file) {
-            std::cerr << "Failed to load sound: " << filename << "\n";
+            LOG_ERROR(std::format("[SOUND] Failed to load sound: {}", filename));
             return 0;
         }
 
@@ -50,7 +51,7 @@ public:
     void setMusToBuffer(ALuint& buffer, std::string path) { 
         ALuint buf = LoadWav(path.c_str());
         if (buf == 0) {
-            std::cerr << "Cannot load " << path << "\n";
+            LOG_ERROR(std::format("[SOUND] Cannot load: {}",path));
             return;
         }
         buffer = buf;
@@ -68,8 +69,9 @@ public:
         setMusToBuffer(channel1Buffer, channelPaths[0]);
         setMusToBuffer(channel2Buffer, channelPaths[1]);
         setMusToBuffer(channel3Buffer, channelPaths[2]);
-    }
-    
+
+        LOG_INFO("[SOUND] Buffer initializated");
+    } 
     void createSources() {
         alGenSources(1, &channel1Source);
         alSourcei(channel1Source, AL_BUFFER, channel1Buffer);
@@ -83,6 +85,8 @@ public:
         alGenSources(1, &channel3Source);
         alSourcei(channel3Source, AL_BUFFER, channel3Buffer);
         alSourcef(channel3Source, AL_GAIN, 1.0f);
+
+        LOG_INFO("[SOUND] Sources created");
     }
 };
 

@@ -877,10 +877,14 @@ void GUI::soundWindow(Sound& sound) {
         QString path = QFileDialog::getSaveFileName(child,
             "Save Channels JSON", QDir::homePath(), "JSON files (*.json)");
         if (!path.isEmpty()) {
-            if (exportSound.exportToJson(sound, path))
+            if (exportSound.exportToJson(sound, path)) {
                 QMessageBox::information(child, "Succes", "Export successful!");
-            else
+                LOG_INFO("[SOUND] Export sound succesfull");
+            }   
+            else {
                 QMessageBox::critical(child, "Failed", "Export failed!");
+                LOG_ERROR("[SOUND] Export sound failed");
+            }      
         }
         });
 
@@ -892,10 +896,14 @@ void GUI::soundWindow(Sound& sound) {
             "Open Channels JSON", QDir::homePath(), "JSON files (*.json)");
         ImpExp importSound;
         if (!path.isEmpty()) {
-            if (importSound.importFromJson(sound, path))
+            if (importSound.importFromJson(sound, path)) {
                 QMessageBox::information(child, "Succes", "Export successful!");
-            else
+                LOG_INFO("[SOUND] Import sound succesfull");
+            }     
+            else {
                 QMessageBox::critical(child, "Failed", "Export failed!");
+                LOG_ERROR("[SOUND] Import sound failed");
+            }
         }
         });
 

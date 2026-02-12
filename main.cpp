@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
     sound.setupBuffers();
     sound.createSources();
 
-
     auto* ogl = new OpenGLW(&window);
     ogl->setMode("2D");
 
@@ -34,7 +33,7 @@ int main(int argc, char* argv[]) {
     window.setWindowIcon(QIcon(":/windowLogo.png"));
     window.show();
 
-    gui->addMenu(&window, ogl);
+    gui->addMenu(&window, ogl,sound);
 
     return app.exec();
 }

@@ -7,6 +7,13 @@
 
 class Sound {
 public:
+
+    std::vector<std::string> channelPaths = {
+    "sounds/sound1.wav",
+    "sounds/sound2.wav",
+    "sounds/sound3.wav"
+    };
+
     ALCdevice* audioDevice = nullptr;
     ALCcontext* audioContext = nullptr;
 
@@ -40,15 +47,27 @@ public:
 
         return buffer;
     }
-    void setMusToBuffer(ALuint& buffer, std::string path) { buffer = LoadWav(path.c_str()); }
+    void setMusToBuffer(ALuint& buffer, std::string path) { 
+        ALuint buf = LoadWav(path.c_str());
+        if (buf == 0) {
+            std::cerr << "Cannot load " << path << "\n";
+            return;
+        }
+        buffer = buf;
+    }
     void setupBuffers() {
         audioDevice = alcOpenDevice(nullptr);
+        if (!audioDevice) { std::cerr << "Cannot open device\n"; return; }
+
         audioContext = alcCreateContext(audioDevice, nullptr);
+        if (!audioContext) { std::cerr << "Cannot create context\n"; return; }
+
         alcMakeContextCurrent(audioContext);
 
-        setMusToBuffer(channel1Buffer, "sounds/sound1.wav");
-        setMusToBuffer(channel2Buffer, "sounds/sound2.wav");
-        setMusToBuffer(channel3Buffer, "sounds/sound3.wav");
+
+        setMusToBuffer(channel1Buffer, channelPaths[0]);
+        setMusToBuffer(channel2Buffer, channelPaths[1]);
+        setMusToBuffer(channel3Buffer, channelPaths[2]);
     }
     
     void createSources() {
@@ -56,7 +75,6 @@ public:
         alSourcei(channel1Source, AL_BUFFER, channel1Buffer);
         alSourcei(channel1Source, AL_LOOPING, AL_TRUE);
         alSourcef(channel1Source, AL_GAIN, 1.0f);
-        alSourcePlay(channel1Source);
 
         alGenSources(1, &channel2Source);
         alSourcei(channel2Source, AL_BUFFER, channel2Buffer);

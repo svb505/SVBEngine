@@ -26,6 +26,7 @@
 #include "HUD.h"
 #include <format>
 #include <QPointer>
+#include "sounds.h"
 
 void GUI::updateModeUI(OpenGLW* ogl) {
     bool is3D = (ogl->mode == "3D");
@@ -235,7 +236,7 @@ void GUI::addContexMenu(QMouseEvent* event,OpenGLW* ogl,QWidget* parentWindow) {
     fillObjectsMenu(&menu, ogl, true, parentWindow);
     menu.exec(event->globalPosition().toPoint());
 }
-void GUI::addMenu(QMainWindow* w, OpenGLW* ogl) {
+void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
     LOG_INFO("[GUI] Menubar added");
     oglPtr = ogl;
 
@@ -243,6 +244,7 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl) {
 
     QAction* importAction = menubar->addAction("Import");
     QAction* exportAction = menubar->addAction("Export");
+    QAction* soundAction = menubar->addAction("Sound");
     QMenu* modeMenu = menubar->addMenu("Mode");
     QAction* twoD = modeMenu->addAction("Set 2D mode");
     QAction* threeD = modeMenu->addAction("Set 3D mode");
@@ -258,6 +260,7 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl) {
 
     QObject::connect(scenariosAction, &QAction::triggered, [&]() {openScenariosWindow(oglPtr); });
     QObject::connect(sceneAction, &QAction::triggered, [&]() {openSceneWindow(oglPtr); });
+    QObject::connect(soundAction, &QAction::triggered, [&]() {soundWindow(sound); });
 
     QObject::connect(hudAction, &QAction::triggered, [=]() { openHudWindow(ogl,ogl->hud); });
     QObject::connect(importAction, &QAction::triggered, [this, ogl]() {ImpExp scene; scene.importSceneWithDialog(ogl); });
@@ -789,4 +792,81 @@ void GUI::openTreeWindow(QPointer<OpenGLW> oglPtr)
 
     tree->expandAll();
     child->show();
+}
+void GUI::soundWindow(Sound& sound) {
+    QWidget* child = new QWidget();
+    child->resize(400, 350);
+    child->setWindowTitle("Sound");
+    child->show();
+
+    auto* layout = new QVBoxLayout(child);
+
+    QLabel* lblC1 = new QLabel(QString::fromStdString(std::format("Channel 1: {}",sound.channelPaths[0])));
+    layout->addWidget(lblC1);
+    QLabel* lblC2 = new QLabel(QString::fromStdString(std::format("Channel 2: {}", sound.channelPaths[1])));
+    layout->addWidget(lblC2);
+    QLabel* lblC3 = new QLabel(QString::fromStdString(std::format("Channel 3: {}", sound.channelPaths[2])));
+    layout->addWidget(lblC3);
+
+    QComboBox* channels = new QComboBox();
+    channels->addItem("Channel 1");
+    channels->addItem("Channel 2");
+    channels->addItem("Channel 3");
+    layout->addWidget(channels);
+
+    QPushButton* selectMus = new QPushButton("Select music to ...");
+    layout->addWidget(selectMus);
+
+    QObject::connect(selectMus, &QPushButton::pressed, [child,channels,&sound]() {
+        QString filePath = QFileDialog::getOpenFileName(child,"Select WAV file",QDir::homePath(),          
+            "WAV files (*.wav)"        
+        );
+
+        if (filePath.isEmpty()) return;
+
+        int index = channels->currentIndex();
+
+        if (index < 0 || index >= sound.channelPaths.size()) return;
+
+        sound.channelPaths[index] = filePath.toStdString();
+
+        ALuint newBuffer = sound.LoadWav(sound.channelPaths[index].c_str());
+        if (newBuffer == 0) return;
+
+        ALuint* sources[] = { &sound.channel1Source, &sound.channel2Source, &sound.channel3Source };
+        ALuint* buffers[] = { &sound.channel1Buffer, &sound.channel2Buffer, &sound.channel3Buffer };
+
+        alSourceStop(*sources[index]);
+        *buffers[index] = newBuffer;
+        alSourcei(*sources[index], AL_BUFFER, *buffers[index]);
+
+        });
+
+    QPushButton* play = new QPushButton("Play");
+    layout->addWidget(play);
+
+    QPushButton* stop = new QPushButton("Stop");
+    layout->addWidget(stop);
+
+    QObject::connect(play, &QPushButton::pressed, [channels,&sound]() {
+        ALuint source;
+
+        if (channels->currentText() == "Channel 1") source = sound.channel1Source;
+        if (channels->currentText() == "Channel 2") source = sound.channel2Source;
+        if (channels->currentText() == "Channel 3") source = sound.channel3Source;
+
+        alSourcePlay(source);
+        
+    });
+    QObject::connect(stop, &QPushButton::pressed, [channels, &sound]() {
+        ALuint source;
+
+        if (channels->currentText() == "Channel 1") source = sound.channel1Source;
+        if (channels->currentText() == "Channel 2") source = sound.channel2Source;
+        if (channels->currentText() == "Channel 3") source = sound.channel3Source;
+
+        alSourceStop(source);
+
+        });
+
 }

@@ -6,176 +6,158 @@
 #include <qDebug>
 
 void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl, const float& x,
-    const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode) {
+    const  float& y, const  float& z, float colors[], std::map<std::string, float>& positions,bool& dMode,
+    std::string parent) {
+
     LOG_INFO(std::format("[SCENE] Object '{}' added, settings: wireframeMode:{}, type: {},x: {}, y: {}, z: {}, R: {}, G: {}, B: {}",
         name,dMode,type,x,y,z,colors[0],colors[1],colors[2]));
 
+    Object* obj = nullptr;
+    std::string realType = type;
+
+    float pos[3] = {x, y, z};
+    float col[3] = {colors[0], colors[1], colors[2]};
+
+    float turnX = positions["turnX"];
+    float turnY = positions["turnY"];
+    float turnZ = positions["turnZ"];
+
+
     if (type == "rectangle" || type == "flat" || type == "platform") {
+
         if (ogl->mode == "2D" || type == "flat") {
-            Box* obj = new Box();
-            obj->position = { x, y, z };
-            obj->color = { colors[0], colors[1], colors[2] };
-            obj->turnX = positions["turnX"];
-            obj->turnY = positions["turnY"];
-            obj->turnZ = positions["turnZ"];
-            obj->setSize(positions["w"], positions["h"]);
-            ogl->addObj(obj, name, type, x, y, z, colors[0], colors[1], colors[2]);
+            obj = new Box();
+            static_cast<Box*>(obj)->setSize(positions["w"], positions["h"]);
         }
         else if (type == "platform") {
-            Platform* obj = new Platform();
-            obj->position = { x, y, z };;
-            obj->scale = { 1, 1, 1 };
-            obj->rotation = 45.0f;
-            obj->color = { colors[0], colors[1], colors[2] };
-            obj->turnX = positions["turnX"];
-            obj->turnY = positions["turnY"];
-            obj->turnZ = positions["turnZ"];
-            obj->setSize(positions["w"], positions["h"]);
+            obj = new Platform();
+            static_cast<Platform*>(obj)->setSize(positions["w"], positions["h"]);
+            obj->scale = { 1,1,1 };
+            obj->rotation = 45.f;
             obj->mode = dMode;
-            ogl->addObj(obj, name, "platform", obj->position.x(), obj->position.y(), obj->position.z(),
-                obj->color.x(), obj->color.y(), obj->color.z());
-
+            realType = "platform";
         }
         else {
-            Cube* cube = new Cube();
-            cube->position = { x, y, z };;
-            cube->scale = { 1, 1, 1 };
-            cube->rotation = 45.0f;
-            cube->color = { colors[0], colors[1], colors[2] };
-            cube->turnX = positions["turnX"];
-            cube->turnY = positions["turnY"];
-            cube->turnZ = positions["turnZ"];
-            cube->setSize(positions["w"], positions["h"], positions["w"]);
-            cube->mode = dMode;
-            ogl->addObj(cube, name, "cube", cube->position.x(), cube->position.y(), cube->position.z(),
-                cube->color.x(), cube->color.y(), cube->color.z());
+            obj = new Cube();
+            static_cast<Cube*>(obj)->setSize(
+                positions["w"],
+                positions["h"],
+                positions["w"]
+            );
+            obj->scale = { 1,1,1 };
+            obj->rotation = 45.f;
+            obj->mode = dMode;
+            realType = "cube";
         }
     }
     else if (type == "point") {
-        Point* obj = new Point();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["size"]);
-        ogl->addObj(obj, name, "point", x, y, z, colors[0], colors[1], colors[2]);
+        obj = new Point();
+        static_cast<Point*>(obj)->setSize(positions["size"]);
     }
     else if (type == "triangle") {
+
         if (ogl->mode == "2D") {
-            Triangle* obj = new Triangle();
-            obj->position = { x, y, z };
-            obj->color = { colors[0], colors[1], colors[2] };
-            obj->turnX = positions["turnX"];
-            obj->turnY = positions["turnY"];
-            obj->turnZ = positions["turnZ"];
-            obj->setSize(positions["base"], positions["h"]);
-            ogl->addObj(obj, name, "triangle", x, y, z, colors[0], colors[1], colors[2]);
+            obj = new Triangle();
+            static_cast<Triangle*>(obj)->setSize(
+                positions["base"],
+                positions["h"]
+            );
         }
         else {
-            Pyramid* pyr = new Pyramid();
-            pyr->position = { x,y,z };
-            pyr->scale = { 1, 1, 1 };
-            pyr->color = { colors[0], colors[1], colors[2] };
-            pyr->setSize(positions["base"], positions["h"]);
-            pyr->mode = dMode;
-            pyr->turnX = positions["turnX"];
-            pyr->turnY = positions["turnY"];
-            pyr->turnZ = positions["turnZ"];
-            ogl->addObj(pyr, name, "pyramid", pyr->position.x(), pyr->position.y(), pyr->position.z(),
-                pyr->color.x(), pyr->color.y(), pyr->color.z());
-
+            obj = new Pyramid();
+            static_cast<Pyramid*>(obj)->setSize(
+                positions["base"],
+                positions["h"]
+            );
+            obj->scale = { 1,1,1 };
+            obj->mode = dMode;
+            realType = "pyramid";
         }
     }
     else if (type == "circle") {
+
         if (ogl->mode == "2D") {
-            Circle* obj = new Circle();
-            obj->position = { x, y, z };
-            obj->color = { colors[0], colors[1], colors[2] };
-            obj->setRadius(positions["radius"]);
-            obj->turnX = positions["turnX"];
-            obj->turnY = positions["turnY"];
-            obj->turnZ = positions["turnZ"];
-            ogl->addObj(obj, name, "circle", x, y, z, colors[0], colors[1], colors[2]);
+            obj = new Circle();
+            static_cast<Circle*>(obj)->setRadius(
+                positions["radius"]
+            );
         }
         else {
-            Sphere* ball = new Sphere();
-            ball->position = { x, y, z };
-            ball->scale = { 1, 1, 1 };
-            ball->color = { colors[0], colors[1], colors[2] };
-            ball->mode = dMode;
-            ball->turnX = positions["turnX"];
-            ball->turnY = positions["turnY"];
-            ball->turnZ = positions["turnZ"];
-            ball->setSize(positions["radius"], 32, 32);
-
-            ogl->addObj(ball, name, "sphere", ball->position.x(), ball->position.y(), ball->position.z(),
-                ball->color.x(), ball->color.y(), ball->color.z());
+            obj = new Sphere();
+            static_cast<Sphere*>(obj)->setSize(
+                positions["radius"],
+                32,
+                32
+            );
+            obj->scale = { 1,1,1 };
+            obj->mode = dMode;
+            realType = "sphere";
         }
     }
     else if (type == "star") {
-        Star* obj = new Star();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["points"], positions["outer"], positions["inner"]);
-        obj->turnX = positions["turnX"];
-        obj->turnY = positions["turnY"];
-        obj->turnZ = positions["turnZ"];
-        ogl->addObj(obj, name, "star", x, y, z, colors[0], colors[1], colors[2]);
+        obj = new Star();
+        static_cast<Star*>(obj)->setSize(
+            positions["points"],
+            positions["outer"],
+            positions["inner"]
+        );
     }
     else if (type == "polygon") {
         if (ogl->mode == "2D") {
-            PolygonFigure* obj = new PolygonFigure();
-            obj->position = { x, y, z };
-            obj->color = { colors[0], colors[1], colors[2] };
-            obj->setSize(positions["count"], positions["radius"]);
-            obj->turnX = positions["turnX"];
-            obj->turnY = positions["turnY"];
-            obj->turnZ = positions["turnZ"];
-            ogl->addObj(obj, name, "polygon", x, y, z, colors[0], colors[1], colors[2]);
+            obj = new PolygonFigure();
+            static_cast<PolygonFigure*>(obj)->setSize(
+                positions["count"],
+                positions["radius"]
+            );
         }
         else {
-            Prism* prism = new Prism();
-            prism->position = { x,y,z };
-            prism->scale = { 1, 1, 1 };
-            prism->color = { colors[0], colors[1], colors[2] };
-            prism->mode = dMode;
-            prism->turnX = positions["turnX"];
-            prism->turnY = positions["turnY"];
-            prism->turnZ = positions["turnZ"];
-            prism->setSize(positions["count"], positions["radius"], positions["h"]);
-
-            ogl->addObj(prism, name, "prism", prism->position.x(), prism->position.y(), prism->position.z(),
-                prism->color.x(), prism->color.y(), prism->color.z());
+            obj = new Prism();
+            static_cast<Prism*>(obj)->setSize(
+                positions["count"],
+                positions["radius"],
+                positions["h"]
+            );
+            obj->scale = { 1,1,1 };
+            obj->mode = dMode;
+            realType = "prism";
         }
     }
     else if (type == "line") {
-        Line* obj = new Line();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["wL"], positions["x0"], positions["y0"], positions["lineW"]);
-        ogl->addObj(obj, name, "line", x, y, z, colors[0], colors[1], colors[2]);
+        obj = new Line();
+        static_cast<Line*>(obj)->setSize(
+            positions["wL"],
+            positions["x0"],
+            positions["y0"],
+            positions["lineW"]
+        );
     }
     else if (type == "cone") {
-        Cone* obj = new Cone();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["r"], positions["h"]);
+        obj = new Cone();
+        static_cast<Cone*>(obj)->setSize(
+            positions["r"],
+            positions["h"]
+        );
         obj->mode = dMode;
-        obj->turnX = positions["turnX"];
-        obj->turnY = positions["turnY"];
-        obj->turnZ = positions["turnZ"];
-        ogl->addObj(obj, name, "cone", x, y, z, colors[0], colors[1], colors[2]);
     }
     else if (type == "cylinder") {
-        Cylinder* obj = new Cylinder();
-        obj->position = { x, y, z };
-        obj->color = { colors[0], colors[1], colors[2] };
-        obj->setSize(positions["rT"], positions["rB"], positions["h"]);
+        obj = new Cylinder();
+        static_cast<Cylinder*>(obj)->setSize(
+            positions["rT"],
+            positions["rB"],
+            positions["h"]
+        );
         obj->mode = dMode;
-        obj->turnX = positions["turnX"];
-        obj->turnY = positions["turnY"];
-        obj->turnZ = positions["turnZ"];
-        ogl->addObj(obj, name, "cylinder", x, y, z, colors[0], colors[1], colors[2]);
     }
 
+    if (obj) {
+        obj->position = { x, y, z };
+        obj->color = { colors[0], colors[1], colors[2] };
+        obj->turnX = turnX;
+        obj->turnY = turnY;
+        obj->turnZ = turnZ;
+
+        ogl->addObj(obj, name, realType,pos[0], pos[1], pos[2],col[0], col[1], col[2]);
+    }
 }
 void Action::movingParcer(OpenGLW* ogl, const std::string& name, const int& repeatTime, const QStringList& items,
     const std::map<std::string, std::string>& scenarios, const int& speed){

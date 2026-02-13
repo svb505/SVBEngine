@@ -693,6 +693,12 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
     layout->addRow("Angle turn in Z axe", turnZ);
     (*fields)["turnY"] = turnZ;
 
+    QComboBox* parents = new QComboBox();
+    parents->addItem("None");
+
+    for (auto obj : ogl->getObjects()) parents->addItem(QString::fromStdString(obj.first));
+
+    layout->addRow("Select parent",parents);
 
     QPushButton* create = new QPushButton("Create object");
     layout->addRow(create);
@@ -707,7 +713,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
                 return;
             }
         }
-        for (auto& p : *fields)
+        for (auto& p : *fields) {
             if (p.first == "count" || p.first == "points" ||
                 p.first == "wL" || p.first == "x" || p.first == "y" || p.first == "turnX" ||
                 p.first == "turnZ") {
@@ -716,6 +722,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
             else {
                 (*positions)[p.first] = p.second->text().toFloat();
             }
+        }
         for (auto& md : *designModes) {
             if (md.second->isChecked()) {
                 dMode = true;
@@ -723,7 +730,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         }
         Action act;
         act.addObject(*typeObj, name->text().toStdString(), ogl, xPos->text().toFloat(),
-            yPos->text().toFloat(), zPos->text().toFloat(), colorRGB->data(), *positions, dMode);
+            yPos->text().toFloat(), zPos->text().toFloat(), colorRGB->data(), *positions, dMode,parents->currentText().toStdString());
         });
 }
 void GUI::openHudWindow(OpenGLW* ogl,HUD* hud) {

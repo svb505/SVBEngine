@@ -680,14 +680,17 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         layout->addRow("Enter size", size);
         (*fields)["size"] = size;
     }
+
     QLineEdit* turnX = new QLineEdit();
     turnX->setText("0");
     layout->addRow("Angle turn in X axe", turnX);
     (*fields)["turnX"] = turnX;
+
     QLineEdit* turnY = new QLineEdit();
     turnY->setText("0");
     layout->addRow("Angle turn in Y axe", turnY);
     (*fields)["turnY"] = turnY;
+
     QLineEdit* turnZ = new QLineEdit();
     turnZ->setText("0");
     layout->addRow("Angle turn in Z axe", turnZ);
@@ -951,8 +954,7 @@ void GUI::profilerWindow() {
         LOG_INFO(std::format("[MEMORY]: Memory usage: {}", text.toStdString()));
 
         info->setText(text);
-    });
-    
+    }); 
     QObject::connect(exportReport, &QPushButton::pressed, [child]() {
         QString path = QFileDialog::getSaveFileName(child, "Save memory usage", QDir::homePath(), "Text files (*.txt)");
         if (!path.isEmpty()) {

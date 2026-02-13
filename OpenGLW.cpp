@@ -100,7 +100,8 @@ void OpenGLW::paintGL() {
     painter.end();
 
     for (auto& [name, data] : objects) {
-        if (data.obj) data.obj->render();
+        if (data.x >= left && data.x <= right && data.y >= bottom && data.y <= top && data.z <= zFar)  
+            if (data.obj) data.obj->render();
     }
     if (hud) hud->drawHud(this, &cam, &gui);
   

@@ -77,7 +77,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
 
     return result;
 }
-void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Data>& objects, OpenGLW* ogl)
+void ImpExp::exportScene(const QString& fileName, const std::unordered_map<std::string, Data>& objects, OpenGLW* ogl)
 {
     QJsonArray objectArray;
 
@@ -203,7 +203,7 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
     if (file.open(QIODevice::WriteOnly)) file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
         
 }
-void ImpExp::exportSceneWithDialog(const std::map<std::string, Data>& objects, OpenGLW* ogl){
+void ImpExp::exportSceneWithDialog(const std::unordered_map<std::string, Data>& objects, OpenGLW* ogl){
     QString fileName = QFileDialog::getSaveFileName(nullptr,"Save scene","scenes/scene.json","Scene Files (*.json)");
 
     if (fileName.isEmpty()) return;

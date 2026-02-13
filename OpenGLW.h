@@ -44,7 +44,7 @@ public:
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
     void startMove(const std::string& name, int targetX, int speed);
-    std::map<std::string, Data> getObjects() const;
+    std::unordered_map<std::string, Data> getObjects() const;
     void moveObj(const std::string& name, const float& x, const float& y, const float z);
     int getX(const std::string& name);
     int getY(const std::string& name);
@@ -65,7 +65,7 @@ protected:
 private:
     float backgroundColor[4] = {0.1f, 0.1f, 0.0f, 1.0f};
     int fps = 0;
-    std::map<std::string, Data> objects; // List of objects
+    std::unordered_map<std::string, Data> objects; // List of objects
     //Scene coordinates
     float aspect = 1.0f;
     float left = 0.0f;

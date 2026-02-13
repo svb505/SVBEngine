@@ -264,5 +264,5 @@ int OpenGLW::getTurnX(const std::string& name) { return objects[name].obj->turnX
 int OpenGLW::getTurnY(const std::string& name) { return objects[name].obj->turnY; }
 int OpenGLW::getTurnZ(const std::string& name) { return objects[name].obj->turnZ; }
 std::string OpenGLW::getType(const std::string& name) { return objects[name].type; }
-std::map<std::string, Data> OpenGLW::getObjects() const {return objects; }
+std::unordered_map<std::string, Data> OpenGLW::getObjects() const {return objects; }
 std::vector<float> OpenGLW::getColors(const std::string& name) {return { objects[name].r, objects[name].g, objects[name].b };}

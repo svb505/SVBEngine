@@ -156,7 +156,7 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
         obj->turnY = turnY;
         obj->turnZ = turnZ;
 
-        ogl->addObj(obj, name, realType,pos[0], pos[1], pos[2],col[0], col[1], col[2]);
+        ogl->addObj(obj, name, realType,pos[0], pos[1], pos[2],col[0], col[1], col[2],parent);
     }
 }
 void Action::movingParcer(OpenGLW* ogl, const std::string& name, const int& repeatTime, const QStringList& items,

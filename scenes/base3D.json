@@ -19,7 +19,8 @@
                 "mode": false,
                 "width": 20
             },
-            "type": "cube"
+            "type": "cube",
+            "parent": "None"
         },
         {
             "color": {
@@ -39,7 +40,8 @@
                 "rBottom": 20,
                 "rTop": 20
             },
-            "type": "cylinder"
+            "type": "cylinder",
+            "parent": "None"
         },
         {
             "color": {
@@ -59,7 +61,8 @@
                 "slices": 32,
                 "stacks": 32
             },
-            "type": "sphere"
+            "type": "sphere",
+            "parent": "None"
         },
         {
             "color": {
@@ -75,7 +78,8 @@
             },
             "size": {
             },
-            "type": "pyramid"
+            "type": "pyramid",
+            "parent": "None"
         },
         {
             "color": {
@@ -95,7 +99,8 @@
                 "radius": 10,
                 "sides": 5
             },
-            "type": "prism"
+            "type": "prism",
+            "parent": "None"
         },
         {
             "color": {
@@ -114,7 +119,8 @@
                 "mode": false,
                 "radius": 20
             },
-            "type": "cone"
+            "type": "cone",
+            "parent": "None"
         },
         {
             "color": {
@@ -131,7 +137,8 @@
             "size": {
                 "size": 35
             },
-            "type": "point"
+            "type": "point",
+            "parent": "None"
         }
     ]
 }

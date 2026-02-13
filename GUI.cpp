@@ -782,14 +782,30 @@ void GUI::openTreeWindow(QPointer<OpenGLW> oglPtr)
 
     const auto objects = oglPtr->getObjects();
 
+    std::unordered_map<std::string, QTreeWidgetItem*> itemMap;
+
     for (const auto& [name, data] : objects) {
-        auto* item = new QTreeWidgetItem(root);
+        QTreeWidgetItem* item = new QTreeWidgetItem();
         item->setText(0, QString::fromStdString(name));
+        itemMap[name] = item; 
+    }
+
+    for (const auto& [name, data] : objects) {
+        QTreeWidgetItem* item = itemMap[name];
+        if (data.parent == "None") root->addChild(item);  
+        else {
+            auto it = itemMap.find(data.parent);
+            if (it != itemMap.end()) {
+                it->second->addChild(item);  
+            }
+            else  root->addChild(item);  
+        }
     }
 
     tree->expandAll();
     child->show();
 }
+
 void GUI::soundWindow(Sound& sound) {
     QWidget* child = new QWidget();
     child->resize(400, 350);

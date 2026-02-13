@@ -48,6 +48,8 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
         d.r = col["r"].toDouble();
         d.g = col["g"].toDouble();
         d.b = col["b"].toDouble();
+        
+        d.parent = o["parent"].toString().toStdString();
 
         Object* obj = nullptr;
 
@@ -67,11 +69,10 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };
         
-        ogl->addObj(obj, name, type, d.x, d.y, d.z, d.r, d.g, d.b);
+        ogl->addObj(obj, name, type, d.x, d.y, d.z, d.r, d.g, d.b,d.parent);
 
         d.obj = obj;
         result[name] = d;
-        
     }
 
     return result;
@@ -92,7 +93,7 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
         o["turnX"] = obj->turnX;
         o["turnY"] = obj->turnY;
         o["turnZ"] = obj->turnZ;
-
+        o["parent"] = QString::fromStdString(ogl->getObjects()[name].parent);
 
         QJsonObject pos;
         pos["x"] = data.x;
@@ -105,6 +106,8 @@ void ImpExp::exportScene(const QString& fileName, const std::map<std::string, Da
         col["g"] = data.g;
         col["b"] = data.b;
         o["color"] = col;
+
+        
 
         QJsonObject size;
 

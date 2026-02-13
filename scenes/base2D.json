@@ -17,7 +17,8 @@
                 "height": 20,
                 "width": 20
             },
-            "type": "rectangle"
+            "type": "rectangle",
+            "parent": "None"
         },
         {
             "color": {
@@ -34,7 +35,8 @@
             "size": {
                 "radius": 6
             },
-            "type": "circle"
+            "type": "circle",
+            "parent": "None"
         },
         {
             "color": {
@@ -52,7 +54,8 @@
                 "radius": 10,
                 "sides": 5
             },
-            "type": "polygon"
+            "type": "polygon",
+            "parent": "None"
         },
         {
             "color": {
@@ -70,7 +73,8 @@
                 "base": 30,
                 "height": 30
             },
-            "type": "triangle"
+            "type": "triangle",
+            "parent": "None"
         },
         {
             "color": {
@@ -89,7 +93,8 @@
                 "outer": 5,
                 "points": 6
             },
-            "type": "star"
+            "type": "star",
+            "parent": "None"
         },
         {
             "color": {
@@ -109,7 +114,8 @@
                 "x0": -200,
                 "y0": 0
             },
-            "type": "line"
+            "type": "line",
+            "parent": "None"
         }
     ]
 }

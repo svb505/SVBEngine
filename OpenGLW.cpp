@@ -168,16 +168,30 @@ void OpenGLW::mousePressEvent(QMouseEvent* event) {
     update();
 }
 void OpenGLW::addObj(Object* obj, const std::string& name, const std::string& type,
-    float x, float y, float z, float r, float g, float b){
+    float x, float y, float z, float r, float g, float b,std::string parent){
     LOG_INFO(std::format("[SCENE] Object '{}' added",name));
-    objects[name] = { obj, type, x, y, z, r, g, b };
+    objects[name] = { obj, type, x, y, z, r, g, b, parent};
     update();
 }
-void OpenGLW::removeObj(const std::string& name) {
-    LOG_INFO(std::format("[SCENE] Object with name '{}' has been removed", name));
-    objects.erase(name);
+void OpenGLW::removeObj(const std::string& name)
+{
+    auto it = objects.find(name);
+    if (it == objects.end()) return;
+
+    Object* target = it->second.obj;
+
+    LOG_INFO(std::format("[SCENE] Object with name '{}' has been removed",name));
+
+    for (auto iter = objects.begin(); iter != objects.end(); ){
+        if (iter->second.parent == name) iter = objects.erase(iter);  
+        else ++iter;
+    }
+
+    objects.erase(it);
+
     update();
 }
+
 void OpenGLW::clearScene() {
     LOG_INFO("[SCENE] Scene cleared");
     objects.clear();

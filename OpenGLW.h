@@ -14,6 +14,7 @@ struct Data {
     std::string type;
     float x, y, z;
     float r, g, b;
+    std::string parent;
 };
 struct ProjectionParams {
     float left, right, top, bottom, zNear, zFar;
@@ -36,7 +37,8 @@ public:
     explicit OpenGLW(QWidget* parent = nullptr);
     ~OpenGLW();
 
-    void addObj(Object* obj, const std::string& name,  const std::string& type,float x, float y, float z, float r, float g, float b);
+    void addObj(Object* obj, const std::string& name,  const std::string& type,float x, float y, float z, 
+        float r, float g, float b,std::string parent);
     void clearScene();
     void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,int turnY, int turnZ);
     void removeObj(const std::string& name);

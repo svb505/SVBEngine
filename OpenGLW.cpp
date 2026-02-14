@@ -28,6 +28,8 @@ void perspective(float fov, float aspect, float zNear, float zFar) {
 }
 OpenGLW::OpenGLW(QWidget* parent) : QOpenGLWidget(parent) {
     LOG_INFO("[RENDER] OpenGLWidget created");
+    objects.reserve(100);
+
     animTimer = new QTimer(this);
     connect(animTimer, &QTimer::timeout, this, &OpenGLW::animateMove);
     fpsTimer.start();
@@ -89,10 +91,15 @@ void OpenGLW::paintGL() {
 
     drawGridOpenGL(100.0f, 10);
 
-    QPainter painter(this);
+    painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setFont(QFont("Consolas", 11));
     painter.setPen(Qt::white);
+
+    for (auto& t : texts){
+        if (mode == "2D") text->drawText(painter, t.x, t.y, t.text, this);
+        else text->drawText3D(t.x, t.y, t.z, t.text, t.r, t.g, t.b);
+    }
 
     if (mode == "2D") text->drawGridText(painter, 100.0f, 10,this);
     else text->draw3DGridText(100.0f,this);

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Objects.h"
 #include <QElapsedTimer>
+#include <QPainter>
 #include "Camera.h"
 #include "GUI.h"
 #include "HUD.h"
@@ -28,6 +29,7 @@ public:
     SceneText* text = nullptr;
     HUD* hud = nullptr;
     std::string mode = "2D";
+    QPainter painter;
 
     QMap<QString, QTimer*> timers;
     ProjectionParams getProjectionParams() const;
@@ -65,6 +67,7 @@ protected:
 private:
     float backgroundColor[4] = {0.1f, 0.1f, 0.0f, 1.0f};
     int fps = 0;
+    std::vector<TextData> texts; // Users texts in scene
     std::unordered_map<std::string, Data> objects; // List of objects
     //Scene coordinates
     float aspect = 1.0f;
@@ -74,6 +77,7 @@ private:
     float bottom = 0.0f;
     float zNear = 0.0f;
     float zFar = 0.0f;
+    //FPS
     QElapsedTimer fpsTimer;
     int fpsFrames = 0;
     int animTargetX = 0;

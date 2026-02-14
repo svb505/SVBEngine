@@ -5,6 +5,12 @@
 #include <QPainter>
 #include <QPointF>
 
+struct TextData {
+    QString text;
+    float x, y, z;
+    float r, g, b;
+};
+
 class OpenGLW;
 class SceneText {
 public:

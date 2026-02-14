@@ -317,6 +317,8 @@ void GUI::openSceneWindow(QPointer<OpenGLW> oglPtr) {
 
     QPushButton* cleanBtn = new QPushButton("Clean scene");
     layout->addRow(cleanBtn);
+    QPushButton* addTextBtn = new QPushButton("Add text to scene");
+    layout->addRow(addTextBtn);
 
     QPushButton* colorBtn = new QPushButton("Select new background color");
     QLabel* colorPreview = new QLabel("Color not chosen");
@@ -324,6 +326,7 @@ void GUI::openSceneWindow(QPointer<OpenGLW> oglPtr) {
     layout->addRow(colorBtn);
     layout->addRow(colorPreview);
 
+    QObject::connect(addTextBtn, &QPushButton::pressed, [this,oglPtr]() { addTextWin(oglPtr); });
     QObject::connect(cleanBtn, &QPushButton::pressed, [oglPtr]() {oglPtr->clearScene(); });
     QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
         QColor color = QColorDialog::getColor(Qt::white, child);
@@ -808,7 +811,6 @@ void GUI::openTreeWindow(QPointer<OpenGLW> oglPtr)
     tree->expandAll();
     child->show();
 }
-
 void GUI::soundWindow(Sound& sound) {
     QWidget* child = new QWidget();
     child->resize(400, 350);
@@ -977,4 +979,76 @@ void GUI::profilerWindow() {
         });
 
     timer->start(1000);
+}
+void GUI::addTextWin(QPointer<OpenGLW> oglPtr) {
+    auto colorRGB = std::make_shared<std::array<float, 3>>();
+
+    QWidget* child = new QWidget();
+    child->resize(200, 400);
+    child->setWindowTitle("Add text");
+    child->show();
+
+    auto* layout = new QVBoxLayout(child);
+    
+    QLabel* lbl = new QLabel("Enter text");
+    layout->addWidget(lbl);
+    QLineEdit* text = new QLineEdit();
+    layout->addWidget(text);
+
+    QLabel* lblX = new QLabel("Enter X");
+    layout->addWidget(lblX);
+    QLineEdit* X = new QLineEdit("0");
+    layout->addWidget(X);
+
+    QLabel* lblY = new QLabel("Enter Y");
+    layout->addWidget(lblY);
+    QLineEdit* Y = new QLineEdit("0");
+    layout->addWidget(Y);
+
+    QLabel* lblZ = new QLabel("Enter Z");
+    layout->addWidget(lblZ);
+    QLineEdit* Z = new QLineEdit("0");
+    layout->addWidget(Z);
+
+    QPushButton* colorBtn = new QPushButton("Select text color");
+    QLabel* colorPreview = new QLabel("Color not chosen");
+    colorPreview->setAlignment(Qt::AlignCenter);
+    layout->addWidget(colorBtn);
+    layout->addWidget(colorPreview);
+
+    QPushButton* addBtn = new QPushButton("Add");
+    layout->addWidget(addBtn);
+
+    QObject::connect(colorBtn, &QPushButton::clicked, [=]() {
+        QColor color = QColorDialog::getColor(Qt::white, child);
+        if (!color.isValid()) return;
+
+        (*colorRGB)[0] = color.redF();
+        (*colorRGB)[1] = color.greenF();
+        (*colorRGB)[2] = color.blueF();
+
+        colorPreview->setText(QString("R: %1  G: %2  B: %3").arg(color.red()).arg(color.green()).arg(color.blue()));
+
+        colorPreview->setStyleSheet(QString("background: rgb(%1,%2,%3); padding: 10px;")
+            .arg(color.red()).arg(color.green()).arg(color.blue()));
+        });
+    QObject::connect(addBtn, &QPushButton::pressed, [child,text, X, Y, Z, oglPtr, colorRGB]() {
+        TextData t;
+
+        t.text = text->text();
+        t.x = X->text().toFloat();
+        t.y = Y->text().toFloat();
+        t.z = Z->text().toFloat();
+        t.r = colorRGB->data()[0];
+        t.g = colorRGB->data()[1];
+        t.b = colorRGB->data()[2];
+
+        oglPtr->texts.push_back(t);
+
+        oglPtr->update();
+
+        QMessageBox::information(child, "Success", "Text successfully added");
+        });
+
+
 }

@@ -53,4 +53,5 @@ public:
 	void openHudWindow(OpenGLW* ogl,HUD* hud);
 	void openTreeWindow(QPointer<OpenGLW> oglPtr);
 	void profilerWindow();
+	void addTextWin(QPointer<OpenGLW> oglPtr);
 };

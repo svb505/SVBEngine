@@ -102,6 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="HUD.cpp" />
@@ -121,7 +122,9 @@
     <QtMoc Include="OpenGLW.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="Animation.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="ImportExport.h" />

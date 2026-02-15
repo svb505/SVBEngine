@@ -9,6 +9,7 @@
 #include "GUI.h"
 #include "HUD.h"
 #include "text.h"
+#include "Animation.h"
 
 struct Data {
     Object* obj;
@@ -27,6 +28,7 @@ public:
     GUI gui;
     Camera cam;
     SceneText* text = nullptr;
+    AnimationSystem* animSys;
     HUD* hud = nullptr;
     std::string mode = "2D";
     QPainter painter;
@@ -45,7 +47,6 @@ public:
     void changeObj(const std::string& name, float x, float y, float z, float colors[], int turnX,int turnY, int turnZ);
     void removeObj(const std::string& name);
     void setMode(const std::string& m);
-    void startMove(const std::string& name, int targetX, int speed);
     std::unordered_map<std::string, Data> getObjects() const;
     void moveObj(const std::string& name, const float& x, const float& y, const float z);
     int getX(const std::string& name);
@@ -54,7 +55,6 @@ public:
     int getTurnX(const std::string& name);
     int getTurnY(const std::string& name);
     int getTurnZ(const std::string& name);
-    void drawGridOpenGL(float spacing, int count);
     void setBackground(std::array<float,3> color);
     void initHUD();
     void initSceneText();
@@ -80,14 +80,8 @@ private:
     //FPS
     QElapsedTimer fpsTimer;
     int fpsFrames = 0;
-    int animTargetX = 0;
-    int animSpeed = 5;
-    QTimer* animTimer = nullptr;
-    std::string animName;
-
-private slots:
-    void animateMove();
 friend class HUD;
 friend class SceneText;
 friend class GUI;
+friend class AnimationSystem;
 };

@@ -32,12 +32,8 @@ private:
 	QVector<QAction*> only3DActions;
 public:
 	QPointer<OpenGLW> oglPtr;
-	GUI() {
-		LOG_INFO("[GUI] GUI Added");
-	}
-	~GUI() {
-		LOG_INFO("[GUI] GUI Destroyed");
-	}
+	GUI() { LOG_INFO("[GUI] GUI Added"); }
+	~GUI() { LOG_INFO("[GUI] GUI Destroyed"); }
 	void updateModeUI(OpenGLW* ogl);
 	void addContexMenu(QMouseEvent* event, OpenGLW* ogl, QWidget* parentWindow);
 	void aboutWindow();

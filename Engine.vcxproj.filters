@@ -67,6 +67,9 @@
     <ClCompile Include="text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects.h">
@@ -102,6 +105,9 @@
     <ClInclude Include="Profiler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc">
@@ -121,6 +127,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OpenGLW.h">
+      <Filter>Source Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Animation.h">
       <Filter>Source Files</Filter>
     </QtMoc>
   </ItemGroup>

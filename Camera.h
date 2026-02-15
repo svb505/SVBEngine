@@ -15,5 +15,6 @@ public:
     bool cameraFix = false;
     void mouseWheel(QMouseEvent* event);
     void changeLastMouse(QMouseEvent* event);
+    void perspective(float fov, float aspect, float zNear, float zFar);
     friend class HUD;
 };

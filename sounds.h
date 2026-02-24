@@ -7,12 +7,15 @@
 #include "Logger.h"
 
 class Sound {
-public:
+private:
     std::vector<std::string> channelPaths = {
         "sounds/sound1.wav",
         "sounds/sound2.wav",
         "sounds/sound3.wav"
     };
+public:
+    void setChannel(std::string data, int idx) { channelPaths[idx] = data; }
+    std::vector<std::string> getChannels() { return channelPaths; }
 
     ALCdevice* audioDevice = nullptr;
     ALCcontext* audioContext = nullptr;

@@ -819,11 +819,11 @@ void GUI::soundWindow(Sound& sound) {
 
     auto* layout = new QVBoxLayout(child);
 
-    QLabel* lblC1 = new QLabel(QString::fromStdString(std::format("Channel 1: {}", sound.channelPaths[0])));
+    QLabel* lblC1 = new QLabel(QString::fromStdString(std::format("Channel 1: {}", sound.getChannels()[0])));
     layout->addWidget(lblC1);
-    QLabel* lblC2 = new QLabel(QString::fromStdString(std::format("Channel 2: {}", sound.channelPaths[1])));
+    QLabel* lblC2 = new QLabel(QString::fromStdString(std::format("Channel 2: {}", sound.getChannels()[1])));
     layout->addWidget(lblC2);
-    QLabel* lblC3 = new QLabel(QString::fromStdString(std::format("Channel 3: {}", sound.channelPaths[2])));
+    QLabel* lblC3 = new QLabel(QString::fromStdString(std::format("Channel 3: {}", sound.getChannels()[2])));
     layout->addWidget(lblC3);
 
     QComboBox* channels = new QComboBox();
@@ -856,15 +856,15 @@ void GUI::soundWindow(Sound& sound) {
 
         int index = channels->currentIndex();
 
-        if (index < 0 || index >= sound.channelPaths.size()) return;
+        if (index < 0 || index >= sound.getChannels().size()) return;
 
-        sound.channelPaths[index] = filePath.toStdString();
+        sound.setChannel(filePath.toStdString(),index);
 
         if (index == 0) lblC1->setText(QString::fromStdString(std::format("Channel 1: {}", filePath.toStdString())));
         if (index == 1) lblC2->setText(QString::fromStdString(std::format("Channel 2: {}", filePath.toStdString())));
         if (index == 2) lblC3->setText(QString::fromStdString(std::format("Channel 3: {}", filePath.toStdString())));
 
-        ALuint newBuffer = sound.LoadWav(sound.channelPaths[index].c_str());
+        ALuint newBuffer = sound.LoadWav(sound.getChannels()[index].c_str());
         if (newBuffer == 0) return;
 
         ALuint* sources[] = { &sound.channel1Source, &sound.channel2Source, &sound.channel3Source };

@@ -266,7 +266,7 @@ bool ImpExp::exportToJson(Sound& sound,const QString& filename) {
     QJsonObject root;
     QJsonArray arr;
 
-    for (const auto& path : sound.channelPaths) arr.append(QString::fromStdString(path));
+    for (const auto& path : sound.getChannels()) arr.append(QString::fromStdString(path));
     root["channels"] = arr;
 
     QJsonDocument doc(root);
@@ -294,11 +294,11 @@ bool ImpExp::importFromJson(Sound& sound, const QString& filename) {
     QJsonArray arr = root["channels"].toArray();
     if (arr.size() != 3) return false;
 
-    for (int i = 0; i < 3; ++i) sound.channelPaths[i] = arr[i].toString().toStdString();
+    for (int i = 0; i < 3; ++i) sound.setChannel(arr[i].toString().toStdString(), i);
 
-    sound.setMusToBuffer(sound.channel1Buffer, sound.channelPaths[0]);
-    sound.setMusToBuffer(sound.channel2Buffer, sound.channelPaths[1]);
-    sound.setMusToBuffer(sound.channel3Buffer, sound.channelPaths[2]);
+    sound.setMusToBuffer(sound.channel1Buffer, sound.getChannels()[0]);
+    sound.setMusToBuffer(sound.channel2Buffer, sound.getChannels()[1]);
+    sound.setMusToBuffer(sound.channel3Buffer, sound.getChannels()[2]);
 
     alSourceStop(sound.channel1Source);
     alSourceStop(sound.channel2Source);

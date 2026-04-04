@@ -12,7 +12,6 @@
 - Object behavior is implemented using a **composition-based approach**
 - Rendering, movement, and gameplay logic are processed in independent systems
 - Scenarios define reusable, data-driven gameplay behaviors
-- Deterministic update loop ensures predictable execution order
 
 ## Technical Features
 - Explicit object lifetime and ownership management

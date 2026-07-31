@@ -22,13 +22,14 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
     if (!file.open(QIODevice::ReadOnly)) return result;
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    if (doc["mode"].isString()) ogl->setMode(doc["mode"].toString().toStdString());
-    else ogl->setMode("2D");
+    if (doc["mode"].isString()) {
+        ogl->setMode(doc["mode"] == "2D" ? RenderMode::_2D : RenderMode::_3D);
+    }
+    else ogl->setMode(RenderMode::_2D);
 
     QJsonArray arr = doc["objects"].toArray();
 
-    for (const auto& v : arr)
-    {
+    for (const auto& v : arr){
         QJsonObject o = v.toObject();
 
         std::string name = o["name"].toString().toStdString();
@@ -66,6 +67,7 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
         else if (type == "cone") { Cone* p = new Cone(); p->setSize(size["radius"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "cylinder") { Cylinder* p = new Cylinder(); p->setSize(size["rTop"].toInt(), size["rBottom"].toDouble(), size["h"].toDouble()); p->mode = size["mode"].toDouble(); p->turnX = turnX, p->turnY = turnY, p->turnZ = turnZ; obj = p; }
         else if (type == "point") { Point* p = new Point(); p->setSize(size["size"].toInt()); obj = p;}
+        
         obj->position = { d.x, d.y, d.z };
         obj->color = { d.r, d.g, d.b };
         
@@ -77,18 +79,18 @@ std::map<std::string, Data> ImpExp::importScene(const QString& fileName, OpenGLW
 
     return result;
 }
-void ImpExp::exportScene(const QString& fileName, const std::unordered_map<std::string, Data>& objects, OpenGLW* ogl)
-{
+void ImpExp::exportScene(const QString& fileName, 
+    const std::unordered_map<std::string, Data>& objects, OpenGLW* ogl){
     QJsonArray objectArray;
 
-    for (const auto& [name, data] : objects)
-    {
+    for (const auto& [name, data] : objects){
         Object* obj = data.obj;
         if (!obj) continue;
 
         QJsonObject o;
         o["name"] = QString::fromStdString(name);
         QString type = QString::fromStdString(ogl->getType(name));
+        
         o["type"] = type;
         o["turnX"] = obj->turnX;
         o["turnY"] = obj->turnY;
@@ -106,8 +108,6 @@ void ImpExp::exportScene(const QString& fileName, const std::unordered_map<std::
         col["g"] = data.g;
         col["b"] = data.b;
         o["color"] = col;
-
-        
 
         QJsonObject size;
 
@@ -195,7 +195,13 @@ void ImpExp::exportScene(const QString& fileName, const std::unordered_map<std::
 
     QJsonObject root;
     root["objects"] = objectArray;
-    root["mode"] = QString::fromStdString(ogl->mode);
+
+    std::string bufMode = "";
+
+    if (ogl->getMode() == RenderMode::_3D) bufMode = "3D";
+    else bufMode = "2D";
+
+    root["mode"] = QString::fromStdString(bufMode);
 
     QDir().mkpath("scenes");
 

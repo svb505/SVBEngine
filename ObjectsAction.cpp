@@ -24,74 +24,46 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
 
 
     if (type == "rectangle" || type == "flat" || type == "platform") {
-
-        if (ogl->mode == "2D" || type == "flat") {
+        if (ogl->getMode() == RenderMode::_2D || type == "flat") {
             obj = new Box();
             static_cast<Box*>(obj)->setSize(positions["w"], positions["h"]);
         }
         else if (type == "platform") {
             obj = new Platform();
             static_cast<Platform*>(obj)->setSize(positions["w"], positions["h"]);
-            obj->scale = { 1,1,1 };
-            obj->rotation = 45.f;
-            obj->mode = dMode;
-            realType = "platform";
+            
         }
         else {
             obj = new Cube();
-            static_cast<Cube*>(obj)->setSize(
-                positions["w"],
-                positions["h"],
-                positions["w"]
-            );
-            obj->scale = { 1,1,1 };
-            obj->rotation = 45.f;
-            obj->mode = dMode;
-            realType = "cube";
+            static_cast<Cube*>(obj)->setSize(positions["w"], positions["h"],positions["w"]);
         }
+
+        realType = type;
+
     }
     else if (type == "point") {
         obj = new Point();
         static_cast<Point*>(obj)->setSize(positions["size"]);
     }
     else if (type == "triangle") {
-
-        if (ogl->mode == "2D") {
+        if (ogl->getMode() == RenderMode::_2D) {
             obj = new Triangle();
-            static_cast<Triangle*>(obj)->setSize(
-                positions["base"],
-                positions["h"]
-            );
+            static_cast<Triangle*>(obj)->setSize(positions["base"], positions["h"]);
         }
         else {
             obj = new Pyramid();
-            static_cast<Pyramid*>(obj)->setSize(
-                positions["base"],
-                positions["h"]
-            );
-            obj->scale = { 1,1,1 };
-            obj->mode = dMode;
-            realType = "pyramid";
+            static_cast<Pyramid*>(obj)->setSize(positions["base"],positions["h"]);
         }
     }
     else if (type == "circle") {
 
-        if (ogl->mode == "2D") {
+        if (ogl->getMode() == RenderMode::_2D) {
             obj = new Circle();
-            static_cast<Circle*>(obj)->setRadius(
-                positions["radius"]
-            );
+            static_cast<Circle*>(obj)->setRadius(positions["radius"]);
         }
         else {
             obj = new Sphere();
-            static_cast<Sphere*>(obj)->setSize(
-                positions["radius"],
-                32,
-                32
-            );
-            obj->scale = { 1,1,1 };
-            obj->mode = dMode;
-            realType = "sphere";
+            static_cast<Sphere*>(obj)->setSize(positions["radius"], 32, 32);
         }
     }
     else if (type == "star") {
@@ -103,7 +75,7 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
         );
     }
     else if (type == "polygon") {
-        if (ogl->mode == "2D") {
+        if (ogl->getMode() == RenderMode::_2D) {
             obj = new PolygonFigure();
             static_cast<PolygonFigure*>(obj)->setSize(
                 positions["count"],
@@ -117,9 +89,6 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
                 positions["radius"],
                 positions["h"]
             );
-            obj->scale = { 1,1,1 };
-            obj->mode = dMode;
-            realType = "prism";
         }
     }
     else if (type == "line") {
@@ -133,20 +102,11 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
     }
     else if (type == "cone") {
         obj = new Cone();
-        static_cast<Cone*>(obj)->setSize(
-            positions["r"],
-            positions["h"]
-        );
-        obj->mode = dMode;
+        static_cast<Cone*>(obj)->setSize(positions["r"], positions["h"] );
     }
     else if (type == "cylinder") {
         obj = new Cylinder();
-        static_cast<Cylinder*>(obj)->setSize(
-            positions["rT"],
-            positions["rB"],
-            positions["h"]
-        );
-        obj->mode = dMode;
+        static_cast<Cylinder*>(obj)->setSize(positions["rT"], positions["rB"], positions["h"]); 
     }
 
     if (obj) {
@@ -155,6 +115,12 @@ void Action::addObject(std::string& type, const  std::string& name, OpenGLW* ogl
         obj->turnX = turnX;
         obj->turnY = turnY;
         obj->turnZ = turnZ;
+
+        obj->scale = { 1,1,1 };
+        obj->rotation = 45.f;
+        obj->mode = dMode;
+
+        obj->mode = dMode;
 
         ogl->addObj(obj, name, realType,pos[0], pos[1], pos[2],col[0], col[1], col[2],parent);
     }

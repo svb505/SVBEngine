@@ -194,7 +194,7 @@ public:
         glColor3f(color.x(), color.y(), color.z());
 
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(0, 0); // центр
+        glVertex2f(0, 0);
 
         for (int i = 0; i <= points; ++i) {
             float outerAngle = 2.0f * M_PI * i / points;

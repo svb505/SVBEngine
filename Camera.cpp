@@ -7,6 +7,13 @@
 #include <GL/gl.h>
 #include <GL/glu.h> 
 
+float Camera::getNegativeCamDist() { return negativeCamDistance; }
+float Camera::getCamX() { return camX; }
+float Camera::getCamY() { return camY; }
+float Camera::getCamPitch() { return camPitch; }
+float Camera::getCamYaw() { return camYaw; }
+bool Camera::getCameraFix() { return cameraFix; }
+void Camera::setCameraFix(bool arg) { cameraFix = arg;  }
 void Camera::perspective(float fov, float aspect, float zNear, float zFar) {
     float f = 1.0f / tanf(fov * 0.5f * M_PI / 180.0f);
     float mat[16] = {

@@ -4,12 +4,12 @@
 #include <GL/glu.h>   
 #include <string>
 
-void drawGridOpenGL(float spacing, int count,std::string mode) {
+void drawGridOpenGL(float spacing, int count, RenderMode mode) {
     glPushMatrix();
     glLineWidth(1.0f);
     glBegin(GL_LINES);
 
-    if (mode == "2D") {
+    if (mode == RenderMode::_2D) {
         for (int i = -count; i <= count; ++i) {
             if (i == 0) glColor3f(1.0f, 0.0f, 0.0f);
             else glColor3f(0.5f, 0.5f, 0.5f);
@@ -21,7 +21,7 @@ void drawGridOpenGL(float spacing, int count,std::string mode) {
             glVertex3f(count * spacing, pos, 0);
         }
     }
-    else if (mode == "3D") {
+    else if (mode == RenderMode::_3D) {
         for (int i = -count; i <= count; ++i) {
             float pos = i * spacing;
             glColor3f(1.0f, 1.0f, 1.0f);

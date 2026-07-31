@@ -22,6 +22,7 @@ OpenGLW::OpenGLW(QWidget* parent) : QOpenGLWidget(parent) {
     objects.reserve(100);
     animSys = new AnimationSystem(this, this);
     fpsTimer.start();
+
     initHUD();
     initSceneText();
 }
@@ -46,7 +47,7 @@ void OpenGLW::resizeGL(int w, int h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    if (mode == "2D") {
+    if (mode == RenderMode::_2D) {
         float size = 400;
         left = -size;
         right = size;
@@ -62,6 +63,7 @@ void OpenGLW::resizeGL(int w, int h) {
     glLoadIdentity();
     glTranslatef(0, 0, -400);
 }
+RenderMode OpenGLW::getMode() { return mode; }
 void OpenGLW::paintGL() {
     fpsFrames++;
     if (fpsTimer.elapsed() >= 1000) {
@@ -74,9 +76,9 @@ void OpenGLW::paintGL() {
     glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
     glLoadIdentity();
 
-    glTranslatef(cam.camX, cam.camY, cam.negativeCamDistance);
-    glRotatef(cam.camPitch, 1, 0, 0);
-    glRotatef(cam.camYaw, 0, 1, 0);
+    glTranslatef(cam.getCamX(), cam.getCamY(), cam.getNegativeCamDist());
+    glRotatef(cam.getCamPitch(), 1, 0, 0);
+    glRotatef(cam.getCamYaw(), 0, 1, 0);
 
     drawGridOpenGL(100.0f, 10,mode);
 
@@ -86,11 +88,11 @@ void OpenGLW::paintGL() {
     painter.setPen(Qt::white);
 
     for (auto& t : texts){
-        if (mode == "2D") text->drawText(painter, t.x, t.y, t.text, this);
+        if (mode == RenderMode::_2D) text->drawText(painter, t.x, t.y, t.text, this);
         else text->drawText3D(t.x, t.y, t.z, t.text, t.r, t.g, t.b);
     }
 
-    if (mode == "2D") text->drawGridText(painter, 100.0f, 10,this);
+    if (mode == RenderMode::_2D) text->drawGridText(painter, 100.0f, 10,this);
     else text->draw3DGridText(100.0f,this);
 
     painter.end();
@@ -117,14 +119,14 @@ void OpenGLW::setBackground(std::array<float, 3> color) {
     for (int i = 0; i < 3; i++) backgroundColor[i] = color[i];
 }
 void OpenGLW::mouseMoveEvent(QMouseEvent* event) {
-    if (!cam.cameraFix) {
+    if (!cam.getCameraFix()) {
         cam.mouseWheel(event);
         update();
     }
 }
 void OpenGLW::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::MiddleButton) gui.addContexMenu(event, this, this->window());
-    if (!cam.cameraFix) cam.changeLastMouse(event);
+    if (!cam.getCameraFix()) cam.changeLastMouse(event);
 
     update();
 }
@@ -156,8 +158,8 @@ void OpenGLW::clearScene() {
     objects.clear();
     update();
 }
-void OpenGLW::setMode(const std::string& m) {
-    LOG_INFO(std::format("[SCENE] Current mode: {}",m));
+void OpenGLW::setMode(const RenderMode& m) {
+    LOG_INFO(std::format("[SCENE] Current mode: {}",m == RenderMode::_2D ? "2D" : "3D"));
     mode = m;
     update();
 }

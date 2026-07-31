@@ -3,10 +3,15 @@
 #include <QPainter>
 
 void HUD::drawHud(OpenGLW* ogl, Camera* camera, GUI* gui) {
+    std::string bufMode = "";
+
+    if (ogl->getMode() == RenderMode::_3D) bufMode = "3D";
+    else bufMode = "2D";
+
     std::vector<QString> args = { 
                                   QString("FPS: %1").arg(ogl->fps),
                                   QString("Objects count: %1").arg(ogl->objects.size()),
-                                  QString("Mode: %1").arg(ogl->mode),
+                                  QString("Mode: %1").arg(bufMode),
                                   QString("Camera incline: %1").arg(camera->camPitch),
                                   QString("Camera horizontal: %1").arg(camera->camYaw),
                                   QString("Camera X offcet: %1").arg(camera->camX),

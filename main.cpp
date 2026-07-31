@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
     QMainWindow window;
+
     GUI* gui = new GUI();
     Sound sound;
 
@@ -25,7 +26,7 @@ int main(int argc, char* argv[]) {
     sound.createSources();
 
     auto* ogl = new OpenGLW(&window);
-    ogl->setMode("2D");
+    ogl->setMode(RenderMode::_2D);
 
     window.setCentralWidget(ogl);
     window.showMaximized();

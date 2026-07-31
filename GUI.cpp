@@ -30,7 +30,7 @@
 #include "Profiler.h"
 
 void GUI::updateModeUI(OpenGLW* ogl) {
-    bool is3D = (ogl->mode == "3D");
+    bool is3D = (ogl->getMode() == RenderMode::_3D);
     for (QAction* act : only3DActions) act->setVisible(is3D);
 }
 void GUI::aboutWindow() {
@@ -208,7 +208,7 @@ void GUI::fillObjectsMenu(QMenu* parentMenu,OpenGLW* ogl,bool withExit,QWidget* 
         QAction* act = addMenu->addAction(desc.title);
 
         if (desc.only3D) {
-            act->setVisible(ogl->mode == "3D");
+            act->setVisible(ogl->getMode() == RenderMode::_3D);
             only3DActions.push_back(act);
         }
 
@@ -269,8 +269,8 @@ void GUI::addMenu(QMainWindow* w, OpenGLW* ogl,Sound& sound) {
     QObject::connect(camAction, &QAction::triggered, [this, ogl]() {openCameraWindow(ogl->cam); });
     QObject::connect(aboutAction, &QAction::triggered, [&]() {aboutWindow(); });
     QObject::connect(treeAction, &QAction::triggered, [&]() {openTreeWindow(oglPtr); });
-    QObject::connect(twoD, &QAction::triggered, [this, ogl]() {ogl->setMode("2D"); updateModeUI(ogl); });
-    QObject::connect(threeD, &QAction::triggered, [this, ogl]() {ogl->setMode("3D"); updateModeUI(ogl); });
+    QObject::connect(twoD, &QAction::triggered, [this, ogl]() {ogl->setMode(RenderMode::_2D); updateModeUI(ogl); });
+    QObject::connect(threeD, &QAction::triggered, [this, ogl]() {ogl->setMode(RenderMode::_3D); updateModeUI(ogl); });
 };
 void GUI::openCameraWindow(Camera& cam) {
     QWidget* child = new QWidget();
@@ -281,11 +281,11 @@ void GUI::openCameraWindow(Camera& cam) {
     QFormLayout* layout = new QFormLayout(child);
 
     QCheckBox* cameraFix = new QCheckBox("Fix camera");
-    cameraFix->setChecked(cam.cameraFix);
+    cameraFix->setChecked(cam.getCameraFix());
     layout->addRow(cameraFix);
 
     QObject::connect(cameraFix, &QCheckBox::toggled, child,[this,child,&cam](bool checked) {
-        cam.cameraFix = checked;
+        cam.setCameraFix(checked);
         if (checked) { QMessageBox::information(child, "Camera", "Camera fixed"); LOG_INFO("[CAMERA] Camera fixed"); }
         else QMessageBox::information(child, "Camera", "Camera unfixed"); LOG_INFO("[CAMERA] Camera unfixed");
     });
@@ -546,7 +546,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         QLineEdit* height = new QLineEdit("Enter height");
         height->setText("20");
         layout->addRow("Enter height", height);
-        if (ogl->mode == "3D") {
+        if (ogl->getMode() == RenderMode::_3D) {
             QCheckBox* cb = new QCheckBox("WireFrame mode");
             cb->setChecked(false);
             layout->addRow("Select design mode", cb);
@@ -563,7 +563,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         QLineEdit* height = new QLineEdit("Enter height");
         height->setText("30");
         layout->addRow("Enter height", height);
-        if (ogl->mode == "3D") {
+        if (ogl->getMode() == RenderMode::_3D) {
             QCheckBox* cb = new QCheckBox("WireFrame mode");
             cb->setChecked(false);
             layout->addRow("Select design mode", cb);
@@ -577,7 +577,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         QLineEdit* radius = new QLineEdit("Enter radius");
         radius->setText("6");
         layout->addRow("Enter radius", radius);
-        if (ogl->mode == "3D") {
+        if (ogl->getMode() == RenderMode::_3D) {
             QCheckBox* cb = new QCheckBox("WireFrame mode");
             cb->setChecked(false);
             layout->addRow("Select design mode", cb);
@@ -608,7 +608,7 @@ void GUI::addObjWindow(const std::string& type, OpenGLW* ogl) {
         QLineEdit* radius = new QLineEdit("Enter radius");
         radius->setText("10");
         layout->addRow("Enter radius", radius);
-        if (ogl->mode == "3D") {
+        if (ogl->getMode() == RenderMode::_3D){
             QLineEdit* h = new QLineEdit("Enter height");
             h->setText("10");
             layout->addRow("Enter height", h);
@@ -926,8 +926,6 @@ void GUI::soundWindow(Sound& sound) {
 
 }
 void GUI::profilerWindow() {
-    if (!oglPtr) return;
-
     QWidget* child = new QWidget();
     child->resize(100, 100);
     child->setWindowTitle("Profiler");
@@ -1049,6 +1047,4 @@ void GUI::addTextWin(QPointer<OpenGLW> oglPtr) {
 
         QMessageBox::information(child, "Success", "Text successfully added");
         });
-
-
 }
